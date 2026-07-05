@@ -14,8 +14,8 @@ async def init_chroma():
     global _client
     try:
         _client = await chromadb.AsyncHttpClient(
-            host=settings.CHROMA_HOST,
-            port=settings.CHROMA_PORT,
+            host=settings.CHROMADB_HOST,
+            port=settings.CHROMADB_PORT,
             settings=ChromaSettings(anonymized_telemetry=False)
         )
         await _client.heartbeat()

@@ -31,9 +31,9 @@ class Settings(BaseSettings):
     NEO4J_USER: str = "neo4j"
     NEO4J_PASSWORD: str = "safetyos_neo4j_pwd"
 
-    # ChromaDB
-    CHROMA_HOST: str = "chromadb"
-    CHROMA_PORT: int = 8001
+    # ChromaDB (env: CHROMADB_HOST / CHROMADB_PORT)
+    CHROMADB_HOST: str = "localhost"
+    CHROMADB_PORT: int = 8002
 
     # MQTT
     MQTT_HOST: str = "mqtt"

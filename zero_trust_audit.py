@@ -13,10 +13,10 @@ import requests
 from datetime import datetime
 
 # ─── CONFIG ─────────────────────────────────────────────────────────────────
-BASE_URL      = "http://localhost:8080"   # FastAPI backend
+BASE_URL      = "http://localhost:8000"   # FastAPI backend (Docker: 8000, local: 8080)
 FRONTEND_URL  = "http://localhost:3000"   # Next.js frontend
 NEO4J_URL     = "http://localhost:7474"   # Neo4j browser
-CHROMA_URL    = "http://localhost:8001"   # ChromaDB
+CHROMA_URL    = "http://localhost:8002"   # ChromaDB (docker-compose maps 8002->8000)
 REDIS_HOST    = "localhost"
 REDIS_PORT    = 6379
 MQTT_HOST     = "localhost"
@@ -79,7 +79,7 @@ def audit_infrastructure():
         import psycopg2
         conn = psycopg2.connect(
             host="localhost", port=5432,
-            dbname="safetyos", user="safetyos", password="safetyos",
+            dbname="safetyos", user="postgres", password="postgres",
             connect_timeout=TIMEOUT
         )
         conn.close()
@@ -106,8 +106,19 @@ def audit_infrastructure():
     # Neo4j
     http_get(NEO4J_URL, "Neo4j Browser")
 
-    # ChromaDB
-    http_get(f"{CHROMA_URL}/api/v1/heartbeat", "ChromaDB", "nanosecond heartbeat")
+    # ChromaDB — try v2 heartbeat (v0.5+), fallback to v1, fallback to TCP
+    try:
+        r2 = requests.get(f"{CHROMA_URL}/api/v2/heartbeat", timeout=TIMEOUT)
+        if r2.status_code == 200:
+            check("ChromaDB", "PASS", f"HTTP 200 (v2 heartbeat)")
+        else:
+            r1 = requests.get(f"{CHROMA_URL}/api/v1/heartbeat", timeout=TIMEOUT)
+            if r1.status_code == 200:
+                check("ChromaDB", "PASS", f"HTTP 200 (v1 heartbeat)")
+            else:
+                check("ChromaDB", "FAIL", f"HTTP {r2.status_code}")
+    except Exception as e:
+        tcp_ping("localhost", 8002, "ChromaDB (TCP)")
 
 
 def audit_backend():
@@ -200,7 +211,7 @@ def audit_websocket():
     try:
         import websocket as ws_lib
         ws = ws_lib.create_connection(
-            f"ws://localhost:8080/ws/live",
+            f"ws://localhost:8000/ws/live",
             timeout=TIMEOUT
         )
         msg = ws.recv()
@@ -208,7 +219,7 @@ def audit_websocket():
         check("WebSocket /ws/live", "PASS", f"Received frame: {str(msg)[:60]}...")
     except ImportError:
         # Fallback: just TCP check the port
-        tcp_ping("localhost", 8080, "WebSocket port 8080 (TCP)")
+        tcp_ping("localhost", 8000, "WebSocket port 8000 (TCP)")
         check("WebSocket message", "INFO", "Install websocket-client to test frames")
     except Exception as e:
         check("WebSocket /ws/live", "FAIL", str(e))
