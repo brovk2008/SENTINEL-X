@@ -1,0 +1,1606 @@
+[
+  {
+    "id": "INC-0044",
+    "type": "Worker Injury \u2014 Minor",
+    "date": "2019-10-31",
+    "time": "20:13",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 4799434,
+    "production_loss_hrs": 20.0,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Worn PPE",
+      "Weather conditions"
+    ],
+    "involved_workers": [
+      "W-042"
+    ],
+    "preventable": true,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0052",
+    "type": "Near-Miss \u2014 Slip/Trip",
+    "date": "2019-11-13",
+    "time": "04:26",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 33.1,
+    "root_cause": "Communication failure between shifts",
+    "contributing_factors": [
+      "Recent procedure change",
+      "Simultaneous operations",
+      "Weather conditions"
+    ],
+    "involved_workers": [
+      "W-008",
+      "W-013",
+      "W-002"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "Equipment replaced",
+      "Mandatory refresher training conducted",
+      "Shutdown procedure updated"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0007",
+    "type": "Near-Miss \u2014 Slip/Trip",
+    "date": "2019-11-18",
+    "time": "11:06",
+    "zone_id": "ZF",
+    "zone_name": "Zone F \u2014 Flare Stack Area",
+    "severity": "CRITICAL",
+    "injuries": 2,
+    "fatalities": 0,
+    "property_damage_inr": 3008774,
+    "production_loss_hrs": 2.9,
+    "root_cause": "Inadequate supervision",
+    "contributing_factors": [
+      "Understaffing"
+    ],
+    "involved_workers": [
+      "W-014",
+      "W-029"
+    ],
+    "preventable": false,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "New SOP drafted and approved",
+      "Equipment replaced",
+      "Revised permit-to-work procedure"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0024",
+    "type": "Hot Work Incident",
+    "date": "2020-04-01",
+    "time": "08:46",
+    "zone_id": "ZC",
+    "zone_name": "Zone C \u2014 Coke Battery",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 40.9,
+    "root_cause": "Equipment failure \u2014 maintenance overdue",
+    "contributing_factors": [
+      "Understaffing",
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-036"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "New SOP drafted and approved",
+      "Safety audit conducted",
+      "Shutdown procedure updated"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0021",
+    "type": "Equipment Failure \u2014 Compressor",
+    "date": "2020-05-10",
+    "time": "14:43",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "SERIOUS",
+    "injuries": 2,
+    "fatalities": 0,
+    "property_damage_inr": 2651965,
+    "production_loss_hrs": 7.2,
+    "root_cause": "Failure to follow procedure",
+    "contributing_factors": [
+      "Recent procedure change",
+      "Weather conditions"
+    ],
+    "involved_workers": [
+      "W-032",
+      "W-030",
+      "W-049"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "Mandatory refresher training conducted",
+      "Equipment replaced",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0023",
+    "type": "Confined Space Emergency",
+    "date": "2020-09-02",
+    "time": "22:28",
+    "zone_id": "ZC",
+    "zone_name": "Zone C \u2014 Coke Battery",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 47.6,
+    "root_cause": "Equipment failure \u2014 maintenance overdue",
+    "contributing_factors": [
+      "Weather conditions",
+      "Time pressure"
+    ],
+    "involved_workers": [
+      "W-006",
+      "W-033",
+      "W-042"
+    ],
+    "preventable": false,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "New SOP drafted and approved",
+      "Equipment replaced",
+      "Revised permit-to-work procedure"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0051",
+    "type": "Hot Work Incident",
+    "date": "2020-09-27",
+    "time": "15:16",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 46.4,
+    "root_cause": "Permit system breakdown",
+    "contributing_factors": [
+      "Overdue inspection",
+      "Worn PPE",
+      "Inadequate training"
+    ],
+    "involved_workers": [
+      "W-020",
+      "W-047",
+      "W-045"
+    ],
+    "preventable": true,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0031",
+    "type": "Gas Leak \u2014 CO",
+    "date": "2020-10-04",
+    "time": "13:40",
+    "zone_id": "ZC",
+    "zone_name": "Zone C \u2014 Coke Battery",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 38.1,
+    "root_cause": "Sensor malfunction \u2014 undetected",
+    "contributing_factors": [
+      "Understaffing"
+    ],
+    "involved_workers": [
+      "W-020"
+    ],
+    "preventable": false,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Equipment replaced",
+      "Safety audit conducted",
+      "Additional gas detector installed",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0019",
+    "type": "Confined Space Emergency",
+    "date": "2020-10-20",
+    "time": "19:29",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "SERIOUS",
+    "injuries": 2,
+    "fatalities": 0,
+    "property_damage_inr": 739287,
+    "production_loss_hrs": 21.0,
+    "root_cause": "Failure to follow procedure",
+    "contributing_factors": [
+      "Simultaneous operations"
+    ],
+    "involved_workers": [
+      "W-021"
+    ],
+    "preventable": false,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "Mandatory refresher training conducted",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0006",
+    "type": "Pressure Relief Valve Activation",
+    "date": "2020-10-26",
+    "time": "03:06",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "CRITICAL",
+    "injuries": 1,
+    "fatalities": 0,
+    "property_damage_inr": 1138032,
+    "production_loss_hrs": 18.7,
+    "root_cause": "Environmental conditions",
+    "contributing_factors": [
+      "Simultaneous operations",
+      "Worn PPE",
+      "Weather conditions"
+    ],
+    "involved_workers": [
+      "W-003"
+    ],
+    "preventable": true,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "Shutdown procedure updated",
+      "Equipment replaced",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0034",
+    "type": "Pressure Relief Valve Activation",
+    "date": "2021-01-09",
+    "time": "06:56",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 2.0,
+    "root_cause": "Inadequate supervision",
+    "contributing_factors": [
+      "Simultaneous operations",
+      "Recent procedure change",
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-050",
+      "W-030",
+      "W-003"
+    ],
+    "preventable": false,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0003",
+    "type": "Hot Work Incident",
+    "date": "2021-01-17",
+    "time": "14:02",
+    "zone_id": "ZF",
+    "zone_name": "Zone F \u2014 Flare Stack Area",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 27.8,
+    "root_cause": "Equipment failure \u2014 maintenance overdue",
+    "contributing_factors": [
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-041"
+    ],
+    "preventable": true,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0009",
+    "type": "Electrical Fault",
+    "date": "2021-06-20",
+    "time": "07:37",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "SERIOUS",
+    "injuries": 2,
+    "fatalities": 0,
+    "property_damage_inr": 132381,
+    "production_loss_hrs": 8.4,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Simultaneous operations"
+    ],
+    "involved_workers": [
+      "W-002",
+      "W-009",
+      "W-001"
+    ],
+    "preventable": true,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Shutdown procedure updated",
+      "Mandatory refresher training conducted",
+      "Equipment replaced"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0018",
+    "type": "Pump Seal Failure",
+    "date": "2021-06-25",
+    "time": "21:51",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 2970969,
+    "production_loss_hrs": 3.5,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Overdue inspection",
+      "Inadequate training"
+    ],
+    "involved_workers": [
+      "W-035",
+      "W-046"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Shutdown procedure updated",
+      "Equipment replaced",
+      "Safety audit conducted",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0026",
+    "type": "Gas Leak \u2014 CO",
+    "date": "2021-08-31",
+    "time": "03:32",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 37.0,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Weather conditions",
+      "Simultaneous operations",
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-010"
+    ],
+    "preventable": true,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0002",
+    "type": "Permit Violation",
+    "date": "2022-03-04",
+    "time": "21:25",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 13.2,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Recent procedure change",
+      "Simultaneous operations",
+      "Time pressure"
+    ],
+    "involved_workers": [
+      "W-023",
+      "W-037",
+      "W-019"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "New SOP drafted and approved",
+      "Additional gas detector installed"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0033",
+    "type": "Worker Injury \u2014 Minor",
+    "date": "2022-05-10",
+    "time": "07:46",
+    "zone_id": "ZF",
+    "zone_name": "Zone F \u2014 Flare Stack Area",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 31.5,
+    "root_cause": "Failure to follow procedure",
+    "contributing_factors": [
+      "Weather conditions",
+      "Understaffing",
+      "Overdue inspection"
+    ],
+    "involved_workers": [
+      "W-023"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "New SOP drafted and approved",
+      "Shutdown procedure updated",
+      "Equipment replaced"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0035",
+    "type": "Electrical Fault",
+    "date": "2022-09-20",
+    "time": "11:27",
+    "zone_id": "ZC",
+    "zone_name": "Zone C \u2014 Coke Battery",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 42.7,
+    "root_cause": "Sensor malfunction \u2014 undetected",
+    "contributing_factors": [
+      "Weather conditions",
+      "Understaffing"
+    ],
+    "involved_workers": [
+      "W-042"
+    ],
+    "preventable": false,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "Equipment replaced",
+      "Mandatory refresher training conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0045",
+    "type": "Gas Leak \u2014 H2S",
+    "date": "2022-11-06",
+    "time": "13:30",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 22.3,
+    "root_cause": "Environmental conditions",
+    "contributing_factors": [
+      "Time pressure",
+      "Recent procedure change",
+      "Weather conditions"
+    ],
+    "involved_workers": [
+      "W-045"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "Mandatory refresher training conducted",
+      "Equipment replaced"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0046",
+    "type": "Near-Miss \u2014 Slip/Trip",
+    "date": "2023-02-03",
+    "time": "03:03",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 13.9,
+    "root_cause": "Communication failure between shifts",
+    "contributing_factors": [
+      "Simultaneous operations",
+      "Understaffing",
+      "Recent procedure change"
+    ],
+    "involved_workers": [
+      "W-008",
+      "W-018"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "Additional gas detector installed"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0040",
+    "type": "Chemical Spill \u2014 Minor",
+    "date": "2023-02-05",
+    "time": "09:54",
+    "zone_id": "ZF",
+    "zone_name": "Zone F \u2014 Flare Stack Area",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 1321249,
+    "production_loss_hrs": 34.2,
+    "root_cause": "Equipment failure \u2014 maintenance overdue",
+    "contributing_factors": [
+      "Inadequate training",
+      "Overdue inspection"
+    ],
+    "involved_workers": [
+      "W-046",
+      "W-005"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "Shutdown procedure updated"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0011",
+    "type": "Confined Space Emergency",
+    "date": "2023-02-15",
+    "time": "20:37",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 26.3,
+    "root_cause": "Environmental conditions",
+    "contributing_factors": [
+      "Worn PPE",
+      "Inadequate training"
+    ],
+    "involved_workers": [
+      "W-005"
+    ],
+    "preventable": false,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "New SOP drafted and approved",
+      "Equipment replaced",
+      "Additional gas detector installed"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0016",
+    "type": "Confined Space Emergency",
+    "date": "2023-02-24",
+    "time": "01:43",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "SERIOUS",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 2282564,
+    "production_loss_hrs": 21.3,
+    "root_cause": "Communication failure between shifts",
+    "contributing_factors": [
+      "Recent procedure change",
+      "Inadequate training"
+    ],
+    "involved_workers": [
+      "W-006",
+      "W-004",
+      "W-010"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "Mandatory refresher training conducted",
+      "Shutdown procedure updated",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0020",
+    "type": "Hot Work Incident",
+    "date": "2023-04-01",
+    "time": "16:12",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 43.5,
+    "root_cause": "Environmental conditions",
+    "contributing_factors": [
+      "Time pressure",
+      "Understaffing"
+    ],
+    "involved_workers": [
+      "W-033"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "Safety audit conducted",
+      "Equipment replaced"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0008",
+    "type": "Pump Seal Failure",
+    "date": "2023-04-03",
+    "time": "17:13",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 28.1,
+    "root_cause": "Permit system breakdown",
+    "contributing_factors": [
+      "Time pressure",
+      "Simultaneous operations"
+    ],
+    "involved_workers": [
+      "W-037"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "Equipment replaced"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0030",
+    "type": "Pressure Relief Valve Activation",
+    "date": "2023-04-10",
+    "time": "15:44",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "CRITICAL",
+    "injuries": 1,
+    "fatalities": 0,
+    "property_damage_inr": 3935180,
+    "production_loss_hrs": 21.5,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Overdue inspection"
+    ],
+    "involved_workers": [
+      "W-003"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Equipment replaced",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0015",
+    "type": "Instrument Malfunction",
+    "date": "2023-04-28",
+    "time": "21:25",
+    "zone_id": "ZC",
+    "zone_name": "Zone C \u2014 Coke Battery",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 3.3,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Inadequate training"
+    ],
+    "involved_workers": [
+      "W-012"
+    ],
+    "preventable": false,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Mandatory refresher training conducted",
+      "Additional gas detector installed",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0043",
+    "type": "Pump Seal Failure",
+    "date": "2023-05-24",
+    "time": "17:17",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 1050004,
+    "production_loss_hrs": 30.0,
+    "root_cause": "Failure to follow procedure",
+    "contributing_factors": [
+      "Time pressure",
+      "Worn PPE",
+      "Simultaneous operations"
+    ],
+    "involved_workers": [
+      "W-006",
+      "W-017"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Equipment replaced",
+      "New SOP drafted and approved",
+      "Safety audit conducted",
+      "Mandatory refresher training conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0041",
+    "type": "Confined Space Emergency",
+    "date": "2023-07-24",
+    "time": "02:04",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 2594518,
+    "production_loss_hrs": 19.1,
+    "root_cause": "Sensor malfunction \u2014 undetected",
+    "contributing_factors": [
+      "Simultaneous operations",
+      "Recent procedure change",
+      "Inadequate training"
+    ],
+    "involved_workers": [
+      "W-024",
+      "W-030",
+      "W-036"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "New SOP drafted and approved",
+      "Revised permit-to-work procedure",
+      "Shutdown procedure updated"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0038",
+    "type": "Hot Work Incident",
+    "date": "2023-07-29",
+    "time": "11:23",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 21.3,
+    "root_cause": "Failure to follow procedure",
+    "contributing_factors": [
+      "Time pressure",
+      "Worn PPE",
+      "Recent procedure change"
+    ],
+    "involved_workers": [
+      "W-003",
+      "W-039",
+      "W-010"
+    ],
+    "preventable": false,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Mandatory refresher training conducted",
+      "Additional gas detector installed",
+      "Revised permit-to-work procedure",
+      "Equipment replaced"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0036",
+    "type": "Chemical Spill \u2014 Minor",
+    "date": "2024-04-09",
+    "time": "03:05",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 15.7,
+    "root_cause": "Inadequate supervision",
+    "contributing_factors": [
+      "Recent procedure change",
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-039",
+      "W-012"
+    ],
+    "preventable": false,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Shutdown procedure updated",
+      "Mandatory refresher training conducted",
+      "Safety audit conducted",
+      "Revised permit-to-work procedure"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0032",
+    "type": "Fire \u2014 Small (Contained)",
+    "date": "2024-04-29",
+    "time": "21:05",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 25.1,
+    "root_cause": "Environmental conditions",
+    "contributing_factors": [
+      "Overdue inspection"
+    ],
+    "involved_workers": [
+      "W-023",
+      "W-016",
+      "W-037"
+    ],
+    "preventable": false,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "New SOP drafted and approved",
+      "Shutdown procedure updated"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0013",
+    "type": "Chemical Spill \u2014 Minor",
+    "date": "2024-05-09",
+    "time": "17:35",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 15.8,
+    "root_cause": "Failure to follow procedure",
+    "contributing_factors": [
+      "Weather conditions",
+      "Simultaneous operations"
+    ],
+    "involved_workers": [
+      "W-048",
+      "W-024",
+      "W-009"
+    ],
+    "preventable": false,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Equipment replaced",
+      "Mandatory refresher training conducted",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0027",
+    "type": "Permit Violation",
+    "date": "2024-06-02",
+    "time": "14:39",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 13.7,
+    "root_cause": "Sensor malfunction \u2014 undetected",
+    "contributing_factors": [
+      "Inadequate training"
+    ],
+    "involved_workers": [
+      "W-024",
+      "W-044"
+    ],
+    "preventable": true,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Mandatory refresher training conducted",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0029",
+    "type": "Gas Leak \u2014 CO",
+    "date": "2024-07-20",
+    "time": "07:52",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "CRITICAL",
+    "injuries": 3,
+    "fatalities": 0,
+    "property_damage_inr": 223725,
+    "production_loss_hrs": 19.9,
+    "root_cause": "Communication failure between shifts",
+    "contributing_factors": [
+      "Weather conditions",
+      "Understaffing",
+      "Inadequate training"
+    ],
+    "involved_workers": [
+      "W-028"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "Mandatory refresher training conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0012",
+    "type": "Fire \u2014 Small (Contained)",
+    "date": "2024-07-29",
+    "time": "03:20",
+    "zone_id": "ZB",
+    "zone_name": "Zone B \u2014 Processing Unit",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 20.5,
+    "root_cause": "Inadequate supervision",
+    "contributing_factors": [
+      "Time pressure",
+      "Weather conditions"
+    ],
+    "involved_workers": [
+      "W-022",
+      "W-030"
+    ],
+    "preventable": false,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "Revised permit-to-work procedure"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0010",
+    "type": "Gas Leak \u2014 H2S",
+    "date": "2024-07-31",
+    "time": "21:33",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 2530258,
+    "production_loss_hrs": 22.0,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Recent procedure change"
+    ],
+    "involved_workers": [
+      "W-040"
+    ],
+    "preventable": false,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "Shutdown procedure updated",
+      "New SOP drafted and approved",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0001",
+    "type": "Hot Work Incident",
+    "date": "2024-08-31",
+    "time": "02:28",
+    "zone_id": "ZC",
+    "zone_name": "Zone C \u2014 Coke Battery",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 2898814,
+    "production_loss_hrs": 47.4,
+    "root_cause": "Inadequate supervision",
+    "contributing_factors": [
+      "Simultaneous operations",
+      "Weather conditions",
+      "Time pressure"
+    ],
+    "involved_workers": [
+      "W-001",
+      "W-030",
+      "W-019"
+    ],
+    "preventable": false,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Shutdown procedure updated",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0022",
+    "type": "Electrical Fault",
+    "date": "2024-09-09",
+    "time": "02:41",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "SERIOUS",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 4983502,
+    "production_loss_hrs": 24.3,
+    "root_cause": "Sensor malfunction \u2014 undetected",
+    "contributing_factors": [
+      "Overdue inspection",
+      "Inadequate training",
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-004"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Shutdown procedure updated",
+      "Equipment replaced",
+      "Additional gas detector installed",
+      "Revised permit-to-work procedure"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0028",
+    "type": "Fire \u2014 Small (Contained)",
+    "date": "2024-09-09",
+    "time": "06:51",
+    "zone_id": "ZC",
+    "zone_name": "Zone C \u2014 Coke Battery",
+    "severity": "CRITICAL",
+    "injuries": 1,
+    "fatalities": 0,
+    "property_damage_inr": 437715,
+    "production_loss_hrs": 30.8,
+    "root_cause": "Environmental conditions",
+    "contributing_factors": [
+      "Understaffing",
+      "Weather conditions",
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-033",
+      "W-034"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "Additional gas detector installed"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0050",
+    "type": "Valve Failure \u2014 Stuck Open",
+    "date": "2024-10-28",
+    "time": "10:59",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 2672023,
+    "production_loss_hrs": 7.8,
+    "root_cause": "Inadequate supervision",
+    "contributing_factors": [
+      "Weather conditions",
+      "Worn PPE",
+      "Simultaneous operations"
+    ],
+    "involved_workers": [
+      "W-010",
+      "W-039"
+    ],
+    "preventable": false,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Safety audit conducted",
+      "Revised permit-to-work procedure",
+      "Mandatory refresher training conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0039",
+    "type": "Pressure Relief Valve Activation",
+    "date": "2025-02-09",
+    "time": "22:28",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "SERIOUS",
+    "injuries": 1,
+    "fatalities": 0,
+    "property_damage_inr": 2395592,
+    "production_loss_hrs": 33.3,
+    "root_cause": "Sensor malfunction \u2014 undetected",
+    "contributing_factors": [
+      "Understaffing"
+    ],
+    "involved_workers": [
+      "W-036",
+      "W-008"
+    ],
+    "preventable": true,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "New SOP drafted and approved",
+      "Shutdown procedure updated"
+    ],
+    "lessons_learned": "Incident highlighted the need for better cross-team communication.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0047",
+    "type": "Gas Leak \u2014 H2S",
+    "date": "2025-04-14",
+    "time": "12:32",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 21.9,
+    "root_cause": "Permit system breakdown",
+    "contributing_factors": [
+      "Weather conditions"
+    ],
+    "involved_workers": [
+      "W-020",
+      "W-032"
+    ],
+    "preventable": true,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Shutdown procedure updated",
+      "Equipment replaced",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0042",
+    "type": "Chemical Spill \u2014 Minor",
+    "date": "2025-04-25",
+    "time": "05:49",
+    "zone_id": "ZC",
+    "zone_name": "Zone C \u2014 Coke Battery",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 1082406,
+    "production_loss_hrs": 20.8,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Time pressure"
+    ],
+    "involved_workers": [
+      "W-050"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Mandatory refresher training conducted",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for more frequent sensor calibration.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0004",
+    "type": "Valve Failure \u2014 Stuck Open",
+    "date": "2025-06-19",
+    "time": "15:51",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "SERIOUS",
+    "injuries": 2,
+    "fatalities": 0,
+    "property_damage_inr": 2841349,
+    "production_loss_hrs": 38.6,
+    "root_cause": "Sensor malfunction \u2014 undetected",
+    "contributing_factors": [
+      "Time pressure"
+    ],
+    "involved_workers": [
+      "W-011",
+      "W-017"
+    ],
+    "preventable": true,
+    "reported_to": "OISD Board",
+    "corrective_actions": [
+      "Mandatory refresher training conducted",
+      "Revised permit-to-work procedure",
+      "Shutdown procedure updated",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0005",
+    "type": "Permit Violation",
+    "date": "2025-07-12",
+    "time": "18:24",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 3116146,
+    "production_loss_hrs": 5.2,
+    "root_cause": "Permit system breakdown",
+    "contributing_factors": [
+      "Overdue inspection",
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-024",
+      "W-044"
+    ],
+    "preventable": true,
+    "reported_to": "DGFASLI",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "New SOP drafted and approved",
+      "Shutdown procedure updated",
+      "Mandatory refresher training conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0048",
+    "type": "Confined Space Emergency",
+    "date": "2025-07-13",
+    "time": "23:23",
+    "zone_id": "ZA",
+    "zone_name": "Zone A \u2014 Tank Farm",
+    "severity": "SERIOUS",
+    "injuries": 3,
+    "fatalities": 0,
+    "property_damage_inr": 3069705,
+    "production_loss_hrs": 2.2,
+    "root_cause": "Inadequate pre-job hazard assessment",
+    "contributing_factors": [
+      "Inadequate training",
+      "Time pressure",
+      "Worn PPE"
+    ],
+    "involved_workers": [
+      "W-028"
+    ],
+    "preventable": true,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Equipment replaced",
+      "Shutdown procedure updated",
+      "Safety audit conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": true
+  },
+  {
+    "id": "INC-0014",
+    "type": "Hot Work Incident",
+    "date": "2025-12-29",
+    "time": "03:22",
+    "zone_id": "ZE",
+    "zone_name": "Zone E \u2014 Utilities Block",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 4666293,
+    "production_loss_hrs": 17.6,
+    "root_cause": "Inadequate supervision",
+    "contributing_factors": [
+      "Inadequate training",
+      "Simultaneous operations",
+      "Recent procedure change"
+    ],
+    "involved_workers": [
+      "W-010"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "Mandatory refresher training conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0017",
+    "type": "Pump Seal Failure",
+    "date": "2026-03-01",
+    "time": "19:03",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 0.4,
+    "root_cause": "Inadequate supervision",
+    "contributing_factors": [
+      "Time pressure"
+    ],
+    "involved_workers": [
+      "W-043",
+      "W-020",
+      "W-003"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "Safety audit conducted",
+      "Shutdown procedure updated"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0025",
+    "type": "Chemical Spill \u2014 Minor",
+    "date": "2026-03-09",
+    "time": "10:52",
+    "zone_id": "ZF",
+    "zone_name": "Zone F \u2014 Flare Stack Area",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 6.1,
+    "root_cause": "Failure to follow procedure",
+    "contributing_factors": [
+      "Simultaneous operations",
+      "Worn PPE",
+      "Time pressure"
+    ],
+    "involved_workers": [
+      "W-020"
+    ],
+    "preventable": true,
+    "reported_to": "Internal Only",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "Safety audit conducted",
+      "Mandatory refresher training conducted"
+    ],
+    "lessons_learned": "Incident highlighted the need for improved PPE compliance monitoring.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0037",
+    "type": "Gas Leak \u2014 CO",
+    "date": "2026-05-29",
+    "time": "12:23",
+    "zone_id": "ZD",
+    "zone_name": "Zone D \u2014 Control Room",
+    "severity": "MODERATE",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 4304077,
+    "production_loss_hrs": 38.5,
+    "root_cause": "Equipment failure \u2014 maintenance overdue",
+    "contributing_factors": [
+      "Time pressure"
+    ],
+    "involved_workers": [
+      "W-041",
+      "W-004"
+    ],
+    "preventable": false,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Revised permit-to-work procedure",
+      "Additional gas detector installed"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  },
+  {
+    "id": "INC-0049",
+    "type": "Fire \u2014 Small (Contained)",
+    "date": "2026-07-02",
+    "time": "10:35",
+    "zone_id": "ZF",
+    "zone_name": "Zone F \u2014 Flare Stack Area",
+    "severity": "MINOR",
+    "injuries": 0,
+    "fatalities": 0,
+    "property_damage_inr": 0,
+    "production_loss_hrs": 45.1,
+    "root_cause": "Equipment failure \u2014 maintenance overdue",
+    "contributing_factors": [
+      "Simultaneous operations"
+    ],
+    "involved_workers": [
+      "W-008",
+      "W-009",
+      "W-007"
+    ],
+    "preventable": true,
+    "reported_to": "Factory Inspector",
+    "corrective_actions": [
+      "Additional gas detector installed",
+      "New SOP drafted and approved"
+    ],
+    "lessons_learned": "Incident highlighted the need for stricter permit enforcement.",
+    "regulatory_report_filed": false
+  }
+]

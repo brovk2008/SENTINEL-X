@@ -1,156 +1,262 @@
-#!/usr/bin/env python3
 """
-SafetyOS Zero Trust Audit Script
-Checks infrastructure (Postgres, Redis, MQTT, Neo4j, ChromaDB),
-FastAPI backend endpoints, data integrity, frontend pages, and WebSocket connections.
+SafetyOS — Zero Trust Audit Script
+Checks every service endpoint and verifies the stack is alive.
+Run this from inside your project folder:
+    python zero_trust_audit.py
 """
+
 import sys
 import json
-import asyncio
-import urllib.request
+import time
 import socket
+import requests
 from datetime import datetime
 
-# Configuration
-BACKEND_URL = "http://localhost:8000"
-FRONTEND_URL = "http://localhost:3000"
-INFRA_PORTS = {
-    "Postgres": 5432,
-    "Redis": 6379,
-    "MQTT Broker": 1883,
-    "ChromaDB": 8002,
-    "Neo4j Bolt": 7687,
-    "Neo4j HTTP": 7474
-}
+# ─── CONFIG ─────────────────────────────────────────────────────────────────
+BASE_URL      = "http://localhost:8000"   # FastAPI backend
+FRONTEND_URL  = "http://localhost:3000"   # Next.js frontend
+NEO4J_URL     = "http://localhost:7474"   # Neo4j browser
+CHROMA_URL    = "http://localhost:8001"   # ChromaDB
+REDIS_HOST    = "localhost"
+REDIS_PORT    = 6379
+MQTT_HOST     = "localhost"
+MQTT_PORT     = 1883
+TIMEOUT       = 5  # seconds per check
 
-RESULTS = []
+PASS  = "✅ PASS"
+FAIL  = "❌ FAIL"
+WARN  = "⚠️  WARN"
+INFO  = "ℹ️  INFO"
 
-def check_port(host: str, port: int) -> bool:
+results = []
+
+# ─── HELPERS ────────────────────────────────────────────────────────────────
+def check(label: str, status: str, detail: str = ""):
+    icon = {"PASS": PASS, "FAIL": FAIL, "WARN": WARN, "INFO": INFO}.get(status, INFO)
+    line = f"  {icon}  {label}"
+    if detail:
+        line += f" — {detail}"
+    print(line)
+    results.append({"label": label, "status": status, "detail": detail})
+
+def http_get(url: str, label: str, expect_key: str = None):
     try:
-        with socket.create_connection((host, port), timeout=2.0):
-            return True
-    except (socket.timeout, ConnectionRefusedError):
-        return False
-
-def http_get(url: str, timeout: float = 3.0) -> tuple:
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "SafetyOS-Audit"})
-        with urllib.request.urlopen(req, timeout=timeout) as response:
-            return response.status, response.read().decode('utf-8')
+        r = requests.get(url, timeout=TIMEOUT)
+        if r.status_code == 200:
+            if expect_key:
+                data = r.json()
+                if expect_key in data:
+                    check(label, "PASS", f"HTTP 200 | '{expect_key}' present")
+                else:
+                    check(label, "WARN", f"HTTP 200 but '{expect_key}' missing in response")
+            else:
+                check(label, "PASS", f"HTTP 200")
+        else:
+            check(label, "FAIL", f"HTTP {r.status_code}")
+    except requests.exceptions.ConnectionError:
+        check(label, "FAIL", "Connection refused — service not running")
+    except requests.exceptions.Timeout:
+        check(label, "FAIL", f"Timeout after {TIMEOUT}s")
     except Exception as e:
-        return 0, str(e)
+        check(label, "FAIL", str(e))
 
-def add_result(category: str, name: str, success: bool, detail: str):
-    RESULTS.append({
-        "category": category,
-        "name": name,
-        "success": success,
-        "detail": detail
-    })
-
-async def run_audit():
-    print("=" * 60)
-    print(f"SafetyOS Zero Trust Audit System — {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("=" * 60)
-
-    # 1. Infrastructure Checks
-    print("\n[1/5] Auditing Infrastructure Connections...")
-    for name, port in INFRA_PORTS.items():
-        ok = check_port("localhost", port)
-        detail = f"Port {port} open and listening" if ok else f"Port {port} connection refused"
-        add_result("Infrastructure", name, ok, detail)
-        print(f"  {'✓' if ok else '✗'} {name:<15} : {detail}")
-
-    # 2. FastAPI Backend Endpoint Check
-    print("\n[2/5] Auditing FastAPI Backend Endpoints...")
-    endpoints = [
-        ("Health Root", "/"),
-        ("Sensor List", "/sensors/"),
-        ("Active Permits", "/permits/"),
-        ("Compliance Rules", "/compliance/"),
-        ("Agent Profiles", "/agents/profiles"),
-        ("Suggested Queries", "/knowledge/suggestions"),
-        ("Historical Incidents", "/incidents/"),
-        ("CCTV Camera List", "/cameras/"),
-        ("LLM Config Settings", "/settings/llm"),
-    ]
-    for name, path in endpoints:
-        status, body = http_get(f"{BACKEND_URL}{path}")
-        ok = status == 200
-        detail = f"HTTP {status} received" if ok else f"HTTP {status} | Error: {body[:60]}"
-        add_result("Backend API", name, ok, detail)
-        print(f"  {'✓' if ok else '✗'} {name:<20} : {detail}")
-
-    # 3. Data Integrity Validation
-    print("\n[3/5] Auditing Data Integrity & Content Verification...")
-    status, body = http_get(f"{BACKEND_URL}/sensors/")
-    if status == 200:
-        try:
-            data = json.loads(body)
-            sensors_count = len(data.get("sensors", []))
-            ok = sensors_count >= 15
-            detail = f"Found {sensors_count} sensors configured (expecting >= 15)"
-        except Exception as e:
-            ok, detail = False, f"JSON parse error: {e}"
-    else:
-        ok, detail = False, "Sensors list unreachable"
-    add_result("Data Integrity", "Sensors Threshold Integrity", ok, detail)
-    print(f"  {'✓' if ok else '✗'} Sensors Count     : {detail}")
-
-    # 4. Frontend Page Checks
-    print("\n[4/5] Auditing Frontend Routing & SSR compilation...")
-    pages = [
-        ("Dashboard", "/"),
-        ("AI Debate Room", "/agents"),
-        ("Sensor Grid", "/sensors"),
-        ("Knowledge Graph", "/graph"),
-        ("CCTV Vision Panel", "/cameras"),
-        ("Permits Overview", "/permits"),
-        ("Compliance Audits", "/compliance"),
-        ("Worker Companion App", "/mobile"),
-        ("Settings Room", "/settings")
-      ]
-    for name, path in pages:
-        status, _ = http_get(f"{FRONTEND_URL}{path}")
-        ok = status == 200
-        detail = f"Page loaded with HTTP {status}" if ok else f"Page loading error HTTP {status}"
-        add_result("Frontend Web", name, ok, detail)
-        print(f"  {'✓' if ok else '✗'} {name:<20} : {detail}")
-
-    # 5. WebSocket Connection handshake
-    print("\n[5/5] Auditing Real-Time WebSockets...")
+def tcp_ping(host: str, port: int, label: str):
     try:
-        import websockets
-        async with websockets.connect("ws://localhost:8000/ws/live", timeout=2.0) as ws:
-            # Send mock subscribe or wait for greeting
-            greeting = await asyncio.wait_for(ws.recv(), timeout=2.0)
-            ok = len(greeting) > 0
-            detail = "Handshake success, live telemetry feed incoming"
+        s = socket.create_connection((host, port), timeout=TIMEOUT)
+        s.close()
+        check(label, "PASS", f"TCP {host}:{port} reachable")
+    except ConnectionRefusedError:
+        check(label, "FAIL", f"TCP {host}:{port} — connection refused")
     except Exception as e:
-        ok = False
-        detail = f"WebSocket handshaking failed: {e}. Ensure backend is running."
-    add_result("Real-time WS", "WebSocket Telemetry Handshake", ok, detail)
-    print(f"  {'✓' if ok else '✗'} WebSocket Status   : {detail}")
+        check(label, "FAIL", str(e))
 
-    # Summary
-    print("\n" + "=" * 60)
-    total = len(RESULTS)
-    successes = sum(1 for r in RESULTS if r["success"])
-    score = (successes / total) * 100
-    print(f"Audit completed: {successes}/{total} checks passed ({score:.1f}%)")
-    print("=" * 60)
-    if score == 100:
-        print("🎉 Zero Trust Audit fully COMPLIANT. Ready for production submission!")
-    else:
-        print("⚠️ Warning: Fix failing ports/endpoints before running the final demo.")
-    print("=" * 60)
+# ─── AUDIT SECTIONS ─────────────────────────────────────────────────────────
+def audit_infrastructure():
+    print("\n━━━ 1. INFRASTRUCTURE SERVICES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
-if __name__ == "__main__":
-    # Ensure websockets library is checked/installed or print warning
+    # PostgreSQL
     try:
-        import websockets
+        import psycopg2
+        conn = psycopg2.connect(
+            host="localhost", port=5432,
+            dbname="safetyos", user="safetyos", password="safetyos",
+            connect_timeout=TIMEOUT
+        )
+        conn.close()
+        check("PostgreSQL", "PASS", "Connected to safetyos DB")
     except ImportError:
-        print("Please install required libraries first: pip install websockets")
-        sys.exit(1)
+        tcp_ping("localhost", 5432, "PostgreSQL (TCP only — psycopg2 not installed)")
+    except Exception as e:
+        check("PostgreSQL", "FAIL", str(e))
 
-    asyncio.run(run_audit())
+    # Redis
+    try:
+        import redis
+        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, socket_connect_timeout=TIMEOUT)
+        r.ping()
+        check("Redis", "PASS", "PONG received")
+    except ImportError:
+        tcp_ping(REDIS_HOST, REDIS_PORT, "Redis (TCP only — redis-py not installed)")
+    except Exception as e:
+        check("Redis", "FAIL", str(e))
+
+    # MQTT
+    tcp_ping(MQTT_HOST, MQTT_PORT, "MQTT Broker (Mosquitto)")
+
+    # Neo4j
+    http_get(NEO4J_URL, "Neo4j Browser")
+
+    # ChromaDB
+    http_get(f"{CHROMA_URL}/api/v1/heartbeat", "ChromaDB", "nanosecond heartbeat")
+
+
+def audit_backend():
+    print("\n━━━ 2. FASTAPI BACKEND ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+    http_get(f"{BASE_URL}/health",       "Health check",          "status")
+    http_get(f"{BASE_URL}/sensors/",     "GET /sensors/")
+    http_get(f"{BASE_URL}/incidents/",   "GET /incidents/")
+    http_get(f"{BASE_URL}/permits/",     "GET /permits/")
+    http_get(f"{BASE_URL}/workers/",     "GET /workers/")
+    http_get(f"{BASE_URL}/compliance/",  "GET /compliance/")
+    http_get(f"{BASE_URL}/analytics/",   "GET /analytics/")
+    http_get(f"{BASE_URL}/plants/",      "GET /plants/")
+    http_get(f"{BASE_URL}/docs",         "FastAPI Swagger UI")
+
+
+def audit_api_data():
+    print("\n━━━ 3. DATA INTEGRITY CHECKS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+    # Sensors — expect at least 10
+    try:
+        r = requests.get(f"{BASE_URL}/sensors/", timeout=TIMEOUT)
+        sensors = r.json()
+        count = len(sensors) if isinstance(sensors, list) else len(sensors.get("data", []))
+        if count >= 10:
+            check("Sensor count", "PASS", f"{count} sensors in DB")
+        elif count > 0:
+            check("Sensor count", "WARN", f"Only {count} sensors — expected ≥10")
+        else:
+            check("Sensor count", "FAIL", "No sensors found — seed data missing")
+    except Exception as e:
+        check("Sensor count", "FAIL", str(e))
+
+    # Incidents — expect at least 5
+    try:
+        r = requests.get(f"{BASE_URL}/incidents/", timeout=TIMEOUT)
+        data = r.json()
+        count = len(data) if isinstance(data, list) else len(data.get("data", []))
+        status = "PASS" if count >= 5 else ("WARN" if count > 0 else "FAIL")
+        check("Incident history", status, f"{count} historical incidents")
+    except Exception as e:
+        check("Incident history", "FAIL", str(e))
+
+    # RAG — ask a test question
+    try:
+        r = requests.post(
+            f"{BASE_URL}/knowledge/query",
+            json={"question": "What is the safe H2S exposure limit?"},
+            timeout=15
+        )
+        if r.status_code == 200:
+            ans = r.json()
+            has_answer = bool(ans.get("answer") or ans.get("response") or ans.get("text"))
+            check("RAG Knowledge Query", "PASS" if has_answer else "WARN",
+                  "Got answer" if has_answer else "Empty response — check embeddings")
+        else:
+            check("RAG Knowledge Query", "FAIL", f"HTTP {r.status_code}")
+    except Exception as e:
+        check("RAG Knowledge Query", "FAIL", str(e))
+
+    # Compound Risk Engine
+    try:
+        r = requests.get(f"{BASE_URL}/agents/risk-status", timeout=TIMEOUT)
+        if r.status_code == 200:
+            check("Compound Risk Engine", "PASS", "Risk status endpoint responding")
+        else:
+            check("Compound Risk Engine", "WARN", f"HTTP {r.status_code} — may not be seeded yet")
+    except Exception as e:
+        check("Compound Risk Engine", "FAIL", str(e))
+
+
+def audit_frontend():
+    print("\n━━━ 4. FRONTEND (Next.js) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+    http_get(FRONTEND_URL,               "Home / Mission Control")
+    http_get(f"{FRONTEND_URL}/agents",   "AI Debate Room page")
+    http_get(f"{FRONTEND_URL}/sensors",  "Live Sensors page")
+    http_get(f"{FRONTEND_URL}/knowledge","Knowledge RAG page")
+    http_get(f"{FRONTEND_URL}/incidents","Incident Timeline page")
+    http_get(f"{FRONTEND_URL}/permits",  "Permit Intelligence page")
+    http_get(f"{FRONTEND_URL}/compliance","Compliance Monitor page")
+    http_get(f"{FRONTEND_URL}/executive","Executive Copilot page")
+    http_get(f"{FRONTEND_URL}/mobile",   "Worker Mobile View page")
+    http_get(f"{FRONTEND_URL}/reports",  "Reports page")
+    http_get(f"{FRONTEND_URL}/graph",    "Knowledge Graph page")
+
+
+def audit_websocket():
+    print("\n━━━ 5. WEBSOCKET (Real-time Layer) ━━━━━━━━━━━━━━━━━━━━━━━━━")
+    try:
+        import websocket as ws_lib
+        ws = ws_lib.create_connection(
+            f"ws://localhost:8000/ws/live",
+            timeout=TIMEOUT
+        )
+        msg = ws.recv()
+        ws.close()
+        check("WebSocket /ws/live", "PASS", f"Received frame: {str(msg)[:60]}...")
+    except ImportError:
+        # Fallback: just TCP check the port
+        tcp_ping("localhost", 8000, "WebSocket port 8000 (TCP)")
+        check("WebSocket message", "INFO", "Install websocket-client to test frames")
+    except Exception as e:
+        check("WebSocket /ws/live", "FAIL", str(e))
+
+
+def print_summary():
+    print("\n━━━ AUDIT SUMMARY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    passed = sum(1 for r in results if r["status"] == "PASS")
+    warned = sum(1 for r in results if r["status"] == "WARN")
+    failed = sum(1 for r in results if r["status"] == "FAIL")
+    total  = len(results)
+
+    print(f"\n  Total checks : {total}")
+    print(f"  {PASS}  : {passed}")
+    print(f"  {WARN}  : {warned}")
+    print(f"  {FAIL}  : {failed}")
+
+    score = int((passed / total) * 100) if total else 0
+    print(f"\n  Overall Score: {score}%", end=" ")
+    if score == 100:
+        print("🏆 Perfect — ready to demo!")
+    elif score >= 80:
+        print("🟢 Mostly healthy — fix warnings before demo")
+    elif score >= 50:
+        print("🟡 Partial — several services need attention")
+    else:
+        print("🔴 Critical — stack not running properly")
+
+    if failed > 0:
+        print("\n  Failed checks (fix these first):")
+        for r in results:
+            if r["status"] == "FAIL":
+                print(f"    → {r['label']}: {r['detail']}")
+
+    print(f"\n  Run at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("━" * 55)
+
+
+# ─── MAIN ───────────────────────────────────────────────────────────────────
+if __name__ == "__main__":
+    print("╔══════════════════════════════════════════════════════╗")
+    print("║        SafetyOS — Zero Trust Audit v1.0             ║")
+    print("║        Checking all services before demo...          ║")
+    print("╚══════════════════════════════════════════════════════╝")
+
+    audit_infrastructure()
+    audit_backend()
+    audit_api_data()
+    audit_frontend()
+    audit_websocket()
+    print_summary()

@@ -1,113 +1,160 @@
-# 🏭 SafetyOS — AI Industrial Safety Operating System
-### *Real-time Compound Risk Engine, Multi-Agent Deliberation & Autonomous Regulatory Compliance*
----
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Built with Next.js](https://img.shields.io/badge/Frontend-Next.js%2014-black.svg?style=flat&logo=next.css)](https://nextjs.org/)
-[![Built with FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Database Docker Stack](https://img.shields.io/badge/Databases-Postgres%20|%20Redis%20|%20Neo4j%20|%20ChromaDB-blue.svg)](docker-compose.yml)
+# 🏭 SafetyOS — Enterprise AI Operating System for Industrial Safety
+### 🏆 ET AI Hackathon 2.0 | Solo Build | 20 Days | ₹5,00,000 Target
 
-**SafetyOS** is a comprehensive, enterprise-ready industrial safety solution built for high-risk environments (Refineries, Chemical Plants, Steel Complexes, and Pharma Manufacturing). It automates real-time compliance tracking against **OISD** (Oil Industry Safety Directorate) standards and the **Factories Act 1948** (India). 
-
-By combining real-time telemetry, computer vision inference, vector RAG, and an autonomous multi-agent AI debate chamber, SafetyOS prevents major industrial disasters before they manifest.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Next.js 14](https://img.shields.io/badge/Next.js-14-black.svg?style=flat&logo=next.js)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg?logo=docker)](https://www.docker.com/)
+[![RAG Engine](https://img.shields.io/badge/ChromaDB-VectorSearch-orange.svg)](https://www.trychroma.com/)
+[![Knowledge Graph](https://img.shields.io/badge/Neo4j-bolt-blue.svg?logo=neo4j)](https://neo4j.com/)
 
 ---
 
-## 📺 Application Previews & Architecture
+## ❓ The Core Problem
 
-```mermaid
-graph TD
-    A[32+ Simulated IoT Sensors & Cameras] -->|MQTT / WebSockets| B(FastAPI Backend)
-    B -->|Fast In-Memory Cache| C[Redis Key-Value Cache & Pub/Sub]
-    B -->|Time-Series / Persistent Stores| D[PostgreSQL DB]
-    B -->|Entity Relationship Mapping| E[Neo4j Graph Database]
-    B -->|Regulations & Incident SOPs| F[ChromaDB Vector Store]
-    B -->|Multi-Agent Debate Chamber| G[LLM Router - Gemini/Ollama/OpenRouter]
-    B -->|Real-Time Push Alerts| H[FCM / Twilio SMS Gateway]
-    B -->|SSE & Live Handshakes| I[Next.js 14 Frontend Web UI]
+Industrial complexes (refineries, steel plants, chemical processors) run on dozens of legacy systems. Standard Operating Procedures (SOPs), sensor streams, CCTV cameras, and physical work permits exist in isolated silos. When critical events occur (e.g., toxic gas release in a confined maintenance space), operators suffer from **alert fatigue** or fail to synthesize multiple data points in time. 
+
+**Legacy solutions are retrospective. SafetyOS is predictive and autonomous.**
+
+**SafetyOS** bridges this gap. It aggregates:
+1. **IoT Sensor Feeds** (20+ virtual sensors via MQTT)
+2. **Work Permit Registries** (Permit-to-Work database correlation)
+3. **CCTV AI Computer Vision** (PPE checks and area intrusion alerts)
+4. **Regulatory Standards** (OISD standards, Factories Act 1948, DGFASLI)
+
+---
+
+## ⚡ The Solution: Next-Gen Architecture
+
+SafetyOS is a containerized real-time OS served via a premium glassmorphic interface, orchestrating background AI agents that debate safety decisions before executing response protocols.
+
+```
+                  ┌──────────────────────┐
+                  │   Nginx Web Proxy    │
+                  └──────────┬───────────┘
+                             │
+            ┌────────────────┴────────────────┐
+            ▼                                 ▼
+   ┌─────────────────┐               ┌─────────────────┐
+   │ Next.js 14 UI   │               │ FastAPI Backend │
+   │ (Mission Control│               │ (HTTP/Websocket)│
+   └─────────────────┘               └────────┬────────┘
+                                              │
+              ┌───────────────────────────────┼──────────────────────────────┐
+              ▼                               ▼                              ▼
+     ┌─────────────────┐             ┌─────────────────┐            ┌─────────────────┐
+     │  Redis Pub/Sub  │             │   PostgreSQL    │            │ ChromaDB Vector │
+     │  (Live State)   │             │  (Permit DB)    │            │ (SOPs & OISD)   │
+     └─────────────────┘             └─────────────────┘            └─────────────────┘
+              ▲                               ▲                              ▲
+              │                               │                              │
+     ┌────────┴────────┐             ┌────────┴────────┐            ┌────────┴────────┐
+     │   MQTT Broker   │             │  Neo4j Bolt Graph│            │  LLM Router Engine│
+     │ (Mosquitto IoT) │             │ (Entity Links)  │            │ (Gemini/Ollama) │
+     └─────────────────┘             └─────────────────┘            └─────────────────┘
 ```
 
 ---
 
-## ✨ Primary Feature Showcases
+## 🎯 Key Hackathon-Winning Features
 
-### 1. 🛑 Compound Risk Correlation (Rule Engine)
-- Combines disparate non-critical indicators to detect severe cumulative risks (e.g., active confined space permit in Zone C + rising H2S levels + overdue maintenance schedules).
-- Real-time calculations with automatic risk scaling (0-100%).
+### 1. 🚦 Mission Control Dashboard
+* **Glassmorphic UI**: Vibrant, responsive dark-mode styling built using CSS variables, custom gauges, and animated transitions.
+* **Interactive SVG Plant Layout**: Real-time color-coded hazard zones indicating risk levels mapped dynamically to active sensor groups.
+* **Live Sensor Ticker**: Smooth, infinite-scroll horizontal ticker displaying critical changes from 20+ live sensor feeds.
 
-### 2. 🧠 Multi-Agent AI Safety Debate Chamber
-- 6 specialized AI agents (Safety, Production, Compliance, Maintenance, Finance, Emergency) debate critical risk triggers in real-time.
-- Synthesized by an **Executive AI** to deliver immediate, legally-compliant recommendations, mitigating downtime vs safety cost trade-offs.
+### 2. 🧠 Multi-Agent AI Debate Room
+* **6 Specialized Agents + 1 Executive Coordinator**:
+  * 🔴 **Safety Agent**: Prioritizes life safety, advocates for immediate evacuations.
+  * 🟡 **Production Agent**: Seeks operational workarounds, quantifies downtime cost.
+  * ⚖️ **Compliance Agent**: Cites OISD, DGFASLI, and Factories Act regulations.
+  * 🔧 **Maintenance Agent**: Identifies technical root causes and estimates fix times.
+  * 💰 **Finance Agent**: Computes the financial cost of action vs. inaction.
+  * 🚨 **Emergency Agent**: Validates and triggers emergency response protocols.
+  * 🎯 **Executive Coordinator**: Synthesizes the debate into a single, concrete action plan.
+* **Real-time Streaming**: Debates are powered by an LLM-router with automatic provider fallback, streamed directly to the frontend via Server-Sent Events (SSE) with typing animations.
 
-### 3. ⚖️ Continuous Compliance Monitor
-- Continuously maps sensor telemetry and permit scopes against Indian regulatory codes (OISD-105, OISD-116, Section 36 of Factories Act 1948).
-- Automatically prompts safety officers with required corrective actions.
+### 3. 👁️ Smart CCTV Computer Vision
+* **Real-Time Video Analytics Mocks**: Interactive video player drawing bounding boxes over workers.
+* **Violations Auditing**: Flags workers without PPE (hardhats, vests) or individuals entering restricted zones (Zone C Compressor Bay) during unsafe gas levels.
 
-### 4. 📖 Smart CCTV & PPE Vision Pipeline
-- Bounding box overlay tracking for PPE compliance (hard hats, safety vests) and restricted area intrusions.
-- Direct push notifications and alerts linked to specific worker records.
+### 4. 📖 Knowledge RAG Engine
+* **Vector Semantic Search**: Queries safety questions against OISD standards, Indian Factory Act regulations, and historical incident logs using ChromaDB embeddings.
+* **Cited Responses**: Delivers responses complete with specific document citations and confidence ratings.
+* **Voice Integration**: Hands-free voice querying utilizing the Web Speech API.
 
-### 5. 🔍 Knowledge Graph & Vector RAG
-- Interactive entity relationship graph linking hazards, permits, regulations, and workers.
-- Context-aware voice/text search tool referencing OISD manuals and historical failure incident files.
+### 5. 📳 Worker Mobile Companion (PWA)
+* **Real-Time Notification Channel**: Simulates QR-code pairing of field devices to the dashboard.
+* **Autonomous Push Notifications**: Instantly pushes evacuation coordinates and warnings to workers.
 
 ---
 
-## 🛠️ Complete Local Deployment
+## 🛠️ Technology Stack
 
-Ensure you have **Docker** and **Docker Compose** installed on your machine.
+| Component | Technology | Role |
+|---|---|---|
+| **Frontend** | Next.js 14, React, Zustand, Recharts, Lucide | Core UI & State Synchronization |
+| **Backend** | FastAPI (Python), Uvicorn, Websockets | REST API & Real-time message streaming |
+| **Database (SQL)** | PostgreSQL + SQLAlchemy | Users, Active Permits, and Shift Logs |
+| **State Store (NoSQL)** | Redis (Hiredis) | Memory state cache & WebSocket Pub/Sub broker |
+| **Vector DB (RAG)** | ChromaDB | Regulation documents, SOPs, and incident vectors |
+| **Graph DB** | Neo4j | Equipment-permit-regulation dependency links |
+| **Message Broker** | Mosquitto (MQTT) | IoT simulated sensor data ingestion |
+| **AI Router** | LangChain / Google Gemini API / Ollama | Multi-provider LLM coordinator with fallbacks |
+| **Reverse Proxy** | Nginx | Port routing and static assets delivery |
 
-### 1. Quick Boot (Windows PowerShell)
+---
+
+## 🚀 Quick Start Instructions (Run Local / Docker)
+
+### Option A: Local Build (Without Docker)
+
+If Docker Desktop is not running, launch the stack directly on your local machine:
+
+1. **Start Backend**:
+   ```bash
+   cd backend
+   pip install -r requirements.txt
+   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+2. **Start Frontend**:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+3. **Generate & Seed Data**:
+   ```bash
+   # In root directory:
+   python synthetic_data_generator.py --export   # creates local database seed files
+   python synthetic_data_generator.py --push     # pushes seed data to backend
+   ```
+4. **Visit**: `http://localhost:3000`
+
+### Option B: Dockerized Container (One Command)
+
+Ensure Docker Desktop is running, then launch the stack using the bootstrapper:
+
 ```powershell
 ./run.ps1
 ```
-
-### 2. Manual Boot (Linux / Mac / Windows Command Prompt)
+Or directly:
 ```bash
-# Clone the repository
-git clone https://github.com/brovk2008/SENTINEL-X.git
-cd SENTINEL-X
-
-# Create environments
-copy .env.example .env
-
-# Boot the Docker stack
 docker-compose up --build -d
 ```
-The frontend is available at `http://localhost:3000` and the backend is serving at `http://localhost:8000`.
 
 ---
 
-## 🔬 Validation & Auditing Scripts
+## 🔒 Zero Trust Internal Security Audit
 
-SafetyOS includes automated scripts to check stack health and generate seed test data.
+SafetyOS contains a built-in automated sanity-check suite that runs health inspections across every TCP/HTTP endpoint, checking data integrity and streaming message performance:
 
-### 1. Zero Trust Audit (Health Check)
-Verifies all 5 layers of the stack: port checks, backend routes, data integrity, frontend SSR pages, and real-time WebSocket telemetry.
 ```bash
 python zero_trust_audit.py
 ```
 
-### 2. Synthetic Data Generator
-Generates a complete Vizag Unit 3 refinery dataset: 32 active sensors, 50 workers, 30 permits, 52 historical failure incidents, and pushes mock crisis telemetry to check trigger flows.
-```bash
-# Export mock seed datasets
-python synthetic_data_generator.py --export
-
-# Push crisis alerts directly to the running backend
-python synthetic_data_generator.py --push
-```
-
----
-
-## 📦 Technology Stack
-* **Frontend UI**: Next.js 14, React, Zustand State Store, Recharts, Tailwind CSS.
-* **Backend API**: FastAPI, Uvicorn, Python Paho MQTT, Asyncpg.
-* **Vector Store**: ChromaDB (RAG embedding storage).
-* **Graph DB**: Neo4j (Entity relationships).
-* **Database**: PostgreSQL (Persistency) & Redis (Real-time pub/sub cache).
-* **AI Engine**: Google Gemini API, OpenRouter, and local Ollama integrations.
-
 ---
 
 ## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
