@@ -13,7 +13,7 @@ import requests
 from datetime import datetime
 
 # ─── CONFIG ─────────────────────────────────────────────────────────────────
-BASE_URL      = "http://localhost:8000"   # FastAPI backend
+BASE_URL      = "http://localhost:8080"   # FastAPI backend
 FRONTEND_URL  = "http://localhost:3000"   # Next.js frontend
 NEO4J_URL     = "http://localhost:7474"   # Neo4j browser
 CHROMA_URL    = "http://localhost:8001"   # ChromaDB
@@ -200,7 +200,7 @@ def audit_websocket():
     try:
         import websocket as ws_lib
         ws = ws_lib.create_connection(
-            f"ws://localhost:8000/ws/live",
+            f"ws://localhost:8080/ws/live",
             timeout=TIMEOUT
         )
         msg = ws.recv()
@@ -208,7 +208,7 @@ def audit_websocket():
         check("WebSocket /ws/live", "PASS", f"Received frame: {str(msg)[:60]}...")
     except ImportError:
         # Fallback: just TCP check the port
-        tcp_ping("localhost", 8000, "WebSocket port 8000 (TCP)")
+        tcp_ping("localhost", 8080, "WebSocket port 8080 (TCP)")
         check("WebSocket message", "INFO", "Install websocket-client to test frames")
     except Exception as e:
         check("WebSocket /ws/live", "FAIL", str(e))
