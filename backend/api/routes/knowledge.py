@@ -1,4 +1,5 @@
 """Knowledge RAG API routes."""
+import asyncio
 import logging
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
@@ -18,10 +19,30 @@ class KnowledgeQuery(BaseModel):
 
 @router.post("/query")
 async def query(body: KnowledgeQuery):
-    """RAG query — returns answer with source citations."""
+    """RAG query — returns answer with source citations. Hard 8-second timeout."""
     filters = {"collection": body.collection_filter} if body.collection_filter else None
-    result = await query_knowledge(body.question, filters=filters)
-    return result
+    try:
+        result = await asyncio.wait_for(
+            query_knowledge(body.question, filters=filters),
+            timeout=8.0,
+        )
+        return result
+    except asyncio.TimeoutError:
+        logger.warning("RAG query timed out after 8 s — returning fallback")
+        return {
+            "answer": "SafetyOS Knowledge Base is initializing. Configure an LLM API key in .env for full AI responses. Safe H2S limit: 1 ppm TWA per OISD-105.",
+            "sources": [],
+            "confidence": 0.0,
+            "fallback": True,
+        }
+    except Exception as e:
+        logger.warning(f"RAG query error: {e} — returning fallback")
+        return {
+            "answer": f"Knowledge query unavailable (demo mode). Error: {str(e)[:120]}",
+            "sources": [],
+            "confidence": 0.0,
+            "fallback": True,
+        }
 
 
 @router.get("/suggestions")

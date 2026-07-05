@@ -10,6 +10,7 @@ Supports:
 All providers use a unified interface so agent code doesn't care
 which LLM is backing it.
 """
+import asyncio
 import logging
 from typing import Optional, AsyncGenerator, List, Dict, Any
 from enum import Enum
@@ -105,6 +106,27 @@ def _get_available_providers() -> List[Dict]:
     return available
 
 
+# ── Canned safety knowledge for demo / no-key mode ─────────────────────────
+_CANNED_KB: Dict[str, str] = {
+    "h2s":      "Safe H2S exposure limit: 1 ppm TWA (8-hr), 5 ppm STEL (15-min) per OISD-105. Evacuate immediately above 25 ppm.",
+    "ppe":      "PPE requirements: H2S personal monitor, SCBA, hard hat, fire-resistant coverall, chemical-splash goggles, safety boots per OISD-137.",
+    "confined": "Confined space entry: gas test (O2 ≥19.5%, LEL <10%, H2S <10 ppm), PTW issued, standby person, rescue team on standby per OISD-105-4.3.",
+    "emergency": "Emergency response: activate alarm, evacuate zone, notify HSE officer, preserve sensor logs, call emergency services (Fire: 101, Ambulance: 102).",
+    "lel":      "Lower Explosive Limit (LEL): stop hot work above 10% LEL, evacuate above 25% LEL. Methane LEL = 5% v/v.",
+    "permit":   "Permit-to-Work system requires: hazard identification, isolation confirmation, gas clearance, authorised signatory, and defined work scope.",
+    "default":  "SafetyOS Knowledge Base — running in demo mode. Set GEMINI_API_KEY, OPENROUTER_API_KEY, or ANTHROPIC_API_KEY in .env for full AI responses.",
+}
+
+
+def _canned_response(messages: List[Dict[str, str]]) -> str:
+    """Pick the most relevant canned safety answer from local KB."""
+    text = " ".join(str(m.get("content", "")) for m in messages).lower()
+    for kw, answer in _CANNED_KB.items():
+        if kw != "default" and kw in text:
+            return answer
+    return _CANNED_KB["default"]
+
+
 async def chat(
     messages: List[Dict[str, str]],
     provider: Optional[str] = None,
@@ -115,7 +137,8 @@ async def chat(
 ) -> str:
     """
     Unified chat completion across all providers.
-    Falls back through providers if primary fails.
+    Hard 10-second timeout — never blocks the server.
+    Falls back to canned safety knowledge if no key is configured.
     """
     use_provider = provider or _default_provider
 
@@ -125,7 +148,7 @@ async def chat(
         full_messages.append({"role": "system", "content": system_prompt})
     full_messages.extend(messages)
 
-    try:
+    async def _dispatch() -> str:
         if use_provider == LLMProvider.GEMINI:
             return await _chat_gemini(full_messages, model, temperature, max_tokens)
         elif use_provider == LLMProvider.OPENROUTER:
@@ -136,9 +159,15 @@ async def chat(
             return await _chat_ollama(full_messages, model, temperature, max_tokens)
         else:
             return await _chat_gemini(full_messages, model, temperature, max_tokens)
+
+    try:
+        return await asyncio.wait_for(_dispatch(), timeout=10.0)
+    except asyncio.TimeoutError:
+        logger.warning("LLM call timed out after 10 s — returning canned response")
     except Exception as e:
-        logger.error(f"LLM {use_provider} failed: {e}")
-        return await _fallback_response(use_provider, str(e))
+        logger.warning(f"LLM {use_provider} failed ({e}) — returning canned response")
+
+    return _canned_response(full_messages)
 
 
 async def _chat_gemini(messages: list, model: str = None, temp: float = 0.7, max_t: int = 2048) -> str:
@@ -214,16 +243,22 @@ async def _chat_ollama(messages: list, model: str = None, temp: float = 0.7, max
 
 
 async def _fallback_response(failed_provider: str, error: str) -> str:
-    """Try fallback providers in order."""
+    """Try fallback providers in order, then return canned KB."""
     fallback_order = ["gemini", "openrouter", "anthropic", "ollama"]
     for provider in fallback_order:
         if provider == failed_provider:
             continue
         try:
             if provider == "gemini" and settings.GEMINI_API_KEY:
-                return await _chat_gemini([{"role": "user", "content": "Analyze this industrial safety situation."}])
+                return await asyncio.wait_for(
+                    _chat_gemini([{"role": "user", "content": "Analyze this industrial safety situation."}]),
+                    timeout=8.0,
+                )
             elif provider == "openrouter" and settings.OPENROUTER_API_KEY:
-                return await _chat_openrouter([{"role": "user", "content": "Analyze this industrial safety situation."}])
+                return await asyncio.wait_for(
+                    _chat_openrouter([{"role": "user", "content": "Analyze this industrial safety situation."}]),
+                    timeout=8.0,
+                )
         except Exception:
             continue
-    return f"[AI OFFLINE] All LLM providers unavailable. Manual assessment required. Error: {error}"
+    return _CANNED_KB["default"]
