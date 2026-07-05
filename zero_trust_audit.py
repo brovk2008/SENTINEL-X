@@ -131,7 +131,7 @@ def audit_api_data():
     try:
         r = requests.get(f"{BASE_URL}/sensors/", timeout=TIMEOUT)
         sensors = r.json()
-        count = len(sensors) if isinstance(sensors, list) else len(sensors.get("data", []))
+        count = len(sensors) if isinstance(sensors, list) else len(sensors.get("sensors", sensors.get("data", [])))
         if count >= 10:
             check("Sensor count", "PASS", f"{count} sensors in DB")
         elif count > 0:
@@ -145,7 +145,7 @@ def audit_api_data():
     try:
         r = requests.get(f"{BASE_URL}/incidents/", timeout=TIMEOUT)
         data = r.json()
-        count = len(data) if isinstance(data, list) else len(data.get("data", []))
+        count = len(data) if isinstance(data, list) else len(data.get("incidents", data.get("data", [])))
         status = "PASS" if count >= 5 else ("WARN" if count > 0 else "FAIL")
         check("Incident history", status, f"{count} historical incidents")
     except Exception as e:

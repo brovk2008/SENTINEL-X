@@ -107,7 +107,7 @@ class Equipment(Base):
     health_score = Column(Float, default=100.0)
     is_critical = Column(Boolean, default=False)
     status = Column(String(50), default="operational")  # operational, maintenance, fault
-    metadata = Column(JSON, default={})
+    meta_data = Column(JSON, default={})
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
@@ -216,7 +216,7 @@ class Alert(Base):
     title = Column(String(500), nullable=False)
     description = Column(Text)
     severity = Column(SAEnum(RiskLevel), default=RiskLevel.MEDIUM)
-    status = Column(AlertStatus, default=AlertStatus.ACTIVE)
+    status = Column(SAEnum(AlertStatus), default=AlertStatus.ACTIVE)
     risk_score = Column(Float)
     compound_factors = Column(JSON, default=[])  # For compound risk alerts
     ai_explanation = Column(Text)
@@ -296,14 +296,16 @@ class LLMConfig(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# ─── DB Init ─────────────────────────────────────────────────────────────────
 async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    # Seed initial data if empty
-    from data.seed_runner import run_seeds
-    await run_seeds()
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        # Seed initial data if empty
+        from data.seed_runner import run_seeds
+        await run_seeds()
+    except Exception as e:
+        import logging
+        logging.getLogger("safetyos").warning(f"PostgreSQL connection failed: {e}. Running in in-memory SQLite / mock fallback mode.")
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

@@ -122,3 +122,14 @@ async def run_debate_sync(request: DebateRequest):
         "total_agents": len(messages),
         "final_decision": messages[-1]["message"] if messages else None,
     }
+
+
+@router.get("/risk-status")
+async def get_risk_status():
+    """Get the current aggregated risk status of the debate engine."""
+    compound_risk = await get_state(COMPOUND_RISK_KEY) or {}
+    return {
+        "status": "ok",
+        "plant_risk_score": compound_risk.get("plant_risk_score", 42.0),
+        "risk_level": compound_risk.get("severity", "MEDIUM"),
+    }

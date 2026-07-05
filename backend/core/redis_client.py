@@ -11,9 +11,26 @@ redis_client: Optional[aioredis.Redis] = None
 
 async def init_redis():
     global redis_client
-    redis_client = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
-    await redis_client.ping()
-    logger.info("Redis connected")
+    try:
+        redis_client = aioredis.from_url(settings.REDIS_URL, decode_responses=True)
+        await redis_client.ping()
+        logger.info("Redis connected")
+    except Exception as e:
+        logger.warning(f"Redis connection failed: {e}. Using in-memory fallback cache.")
+        class MockRedis:
+            def __init__(self):
+                self.cache = {}
+            async def ping(self):
+                return True
+            async def set(self, k, v):
+                self.cache[k] = v
+            async def setex(self, k, t, v):
+                self.cache[k] = v
+            async def get(self, k):
+                return self.cache.get(k)
+            async def publish(self, ch, data):
+                pass
+        redis_client = MockRedis()
 
 
 def get_redis() -> aioredis.Redis:

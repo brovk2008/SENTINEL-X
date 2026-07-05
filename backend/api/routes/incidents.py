@@ -9,6 +9,27 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+
+def _generate_incident_timeline(start_iso: str, incident_iso: str) -> list:
+    """Generate a sample timeline for incident replay."""
+    start = datetime.fromisoformat(start_iso)
+    incident = datetime.fromisoformat(incident_iso)
+
+    events = [
+        {"time": start.isoformat(), "type": "sensor", "description": "H2S-ZC-01: 3.2 ppm (normal)", "severity": "LOW"},
+        {"time": (start + timedelta(minutes=5)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 5.8 ppm (rising)", "severity": "LOW"},
+        {"time": (start + timedelta(minutes=12)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 11.2 ppm (above normal)", "severity": "MEDIUM"},
+        {"time": (start + timedelta(minutes=20)).isoformat(), "type": "permit", "description": "PTW-2025-0847 Confined Space permit issued — Zone C", "severity": "INFO"},
+        {"time": (start + timedelta(minutes=25)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 18.4 ppm (approaching warning)", "severity": "MEDIUM"},
+        {"time": (start + timedelta(minutes=30)).isoformat(), "type": "ai_flag", "description": "⚠️ AI WOULD HAVE FLAGGED: H2S rising with active confined space permit — COMPOUND RISK", "severity": "HIGH"},
+        {"time": (start + timedelta(minutes=35)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 26.1 ppm (exceeded OISD threshold)", "severity": "CRITICAL"},
+        {"time": (start + timedelta(minutes=38)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 31.4 ppm (CRITICAL)", "severity": "CRITICAL"},
+        {"time": (start + timedelta(minutes=42)).isoformat(), "type": "sensor", "description": "Worker exposure detected — alarm triggered", "severity": "CRITICAL"},
+        {"time": incident.isoformat(), "type": "incident", "description": "💥 INCIDENT: Workers evacuated, medical response initiated", "severity": "CRITICAL"},
+    ]
+    return events
+
+
 # Synthetic historical incidents for demo
 SYNTHETIC_INCIDENTS = [
     {
@@ -98,26 +119,6 @@ SYNTHETIC_INCIDENTS = [
         "timeline_data": [],
     },
 ]
-
-
-def _generate_incident_timeline(start_iso: str, incident_iso: str) -> list:
-    """Generate a sample timeline for incident replay."""
-    start = datetime.fromisoformat(start_iso)
-    incident = datetime.fromisoformat(incident_iso)
-
-    events = [
-        {"time": start.isoformat(), "type": "sensor", "description": "H2S-ZC-01: 3.2 ppm (normal)", "severity": "LOW"},
-        {"time": (start + timedelta(minutes=5)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 5.8 ppm (rising)", "severity": "LOW"},
-        {"time": (start + timedelta(minutes=12)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 11.2 ppm (above normal)", "severity": "MEDIUM"},
-        {"time": (start + timedelta(minutes=20)).isoformat(), "type": "permit", "description": "PTW-2025-0847 Confined Space permit issued — Zone C", "severity": "INFO"},
-        {"time": (start + timedelta(minutes=25)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 18.4 ppm (approaching warning)", "severity": "MEDIUM"},
-        {"time": (start + timedelta(minutes=30)).isoformat(), "type": "ai_flag", "description": "⚠️ AI WOULD HAVE FLAGGED: H2S rising with active confined space permit — COMPOUND RISK", "severity": "HIGH"},
-        {"time": (start + timedelta(minutes=35)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 26.1 ppm (exceeded OISD threshold)", "severity": "CRITICAL"},
-        {"time": (start + timedelta(minutes=38)).isoformat(), "type": "sensor", "description": "H2S-ZC-01: 31.4 ppm (CRITICAL)", "severity": "CRITICAL"},
-        {"time": (start + timedelta(minutes=42)).isoformat(), "type": "sensor", "description": "Worker exposure detected — alarm triggered", "severity": "CRITICAL"},
-        {"time": incident.isoformat(), "type": "incident", "description": "💥 INCIDENT: Workers evacuated, medical response initiated", "severity": "CRITICAL"},
-    ]
-    return events
 
 
 @router.get("/")

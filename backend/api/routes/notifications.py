@@ -126,6 +126,10 @@ def make_plants_router():
 def make_analytics_router():
     r = _APIRouter()
 
+    @r.get("/")
+    async def get_analytics_root():
+        return {"status": "ok", "message": "Analytics engine is online"}
+
     @r.get("/summary")
     async def get_analytics_summary():
         from core.redis_client import get_state, COMPOUND_RISK_KEY, SENSOR_STATE_KEY
