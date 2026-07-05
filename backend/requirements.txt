@@ -1,0 +1,75 @@
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+websockets==12.0
+python-multipart==0.0.9
+
+# Database
+sqlalchemy==2.0.31
+asyncpg==0.29.0
+alembic==1.13.2
+psycopg2-binary==2.9.9
+
+# Redis
+redis[hiredis]==5.0.7
+aioredis==2.0.1
+
+# Neo4j
+neo4j==5.22.0
+
+# Vector DB
+chromadb==0.5.5
+
+# MQTT
+paho-mqtt==2.1.0
+
+# AI / LLM (multi-provider)
+google-generativeai==0.7.2
+anthropic==0.31.2
+openai==1.37.1  # Used for OpenRouter (OpenAI-compatible API)
+langchain==0.2.12
+langchain-google-genai==1.0.8
+langchain-anthropic==0.1.23
+langchain-openai==0.1.21
+langchain-community==0.2.12
+langgraph==0.2.4
+
+# Data processing
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.5.1
+scipy==1.14.0
+
+# Computer Vision
+opencv-python-headless==4.10.0.84
+Pillow==10.4.0
+
+# PDF Generation
+reportlab==4.2.2
+weasyprint==62.3
+
+# HTTP
+httpx==0.27.0
+aiohttp==3.9.5
+requests==2.32.3
+
+# Utilities
+python-dotenv==1.0.1
+pydantic==2.8.2
+pydantic-settings==2.3.4
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dateutil==2.9.0
+pytz==2024.1
+cachetools==5.4.0
+
+# Notifications
+firebase-admin==6.5.0
+twilio==9.2.3
+
+# Background tasks
+celery==5.4.0
+apscheduler==3.10.4
+
+# Dev / testing
+pytest==8.3.2
+pytest-asyncio==0.23.8
