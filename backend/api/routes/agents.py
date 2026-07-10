@@ -20,6 +20,7 @@ class DebateRequest(BaseModel):
     zone: Optional[str] = "ZC"
     risk_level: Optional[str] = "CRITICAL"
     use_scripted_demo: Optional[bool] = False
+    scenario: Optional[str] = "h2s_confined_space"  # h2s_confined_space | equipment_failure | permit_conflict
     custom_context: Optional[dict] = None
 
 
@@ -36,6 +37,36 @@ async def get_agent_profiles():
                 "tagline": agent["tagline"],
             }
             for key, agent in AGENT_PROFILES.items()
+        ]
+    }
+
+
+@router.get("/scenarios")
+async def get_debate_scenarios():
+    """Get available debate scenarios for the demo."""
+    return {
+        "scenarios": [
+            {
+                "id": "h2s_confined_space",
+                "name": "H2S + Confined Space",
+                "description": "H2S leak detection during confined space work — compound risk scenario",
+                "emoji": "🔴",
+                "complexity": "CRITICAL",
+            },
+            {
+                "id": "equipment_failure",
+                "name": "Equipment Failure",
+                "description": "Compressor bearing failure with vibration anomaly — shutdown vs. assessment",
+                "emoji": "🔧",
+                "complexity": "HIGH",
+            },
+            {
+                "id": "permit_conflict",
+                "name": "Permit Conflict",
+                "description": "Hot work permit vs. adjacent high LEL zone — safety vs. timeline",
+                "emoji": "⚖️",
+                "complexity": "HIGH",
+            },
         ]
     }
 
@@ -76,7 +107,7 @@ async def stream_debate(request: DebateRequest):
     async def event_generator():
         yield f"data: {json.dumps({'type': 'session_start', 'session_id': session_id})}\n\n"
 
-        async for msg in run_debate(context, session_id, request.use_scripted_demo):
+        async for msg in run_debate(context, session_id, request.use_scripted_demo, request.scenario):
             yield f"data: {json.dumps(msg)}\n\n"
             await asyncio.sleep(0.1)
 
@@ -113,7 +144,7 @@ async def run_debate_sync(request: DebateRequest):
     }
 
     messages = []
-    async for msg in run_debate(context, session_id, request.use_scripted_demo):
+    async for msg in run_debate(context, session_id, request.use_scripted_demo, request.scenario):
         messages.append(msg)
 
     return {

@@ -107,13 +107,20 @@ async def run_debate(
     incident_context: dict,
     session_id: str,
     use_scripted_demo: bool = False,
+    scenario: str = "h2s_confined_space",
 ) -> AsyncGenerator[dict, None]:
     """
     Run a multi-agent debate on a safety incident.
     Yields debate messages one by one (for streaming to frontend).
+    
+    Args:
+        incident_context: Details about the incident
+        session_id: Unique debate session identifier
+        use_scripted_demo: Whether to use scripted debate or live LLM
+        scenario: Which scenario to use if use_scripted_demo=True
     """
     if use_scripted_demo:
-        async for msg in _run_scripted_debate(incident_context, session_id):
+        async for msg in _run_scripted_debate(incident_context, session_id, scenario):
             yield msg
         return
 
@@ -193,21 +200,43 @@ def _build_context_summary(context: dict) -> str:
     return "\n".join(lines)
 
 
-# ─── Scripted Demo Debate ─────────────────────────────────────────────────────
-SCRIPTED_DEBATE = [
-    ("safety", "Zone C conditions are critical — H2S at 45ppm exceeds the OISD-105 mandatory evacuation threshold of 25ppm in a confined space with an active permit. Immediate evacuation of Zone C is non-negotiable. Worker safety cannot be traded for uptime."),
-    ("production", "Evacuation of Zone C means shutting down Line 3. That's approximately ₹12.4 lakh per hour of downtime. Can we isolate the confined space work scope and keep the rest of Zone C operational while we address the gas buildup?"),
-    ("compliance", "OISD Standard 105, Section 4.3 is explicit: when H2S exceeds 25ppm in any area with an active confined space permit, mandatory evacuation is legally required — not optional. Proceeding without evacuation exposes the company to criminal liability under the Factories Act Section 36."),
-    ("maintenance", "The H2S buildup in Zone C is likely from Valve V-12 on Compressor C-301 — it showed a minor seal weep in this morning's inspection. Replacement takes approximately 45 minutes. We can reduce the gas feed during valve replacement to minimize further accumulation."),
-    ("finance", "Full Zone C evacuation + shutdown cost: ₹2.1 lakh. Valve replacement cost: ₹38,000. Cost of a major H2S incident (like Vizag 2025): ₹34 crore in liability, fines, and downtime. The math strongly favors evacuation now."),
-    ("emergency", "With H2S at 45ppm, an active confined space permit, and two sensor confirmations — the emergency threshold is confirmed. EMERGENCY PROTOCOL ACTIVATED. Initiating evacuation notification to all Zone C personnel and alerting the emergency response team."),
-    ("executive", "DECISION: Immediate partial evacuation of Zone C + controlled shutdown of Line 3.\nRationale: OISD-105 mandates evacuation — legal compliance is not optional. Valve V-12 replacement to begin during evacuation window.\nRisk Reduction: 84% → 6%\nFinancial Impact: ₹2.1 lakh (evacuation) vs ₹34 crore (incident)\nCompliance: ✅\nTimeline: Evacuation to begin within 5 minutes. Line 3 shutdown in 15 minutes. Re-entry permitted after gas test confirms H2S < 10ppm."),
-]
+# ─── Scripted Demo Debates (3 Scenarios) ─────────────────────────────────────
 
+SCRIPTED_DEBATES = {
+    "h2s_confined_space": [
+        ("safety", "Zone C conditions are critical — H2S at 45ppm exceeds the OISD-105 mandatory evacuation threshold of 25ppm in a confined space with an active permit. Immediate evacuation of Zone C is non-negotiable. Worker safety cannot be traded for uptime."),
+        ("production", "Evacuation of Zone C means shutting down Line 3. That's approximately ₹18.4 lakh in downtime. Can we isolate the confined space work scope and keep the rest of Zone C operational while we address the gas buildup?"),
+        ("compliance", "OISD Standard 105, Section 4.3 is explicit: when H2S exceeds 25ppm in any area with an active confined space permit, mandatory evacuation is legally required — not optional. Proceeding without evacuation exposes the company to criminal liability."),
+        ("maintenance", "The H2S buildup is from Valve CV-312 seal weep on Compressor C-301 — inspection noted this morning. Replacement takes 45 minutes. We can reduce feed rate to minimize further accumulation during evacuation."),
+        ("finance", "Full Zone C evacuation + shutdown: ₹18.8L total. Cost of a major H2S incident (Vizag 2025 model): ₹34 crore in liability and fines. The math strongly favors evacuation now."),
+        ("emergency", "With H2S at 45ppm, active confined space permit, and dual sensor confirmation — emergency threshold confirmed. EMERGENCY PROTOCOL ACTIVATED. Evacuating all Zone C personnel. Response team dispatched."),
+        ("executive", "DECISION: Immediate Zone C evacuation + partial Line 3 shutdown.\nRationale: OISD-105 mandates evacuation. Valve replacement during 90-minute evacuation window.\nRisk Reduction: 84% → 3%\nCost: ₹18.8L downtime + ₹38K valve = ₹18.8L total\nCompliance: ✅ OISD-105-4.3\nTimeline: Evacuation starts NOW. Operations resume 16:30 after gas test < 10ppm."),
+    ],
+    "equipment_failure": [
+        ("safety", "Compressor P-203 vibration is now 11.2mm/s—critical threshold exceeded. Temperature at 108°C. This bearing failure pattern requires immediate shutdown of the 15-meter work zone around P-203 to protect the 8 workers currently assigned there."),
+        ("production", "P-203 is our main feed compressor—shutdown means 40% capacity loss. That's ₹28 lakh/hour impact. Can we run a quick 30-minute assessment to confirm it's actually the bearing before a full shutdown?"),
+        ("compliance", "OISD-118 Section 3.2 is clear: equipment showing critical vibration must be shut down pending inspection. No assessment window allowed. Continuing operation risks worker injury and regulatory violation under Factory Act Section 36."),
+        ("maintenance", "This is bearing failure—same pattern as P-201 failure in March 2024. Signature shows race-way spalling likely begun. Controlled shutdown now, replacement takes 6 hours, ₹2.2L parts. If we delay—catastrophic failure in under 2 hours, ₹12-18 crore damage."),
+        ("finance", "Controlled shutdown cost: ₹28L/hr × 6hrs = ₹1.68 crore. Catastrophic failure cost: ₹12-18 crore replacement + 3 weeks downtime = ₹47 crore. The ROI on shutdown is 28x."),
+        ("emergency", "Bearing failure imminent. Clearing 15-meter exclusion zone around P-203. Activating standby compressor P-204. Maintenance team briefed. Standing by for executive decision."),
+        ("executive", "DECISION: Immediate P-203 controlled shutdown. Activate P-204 standby. Begin bearing replacement.\nRationale: Critical vibration + overdue inspection + bearing failure pattern = shutdown unavoidable by regulation\nRisk Reduction: 78% → 5%\nCost: ₹1.68 crore\nCompliance: ✅ OISD-118-3.2\nTimeline: P-203 offline in 8 minutes. P-204 online by 08:45. Bearing replacement complete by 18:00."),
+    ],
+    "permit_conflict": [
+        ("safety", "Hot work permit PTW-2024-0891 active in Zone A. Adjacent Zone B now showing LEL at 18%—well above the 10% safe limit for hot work nearby. Wind is pushing gas INTO Zone A. Historical data shows 3 fatal incidents in similar configurations at Vizag and Jamnagar."),
+        ("production", "This hot work is for a critical pipeline weld—delaying it sets back the project 4 days. That's significant. Can we do anything to bring Zone B LEL down quickly instead of full permit suspension?"),
+        ("compliance", "OISD-116 Section 2.1 is unambiguous: hot work is prohibited within 15 meters of any area with LEL greater than 10%. Zone B at 18% LEL with Zone A downwind—permit must be suspended immediately. This is statutory, not a suggestion."),
+        ("maintenance", "Source identified: Tank T-407 vent valve partially stuck open. Closing it takes 12 minutes. After closure, we need a 30-minute purge to bring Zone B LEL back to safe levels. Then hot work can resume."),
+        ("finance", "Permit suspension + vent valve fix + gas purge = 42-minute delay = ₹4.2L cost. Ignoring the risk and proceeding: LEL spike + ignition = ₹60-200 crore catastrophic loss + criminal liability. Clear choice."),
+        ("emergency", "Suspending hot work permit PTW-2024-0891 immediately. Notifying welding crew. Dispatch maintenance to Tank T-407. Gas test team on standby for post-purge verification."),
+        ("executive", "DECISION: Hot work suspended. Maintenance closes T-407 vent within 12 minutes. 30-minute gas purge. Hot work resumes at 15:45.\nRationale: OISD-116 mandates suspension. Technical fix available and quick.\nRisk Reduction: 81% → 2%\nCost: ₹4.2L (delay only; no equipment failure)\nCompliance: ✅ OISD-116-2.1\nTimeline: Suspension effective immediately. Valve closure 08:24. Gas test pass 08:54. Hot work resumes 15:45."),
+    ],
+}
 
-async def _run_scripted_debate(context: dict, session_id: str) -> AsyncGenerator[dict, None]:
+async def _run_scripted_debate(context: dict, session_id: str, scenario: str = "h2s_confined_space") -> AsyncGenerator[dict, None]:
     """Pre-scripted debate for reliable demo playback."""
-    for agent_key, message in SCRIPTED_DEBATE:
+    debate = SCRIPTED_DEBATES.get(scenario, SCRIPTED_DEBATES["h2s_confined_space"])
+    
+    for agent_key, message in debate:
         agent = AGENT_PROFILES[agent_key]
         msg = {
             "session_id": session_id,
