@@ -26,11 +26,11 @@ paho-mqtt==2.1.0
 google-generativeai==0.7.2
 anthropic==0.31.2
 openai==1.40.0  # Used for OpenRouter (OpenAI-compatible API)
-langchain==0.2.12
+langchain==0.2.14
 langchain-google-genai==1.0.8
 langchain-anthropic==0.1.23
 langchain-openai==0.1.21
-langchain-community==0.2.12
+langchain-community==0.2.14
 langgraph==0.2.4
 
 # Data processing
