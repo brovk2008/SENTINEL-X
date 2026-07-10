@@ -11,7 +11,12 @@ import json
 
 from agents.debate_orchestrator import run_debate, AGENT_PROFILES
 from agents.compound_risk_monitor import get_monitor, evaluate_risk
-from core.redis_client import get_state, COMPOUND_RISK_KEY, SENSOR_STATE_KEY
+from intelligence.scenario_simulator import (
+    get_scenario,
+    list_scenarios,
+    get_scenario_comparison,
+    get_risk_score_for_time,
+)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -261,6 +266,49 @@ def _map_rule_to_scenario(rule_id: int) -> str:
         return "permit_conflict"
     else:
         return "h2s_confined_space"  # Default
+
+
+@router.get("/scenarios/list")
+async def list_all_scenarios():
+    """Get all available 'what if' scenarios"""
+    return {"scenarios": list_scenarios()}
+
+
+@router.get("/scenarios/compare")
+async def compare_scenarios():
+    """Get all 3 scenarios for side-by-side comparison"""
+    return get_scenario_comparison()
+
+
+@router.get("/scenarios/{scenario_id}")
+async def get_scenario_detail(scenario_id: str):
+    """Get detailed trajectory for a specific scenario"""
+    scenario = get_scenario(scenario_id)
+    if not scenario:
+        return {"error": f"Scenario {scenario_id} not found"}
+
+    return {
+        "id": scenario.id,
+        "title": scenario.title,
+        "description": scenario.description,
+        "initial_risk": scenario.initial_risk,
+        "final_risk": scenario.final_risk,
+        "probability_incident": scenario.probability_incident,
+        "estimated_cost_inr": scenario.estimated_cost_inr,
+        "confidence_pct": scenario.confidence_pct,
+        "recommendation": scenario.recommendation,
+        "reasoning": scenario.reasoning,
+        "trajectory": [
+            {
+                "time_minutes": p.time_minutes,
+                "time_label": f"{p.time_minutes // 60}h {p.time_minutes % 60}m" if p.time_minutes > 0 else "Now",
+                "risk_score": p.risk_score,
+                "probability_incident": p.probability_incident,
+                "status": p.status,
+            }
+            for p in scenario.trajectory
+        ],
+    }
 
 
 @router.post("/debate/stream")
