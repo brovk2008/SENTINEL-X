@@ -3,6 +3,7 @@ import "./globals.css";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NotificationToast } from "@/components/ui/NotificationToast";
 import { WSProvider } from "@/components/providers/WSProvider";
+import { DemoModeToggle } from "@/components/DemoModeToggle";
 
 export const metadata: Metadata = {
   title: "SafetyOS — AI Operating System for Industrial Safety",
@@ -24,6 +25,7 @@ export default function RootLayout({
       </head>
       <body>
         <WSProvider>
+          <DemoModeToggle />
           <div className="app-layout">
             <Sidebar />
             <main className="main-content">
