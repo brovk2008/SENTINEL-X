@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Shield, AlertTriangle, CheckCircle, RefreshCcw } from "lucide-react";
+import { ExplainableAlert } from "@/components/ExplainableAlert";
 
 interface ComplianceCheck {
   id: string;
@@ -83,6 +84,43 @@ export default function CompliancePage() {
           </div>
         </div>
       </div>
+
+      {status?.checks?.filter((check) => !check.is_compliant).length ? (
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
+            <div>
+              <div style={{ fontSize: "16px", fontWeight: 800 }}>Explainable Compliance Alerts</div>
+              <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                AI-backed explanations for the top regulatory issues.
+              </div>
+            </div>
+          </div>
+          <div style={{ display: "grid", gap: "14px" }}>
+            {status?.checks
+              .filter((check) => !check.is_compliant)
+              .slice(0, 2)
+              .map((check) => ({
+                id: check.id,
+                title: check.title,
+                zone: check.authority,
+                risk_score: check.is_compliant ? 22 : 78,
+                severity: (check.is_compliant ? "LOW" : "CRITICAL") as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+                explanation: check.description,
+                factors: [
+                  { label: "Regulatory mismatch", value: check.is_compliant ? 30 : 82 },
+                  { label: "Operational deviation", value: check.is_compliant ? 20 : 74 },
+                  { label: "Controls overdue", value: check.is_compliant ? 12 : 68 },
+                ],
+                recommended_action: check.recommended_action || "Review the compliance gap and follow the corrective plan.",
+                confidence: 88,
+                is_false_alarm_unlikely: true,
+              }))
+              .map((alert) => (
+                <ExplainableAlert key={alert.id} alert={alert} />
+              ))}
+          </div>
+        </div>
+      ) : null}
 
       {/* Compliance checks */}
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>

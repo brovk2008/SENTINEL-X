@@ -1,7 +1,9 @@
 """Notifications, Workers, Plants, Analytics, Cameras, Reports API stubs."""
 import logging
 from datetime import datetime
+from core.redis_client import get_state, COMPOUND_RISK_KEY, SENSOR_STATE_KEY
 from fastapi import APIRouter
+from intelligence.prediction_engine import predict_incident
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +104,26 @@ def make_workers_router():
             counts[z] = counts.get(z, 0) + 1
         return {"zone_counts": counts}
 
+    @r.get("/handover-report")
+    async def get_handover_report():
+        return {
+            "outgoing_shift": "Morning (06:00-14:00)",
+            "incoming_shift": "Afternoon (14:00-22:00)",
+            "handover_time": "13:45 IST",
+            "ai_summary": "Zone C has been in elevated risk state since 11:30 with H2S and vibration concerns. Maintenance and permit handover items require immediate review.",
+            "open_items": [
+                {"type": "alert", "title": "Zone C gas levels", "duration": "1h 20min elevated"},
+                {"type": "maintenance", "title": "P-203 vibration", "ticket": "MT-2024-0234"},
+                {"type": "permit", "title": "PTW-2024-0847, 0849, 0851", "expires": "before 16:00"},
+            ],
+            "shift_metrics": {
+                "alerts_handled": 7,
+                "near_misses": 1,
+                "compliance_pct": 97.4,
+                "maintenance_completed": "4/5",
+            },
+        }
+
     return r
 
 
@@ -147,6 +169,31 @@ def make_analytics_router():
             "last_incident": "3 days ago",
             "financial_exposure": 2100000,
             "ai_prevented_today": 3,
+        }
+
+    @r.get("/prediction")
+    async def get_incident_prediction():
+        state = await get_state(COMPOUND_RISK_KEY) or {}
+        sensor_state = await get_state(SENSOR_STATE_KEY) or {}
+
+        plant_state = {
+            "h2s_max": sensor_state.get("H2S-ZC-01", {}).get("value", 18.0),
+            "lel_max": sensor_state.get("LEL-ZB-01", {}).get("value", 8.0),
+            "active_permit_count": len(state.get("active_permits", ["PTW-2025-0847", "PTW-2025-0851"])),
+            "maintenance_overdue_days": state.get("maintenance_overdue_days", 7),
+            "hours_since_shift_change": state.get("hours_since_shift_change", 1),
+            "hours_until_shift_change": state.get("hours_until_shift_change", 3),
+            "incidents_zone_30d": state.get("incidents_zone_30d", 2),
+            "avg_hours_on_shift": state.get("avg_hours_on_shift", 10),
+            "avg_equipment_health_pct": state.get("avg_equipment_health_pct", 72),
+            "confined_space_permit_active": state.get("confined_space_permit_active", True),
+            "hot_work_permit_active": state.get("hot_work_permit_active", False),
+        }
+
+        prediction = predict_incident(plant_state)
+        return {
+            "status": "ok",
+            "prediction": prediction,
         }
 
     @r.get("/executive-brief")

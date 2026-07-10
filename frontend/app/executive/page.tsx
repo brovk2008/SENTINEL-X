@@ -114,7 +114,7 @@ export default function ExecutivePage() {
       {/* Chat sidebar */}
       {chatOpen && (
         <div className="glass-card animate-slide-in" style={{ display: "flex", flexDirection: "column", overflow: "hidden", height: "calc(100vh - 48px)" }}>
-          <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--glass-border)", display: "flex", alignItems: "center", justifyBetween: "space-between" }}>
+          <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--glass-border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Brain size={14} color="var(--accent-primary)" />
               <span style={{ fontSize: "13px", fontWeight: "700" }}>Safety Copilot</span>

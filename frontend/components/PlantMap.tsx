@@ -1,201 +1,259 @@
 "use client";
-import { SensorReading } from "@/lib/store";
+import { useEffect, useMemo, useState } from "react";
+import { safetyWS } from "@/lib/websocket";
 
-interface Props {
-  sensors: Record<string, SensorReading>;
-}
-
-// Zone definitions for SVG plant map — petrochemical refinery layout
-const ZONES = [
-  {
-    code: "ZA",
-    label: "Zone A\nTank Farm",
-    path: "M40,60 L180,60 L180,200 L40,200 Z",
-    cx: 110, cy: 130,
-    sensors: ["H2S-ZA-01", "LEL-ZA-01", "LEVEL-V401", "PRESS-V401"],
-  },
-  {
-    code: "ZB",
-    label: "Zone B\nProcess Unit",
-    path: "M200,40 L400,40 L400,240 L200,240 Z",
-    cx: 300, cy: 140,
-    sensors: ["H2S-ZB-01", "CO-ZB-01", "LEL-ZB-01", "TEMP-P203", "VIB-P203", "PRESS-L301", "FLOW-L301", "TEMP-HX501", "CURR-P203"],
-  },
-  {
-    code: "ZC",
-    label: "Zone C\nCompressor Bay",
-    path: "M420,60 L580,60 L580,220 L420,220 Z",
-    cx: 500, cy: 140,
-    sensors: ["H2S-ZC-01", "H2S-ZC-02", "LEL-ZC-01", "VIB-C301", "VIB-C302", "TEMP-C301", "PRESS-C301", "HUM-ZC-01"],
-  },
-  {
-    code: "ZD",
-    label: "Zone D\nControl Room",
-    path: "M220,260 L380,260 L380,340 L220,340 Z",
-    cx: 300, cy: 300,
-    sensors: [],
-  },
-  {
-    code: "ZE",
-    label: "Zone E\nFlare Stack",
-    path: "M600,80 L680,80 L680,200 L600,200 Z",
-    cx: 640, cy: 140,
-    sensors: [],
-  },
+const zoneDefinitions = [
+  { id: "ZA", label: "Tank Farm", x: 50, y: 50, width: 180, height: 120, workers: 5 },
+  { id: "ZB", label: "Processing", x: 280, y: 50, width: 200, height: 150, workers: 8 },
+  { id: "ZC", label: "Coke Battery", x: 530, y: 50, width: 160, height: 120, workers: 12 },
+  { id: "ZD", label: "Control Room", x: 50, y: 220, width: 100, height: 80, workers: 3 },
+  { id: "ZE", label: "Utilities", x: 200, y: 220, width: 160, height: 100, workers: 6 },
+  { id: "ZF", label: "Flare Stack", x: 530, y: 220, width: 120, height: 80, workers: 2 },
 ];
 
-const EQUIPMENT = [
-  { id: "V-401", label: "V-401", x: 80, y: 120, symbol: "tank" },
-  { id: "P-203", label: "P-203", x: 265, y: 140, symbol: "pump" },
-  { id: "HX-501", label: "HX-501", x: 340, y: 100, symbol: "hx" },
-  { id: "C-301", label: "C-301", x: 460, y: 110, symbol: "comp" },
-  { id: "C-302", label: "C-302", x: 530, y: 170, symbol: "comp" },
-];
+const getZoneFill = (score: number) => {
+  if (score >= 80) return "#ff3b3b";
+  if (score >= 60) return "#ff6600";
+  if (score >= 40) return "#ffaa00";
+  if (score >= 20) return "#ffdd00";
+  return "#00ff88";
+};
 
-function getRiskColor(score: number): string {
-  if (score >= 75) return "#ff2244";
-  if (score >= 50) return "#ff8800";
-  if (score >= 30) return "#ffcc00";
-  return "#00e676";
-}
+const getScoreLabel = (score: number) => {
+  if (score >= 80) return "Critical";
+  if (score >= 60) return "High";
+  if (score >= 40) return "Elevated";
+  if (score >= 20) return "Moderate";
+  return "Safe";
+};
 
-function getZoneRisk(zone: typeof ZONES[0], sensors: Record<string, SensorReading>): number {
-  const zoneSensors = zone.sensors.map((id) => sensors[id]).filter(Boolean);
-  if (!zoneSensors.length) return 10;
-  const criticals = zoneSensors.filter((s) => s.risk_level === "CRITICAL").length;
-  const highs = zoneSensors.filter((s) => s.risk_level === "HIGH").length;
-  const mediums = zoneSensors.filter((s) => s.risk_level === "MEDIUM").length;
-  return Math.min(100, criticals * 40 + highs * 20 + mediums * 10 + 10);
-}
+export function PlantMap() {
+  const [zoneRisk, setZoneRisk] = useState<Record<string, number>>({ ZA: 38, ZB: 52, ZC: 84, ZD: 25, ZE: 46, ZF: 29 });
+  const [pulsingZones, setPulsingZones] = useState<Set<string>>(new Set(["ZC"]));
+  const [selectedZone, setSelectedZone] = useState<string | null>(null);
 
-export function PlantMap({ sensors }: Props) {
+  useEffect(() => {
+    safetyWS.connect();
+
+    const compoundHandler = (data: any) => {
+      const zone = data.zone || "ZC";
+      const score = Math.min(100, Math.max(0, data.risk_probability ?? data.risk_score ?? 84));
+      setZoneRisk((prev) => ({ ...prev, [zone]: score }));
+      setPulsingZones((prev) => new Set(prev).add(zone));
+      window.setTimeout(() => {
+        setPulsingZones((prev) => {
+          const next = new Set(prev);
+          next.delete(zone);
+          return next;
+        });
+      }, 5000);
+    };
+
+    const sensorHandler = (data: any) => {
+      const zone = data.zone || (typeof data.sensor_id === "string" ? data.sensor_id.split("-")[1] : "ZC");
+      setZoneRisk((prev) => {
+        const current = prev[zone] ?? 28;
+        const delta = typeof data.value === "number" ? Math.min(10, Math.max(-8, Math.round((data.value / 100) * 8))) : 4;
+        return { ...prev, [zone]: Math.min(100, Math.max(0, current + delta)) };
+      });
+    };
+
+    const unsubCompound = safetyWS.on("compound_risk", compoundHandler);
+    const unsubSensor = safetyWS.on("sensor_update", sensorHandler);
+
+    return () => {
+      unsubCompound();
+      unsubSensor();
+    };
+  }, []);
+
+  const selectedInfo = useMemo(() => {
+    if (!selectedZone) return null;
+    const zone = zoneDefinitions.find((z) => z.id === selectedZone);
+    if (!zone) return null;
+    return {
+      ...zone,
+      risk: zoneRisk[zone.id] ?? 0,
+      workers: zone.workers,
+    };
+  }, [selectedZone, zoneRisk]);
+
+  const pipePaths = [
+    { from: "ZA", to: "ZB" },
+    { from: "ZB", to: "ZC" },
+    { from: "ZA", to: "ZD" },
+    { from: "ZB", to: "ZE" },
+    { from: "ZC", to: "ZF" },
+    { from: "ZE", to: "ZF" },
+  ];
+
+  const getCenter = (zoneId: string) => {
+    const zone = zoneDefinitions.find((z) => z.id === zoneId);
+    return zone ? { x: zone.x + zone.width / 2, y: zone.y + zone.height / 2 } : { x: 0, y: 0 };
+  };
+
+  const workerCircles = zoneDefinitions.flatMap((zone) => {
+    return Array.from({ length: Math.max(2, Math.min(6, zone.workers)) }, (_, idx) => {
+      const x = zone.x + 16 + (idx % 3) * 40;
+      const y = zone.y + 24 + Math.floor(idx / 3) * 32;
+      return {
+        key: `${zone.id}-worker-${idx}`,
+        cx: x,
+        cy: y,
+        delay: idx * 0.35,
+      };
+    });
+  });
+
   return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
-      <svg
-        viewBox="0 0 740 380"
-        style={{
-          width: "100%",
-          maxWidth: "700px",
-          height: "auto",
-          display: "block",
-        }}
-      >
-        {/* Background grid */}
-        <defs>
-          <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
-          </pattern>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
+    <div style={{ position: "relative" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px", flexWrap: "wrap", gap: "14px" }}>
+        <div>
+          <div style={{ fontSize: "12px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#00ff88", marginBottom: "6px" }}>
+            LIVE PLANT MAP
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            <div style={{ fontSize: "20px", fontWeight: 800, color: "white" }}>INDOIL VIZAG UNIT 3</div>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", color: "rgba(255,255,255,0.8)" }}>
+              <span className="pulse-dot" style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#00ff88" }} />
+              <span style={{ fontSize: "12px" }}>Live feed</span>
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={async () => {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/agents/simulate-risk`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ rule_id: 1 }),
+            });
+          }}
+          className="btn btn-primary btn-sm"
+          style={{ alignSelf: "flex-start" }}
+        >
+          Simulate Zone C Alert
+        </button>
+      </div>
 
-        <rect width="740" height="380" fill="url(#grid)" rx="8" />
+      <div style={{ position: "relative", background: "rgba(255,255,255,0.04)", borderRadius: "24px", padding: "18px" }}>
+        <svg viewBox="0 0 720 360" style={{ width: "100%", height: "420px" }}>
+          <defs>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
 
-        {/* Pipes / connections */}
-        <g opacity="0.3" stroke="rgba(255,255,255,0.2)" strokeWidth="2" fill="none">
-          <line x1="180" y1="130" x2="200" y2="130" strokeDasharray="4,4" />
-          <line x1="400" y1="140" x2="420" y2="140" strokeDasharray="4,4" />
-          <line x1="300" y1="240" x2="300" y2="260" strokeDasharray="4,4" />
-        </g>
-
-        {/* Zones */}
-        {ZONES.map((zone) => {
-          const riskScore = getZoneRisk(zone, sensors);
-          const color = getRiskColor(riskScore);
-          const opacity = 0.08 + (riskScore / 100) * 0.12;
-
-          return (
-            <g key={zone.code} className="zone-shape">
+          {pipePaths.map((pipe) => {
+            const source = getCenter(pipe.from);
+            const target = getCenter(pipe.to);
+            return (
               <path
-                d={zone.path}
-                fill={color}
-                fillOpacity={opacity}
-                stroke={color}
-                strokeOpacity={riskScore > 50 ? 0.5 : 0.25}
-                strokeWidth="1.5"
-                rx="8"
+                key={`${pipe.from}-${pipe.to}`}
+                d={`M ${source.x} ${source.y} C ${source.x + 60} ${source.y} ${target.x - 60} ${target.y} ${target.x} ${target.y}`}
+                fill="none"
+                stroke="cyan"
+                strokeWidth="2"
+                strokeOpacity="0.25"
               />
-              {/* Zone label */}
-              <text
-                x={zone.cx}
-                y={zone.cy - 12}
-                textAnchor="middle"
-                fill="rgba(255,255,255,0.6)"
-                fontSize="10"
-                fontWeight="700"
-                fontFamily="Inter, sans-serif"
-                letterSpacing="0.05em"
-              >
-                {zone.code}
-              </text>
-              <text
-                x={zone.cx}
-                y={zone.cy + 4}
-                textAnchor="middle"
-                fill="rgba(255,255,255,0.35)"
-                fontSize="8.5"
-                fontFamily="Inter, sans-serif"
-              >
-                {zone.label.split("\n")[1]}
-              </text>
-              {/* Risk score badge */}
-              <rect x={zone.cx - 16} y={zone.cy + 14} width={32} height={14} rx={7} fill={color} fillOpacity={0.2} />
-              <text
-                x={zone.cx}
-                y={zone.cy + 23}
-                textAnchor="middle"
-                fill={color}
-                fontSize="8"
-                fontWeight="700"
-                fontFamily="'JetBrains Mono', monospace"
-              >
-                {riskScore.toFixed(0)}%
-              </text>
-              {/* Pulse ring for critical zones */}
-              {riskScore >= 75 && (
-                <circle
-                  cx={zone.cx}
-                  cy={zone.cy}
-                  r="8"
-                  fill="none"
-                  stroke={color}
-                  strokeWidth="1"
-                  opacity="0.6"
-                  style={{ animation: "pulse-dot 2s ease-in-out infinite" }}
+            );
+          })}
+
+          {zoneDefinitions.map((zone) => {
+            const score = zoneRisk[zone.id] ?? 0;
+            const fill = getZoneFill(score);
+            const opacity = 0.15 + (score / 100) * 0.4;
+            const isPulsing = pulsingZones.has(zone.id);
+            return (
+              <g key={zone.id}>
+                <rect
+                  x={zone.x}
+                  y={zone.y}
+                  width={zone.width}
+                  height={zone.height}
+                  rx={16}
+                  ry={16}
+                  fill={fill}
+                  fillOpacity={opacity}
+                  stroke="rgba(255,255,255,0.14)"
+                  strokeWidth="1.5"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setSelectedZone(zone.id)}
                 />
-              )}
-            </g>
-          );
-        })}
+                {isPulsing && (
+                  <rect
+                    x={zone.x - 8}
+                    y={zone.y - 8}
+                    width={zone.width + 16}
+                    height={zone.height + 16}
+                    rx={20}
+                    ry={20}
+                    fill="none"
+                    stroke={fill}
+                    strokeWidth="3"
+                    className="pulse-ring"
+                  />
+                )}
+                <text x={zone.x + 14} y={zone.y + 28} fill="white" fontSize="12" fontWeight="700">
+                  {zone.id}
+                </text>
+                <text x={zone.x + 14} y={zone.y + 46} fill="rgba(255,255,255,0.85)" fontSize="11">
+                  {zone.label}
+                </text>
+                <text x={zone.x + 14} y={zone.y + 64} fill="rgba(255,255,255,0.75)" fontSize="11">
+                  {score}% · {getScoreLabel(score)}
+                </text>
+              </g>
+            );
+          })}
 
-        {/* Equipment markers */}
-        {EQUIPMENT.map((eq) => (
-          <g key={eq.id}>
-            <circle cx={eq.x} cy={eq.y} r="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-            <text x={eq.x} y={eq.y + 4} textAnchor="middle" fill="rgba(255,255,255,0.5)" fontSize="7" fontFamily="monospace">
-              {eq.symbol === "pump" ? "⟳" : eq.symbol === "tank" ? "▣" : eq.symbol === "comp" ? "◈" : "⬡"}
-            </text>
-            <text x={eq.x} y={eq.y + 20} textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="7" fontFamily="monospace">
-              {eq.label}
-            </text>
-          </g>
-        ))}
-
-        {/* Legend */}
-        <g transform="translate(20, 350)">
-          {[["#00e676", "Normal"], ["#ffcc00", "Moderate"], ["#ff8800", "High"], ["#ff2244", "Critical"]].map(([c, l], i) => (
-            <g key={l} transform={`translate(${i * 90}, 0)`}>
-              <rect x="0" y="0" width="12" height="8" rx="2" fill={c} fillOpacity="0.6" />
-              <text x="16" y="8" fill="rgba(255,255,255,0.4)" fontSize="8" fontFamily="Inter, sans-serif">{l}</text>
-            </g>
+          {workerCircles.map((worker) => (
+            <circle
+              key={worker.key}
+              cx={worker.cx}
+              cy={worker.cy}
+              r={3}
+              fill="#4da5ff"
+              style={{ animation: `drift ${6 + worker.delay}s ease-in-out infinite`, animationDelay: `${worker.delay}s` }}
+            />
           ))}
-        </g>
-      </svg>
+        </svg>
+
+        {selectedInfo && (
+          <div style={{ position: "absolute", left: 20, right: 20, bottom: 16, background: "rgba(6,9,20,0.95)", borderRadius: "18px", padding: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+              <div>
+                <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "6px" }}>{selectedInfo.label} — {selectedInfo.id}</div>
+                <div style={{ fontSize: "18px", fontWeight: 700, color: "white" }}>Zone {selectedInfo.id}</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedZone(null)}
+                className="btn btn-ghost btn-sm"
+              >
+                Close
+              </button>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "12px", marginTop: "14px" }}>
+              <div style={{ padding: "12px", background: "rgba(255,255,255,0.04)", borderRadius: "14px" }}>
+                <div style={{ fontSize: "10px", color: "var(--text-muted)", marginBottom: "4px" }}>Risk Score</div>
+                <div style={{ fontSize: "16px", fontWeight: 700, color: getZoneFill(selectedInfo.risk) }}>{selectedInfo.risk}%</div>
+              </div>
+              <div style={{ padding: "12px", background: "rgba(255,255,255,0.04)", borderRadius: "14px" }}>
+                <div style={{ fontSize: "10px", color: "var(--text-muted)", marginBottom: "4px" }}>Workers</div>
+                <div style={{ fontSize: "16px", fontWeight: 700, color: "#00ff88" }}>{selectedInfo.workers}</div>
+              </div>
+              <div style={{ padding: "12px", background: "rgba(255,255,255,0.04)", borderRadius: "14px" }}>
+                <div style={{ fontSize: "10px", color: "var(--text-muted)", marginBottom: "4px" }}>Status</div>
+                <div style={{ fontSize: "16px", fontWeight: 700, color: getZoneFill(selectedInfo.risk) }}>{getScoreLabel(selectedInfo.risk)}</div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

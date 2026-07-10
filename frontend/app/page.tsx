@@ -7,7 +7,8 @@ import { SensorTicker } from "@/components/SensorTicker";
 import { CompoundRiskPanel } from "@/components/CompoundRiskPanel";
 import { ActiveAlertsPanel } from "@/components/ActiveAlertsPanel";
 import { QuickStats } from "@/components/QuickStats";
-import { Activity, AlertTriangle, Users, FileText, Shield, Clock } from "lucide-react";
+import { PredictionWidget } from "@/components/PredictionWidget";
+import { AlertTriangle } from "lucide-react";
 
 export default function MissionControlPage() {
   const { plantRiskScore, sensors, compoundRisks, wsConnected } = useStore();
@@ -106,6 +107,11 @@ export default function MissionControlPage() {
           <QuickStats analytics={analytics} />
         </div>
 
+        {/* Prediction widget */}
+        <div style={{ marginTop: "16px" }}>
+          <PredictionWidget />
+        </div>
+
         {/* Main grid: Plant Map + Alerts */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "16px", marginTop: "16px" }}>
           {/* Plant Map */}
@@ -128,7 +134,7 @@ export default function MissionControlPage() {
                 ))}
               </div>
             </div>
-            <PlantMap sensors={sensors} />
+            <PlantMap />
           </div>
 
           {/* Active Alerts Panel */}

@@ -1,5 +1,5 @@
 # 🏭 SafetyOS — Enterprise AI Operating System for Industrial Safety
-### 🏆 ET AI Hackathon 2.0 | Solo Build | 20 Days | ₹5,00,000 Target
+### 🏆 ET AI Hackathon 2.0 | Solo Build |
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Next.js 14](https://img.shields.io/badge/Next.js-14-black.svg?style=flat&logo=next.js)](https://nextjs.org/)

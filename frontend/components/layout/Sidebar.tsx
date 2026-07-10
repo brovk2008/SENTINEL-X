@@ -6,19 +6,21 @@ import { useStore } from "@/lib/store";
 import {
   LayoutDashboard, Brain, Activity, Camera, BookOpen, Clock,
   FileText, Shield, Network, TrendingUp, Smartphone, BarChart3,
-  AlertTriangle, Settings, ChevronLeft, ChevronRight, Radio,
-  Zap,
+  Settings, ChevronLeft, ChevronRight, Sparkles,
+  Zap, Handshake, Bell,
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/", icon: LayoutDashboard, label: "Mission Control", color: "#4a80ff" },
   { href: "/agents", icon: Brain, label: "AI Debate Room", color: "#aa55ff", badge: "LIVE" },
+  { href: "/simulator", icon: Sparkles, label: "Scenario Simulator", color: "#ffcc00" },
   { href: "/sensors", icon: Activity, label: "Sensor Monitor", color: "#00e676" },
   { href: "/cameras", icon: Camera, label: "CCTV Feeds", color: "#00d4ff" },
   { href: "/knowledge", icon: BookOpen, label: "Knowledge RAG", color: "#ffaa00" },
   { href: "/incidents", icon: Clock, label: "Timeline Replay", color: "#ff8800" },
   { href: "/permits", icon: FileText, label: "Permit Intelligence", color: "#44ffaa" },
   { href: "/compliance", icon: Shield, label: "Compliance", color: "#00c8a0" },
+  { href: "/handover", icon: Handshake, label: "Shift Handover", color: "#4a80ff" },
   { href: "/graph", icon: Network, label: "Knowledge Graph", color: "#cc88ff" },
   { href: "/executive", icon: TrendingUp, label: "Executive Copilot", color: "#ffcc00" },
   { href: "/mobile", icon: Smartphone, label: "Worker View", color: "#4a80ff" },
@@ -29,7 +31,7 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const { wsConnected, plantRiskScore, unreadCount, emergencyActive } = useStore();
+  const { wsConnected, plantRiskScore, unreadCount, emergencyActive, setNotificationPanelOpen, notificationUnreadCount } = useStore();
 
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
@@ -39,32 +41,73 @@ export function Sidebar() {
         borderBottom: "1px solid var(--glass-border)",
         display: "flex",
         alignItems: "center",
+        justifyContent: "space-between",
         gap: "10px",
         minHeight: "60px",
       }}>
-        <div style={{
-          width: "32px",
-          height: "32px",
-          borderRadius: "8px",
-          background: "linear-gradient(135deg, #4a80ff, #aa55ff)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-          boxShadow: "0 0 20px rgba(74,128,255,0.3)",
-        }}>
-          <Zap size={16} color="white" />
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1 }}>
+          <div style={{
+            width: "32px",
+            height: "32px",
+            borderRadius: "8px",
+            background: "linear-gradient(135deg, #4a80ff, #aa55ff)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            boxShadow: "0 0 20px rgba(74,128,255,0.3)",
+          }}>
+            <Zap size={16} color="white" />
+          </div>
+          {!collapsed && (
+            <div>
+              <div style={{ fontSize: "14px", fontWeight: "800", color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
+                SafetyOS
+              </div>
+              <div style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: "500", letterSpacing: "0.06em" }}>
+                AI INDUSTRIAL SAFETY
+              </div>
+            </div>
+          )}
         </div>
         {!collapsed && (
-          <div>
-            <div style={{ fontSize: "14px", fontWeight: "800", color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
-              SafetyOS
-            </div>
-            <div style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: "500", letterSpacing: "0.06em" }}>
-              AI INDUSTRIAL SAFETY
-            </div>
-          </div>
-        )}
+          <button
+            type="button"
+            onClick={() => setNotificationPanelOpen(true)}
+          style={{
+            width: "40px",
+            height: "40px",
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(255,255,255,0.04)",
+            color: "white",
+            display: "grid",
+            placeItems: "center",
+            cursor: "pointer",
+            position: "relative",
+          }}
+        >
+          <Bell size={18} />
+          {notificationUnreadCount > 0 && (
+            <span style={{
+              position: "absolute",
+              top: "6px",
+              right: "6px",
+              width: "16px",
+              height: "16px",
+              borderRadius: "50%",
+              background: "#ff3b3b",
+              color: "white",
+              fontSize: "10px",
+              display: "grid",
+              placeItems: "center",
+              fontWeight: 700,
+            }}>
+              {notificationUnreadCount > 99 ? "99+" : notificationUnreadCount}
+            </span>
+          )}
+        </button>
+      )}
       </div>
 
       {/* Plant Risk Score */}

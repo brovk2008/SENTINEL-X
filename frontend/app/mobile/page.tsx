@@ -126,7 +126,7 @@ export default function MobilePage() {
           <div style={{ flex: 1, padding: "12px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px" }}>
             {/* User profile */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "#121225", padding: "8px", borderRadius: "8px", border: "1px solid #222" }}>
-              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#4a80ff", display: "flex", alignItems: "center", justifyCenter: "center", fontSize: "10px" }}>
+              <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#4a80ff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "10px" }}>
                 <User size={12} color="white" />
               </div>
               <div>

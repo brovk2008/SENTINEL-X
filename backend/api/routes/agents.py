@@ -11,6 +11,8 @@ import json
 
 from agents.debate_orchestrator import run_debate, AGENT_PROFILES
 from agents.compound_risk_monitor import get_monitor, evaluate_risk
+from core.redis_client import get_state, COMPOUND_RISK_KEY, SENSOR_STATE_KEY
+from core.websocket_manager import manager
 from intelligence.scenario_simulator import (
     get_scenario,
     list_scenarios,
@@ -98,6 +100,18 @@ async def simulate_risk(rule_id: int = Body(..., embed=True)):
     alerts = evaluate_risk(synthetic_state)
     triggered = next((a for a in alerts if a["rule_id"] == rule_id), None)
 
+    payload = {
+        "rule_id": rule_id,
+        "zone": triggered.get("zone", "ZC") if triggered else "ZC",
+        "title": rule.name,
+        "severity": rule.severity,
+        "risk_probability": triggered.get("risk_probability", synthetic_state.get("plant_risk_score", 0)) if triggered else synthetic_state.get("plant_risk_score", 0),
+        "detected_at": datetime.utcnow().isoformat(),
+        "details": triggered or {},
+    }
+
+    await manager.send_compound_risk(payload)
+
     return {
         "rule_id": rule_id,
         "rule_name": rule.name,
@@ -107,6 +121,50 @@ async def simulate_risk(rule_id: int = Body(..., embed=True)):
         "plant_state": synthetic_state,
         "all_triggered_rules": len(alerts),
         "scenario_suggestion": _map_rule_to_scenario(rule_id),
+    }
+
+
+class DebateTriggerRequest(BaseModel):
+    title: Optional[str] = "AI Risk Debate"
+    zone: Optional[str] = "Zone C — Compressor Bay"
+    risk_level: Optional[str] = "CRITICAL"
+    risk_score: Optional[float] = 84.0
+    scenario: Optional[str] = "h2s_confined_space"
+    use_scripted_demo: Optional[bool] = True
+    custom_context: Optional[dict] = None
+
+
+@router.post("/debate")
+async def trigger_debate(request: DebateTriggerRequest = Body(...)):
+    """Trigger a background debate run and broadcast agent messages via WebSocket."""
+    session_id = str(uuid.uuid4())
+
+    context = request.custom_context or {
+        "plant_name": "Bharat Petrochemicals Refinery Unit 3",
+        "zone": request.zone,
+        "risk_level": request.risk_level,
+        "risk_score": request.risk_score,
+        "factors": [
+            "H2S levels spike in Zone C",
+            "Confined space permit active",
+            "Compressor C-301 vibration elevated",
+        ],
+        "active_permits": [
+            "PTW-2025-0847: Confined Space — Zone C",
+            "PTW-2025-0851: Maintenance — Zone B",
+        ],
+    }
+
+    async def run_in_background():
+        async for _ in run_debate(context, session_id, request.use_scripted_demo, request.scenario):
+            pass
+
+    asyncio.create_task(run_in_background())
+
+    return {
+        "message": "Debate initiated",
+        "session_id": session_id,
+        "scenario": request.scenario,
     }
 
 
