@@ -1,17 +1,35 @@
 "use client";
 import React from "react";
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Filler,
+} from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler);
 
 export function HistoryChart({ values = [] }: { values?: number[] }) {
-  if (!values || values.length === 0) return <div style={{ color: 'var(--text-muted)' }}>No data</div>;
-  const w = 300; const h = 60; const max = Math.max(...values); const min = Math.min(...values);
-  const points = values.map((v, i) => {
-    const x = (i / (values.length - 1)) * w;
-    const y = h - ((v - min) / (max - min || 1)) * h;
-    return `${x},${y}`;
-  }).join(' ');
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Historical chart">
-      <polyline fill="none" stroke="var(--accent-2)" strokeWidth={2} points={points} strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  const data = {
+    labels: values.map((_, i) => i.toString()),
+    datasets: [
+      {
+        label: 'History',
+        data: values,
+        fill: true,
+        backgroundColor: 'rgba(0,212,255,0.08)',
+        borderColor: 'rgba(0,212,255,0.9)',
+        tension: 0.3,
+        pointRadius: 0,
+      },
+    ],
+  };
+
+  const opts = { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } };
+
+  return <div style={{ width: '100%', maxWidth: 320 }}><Line data={data} options={opts as any} /></div>;
 }
