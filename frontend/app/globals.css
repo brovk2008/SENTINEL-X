@@ -208,6 +208,49 @@ body {
 
 /* Sensor card */
 .sensor-card { padding: 14px; display: grid; gap: 12px; text-align: left; }
+
+/* Prediction widget */
+.prediction-widget { padding:20px; min-height:360px; display:flex; flex-direction:column; gap:18px; }
+.prediction-header { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+.prediction-subtitle { font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.12em; }
+.prediction-title { font-size:18px; font-weight:800; margin-top:6px; color:var(--text-primary); }
+.prediction-desc { margin-top:8px; font-size:12px; color:var(--text-muted); line-height:1.6; }
+.prediction-refresh { align-self:flex-start; }
+
+.prediction-grid { display:grid; grid-template-columns: 1fr 220px; gap:16px; align-items:center; }
+.risk-window-label { font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; }
+.risk-windows { display:flex; gap:12px; flex-wrap:wrap; }
+.risk-window-card { flex:1 1 120px; padding:14px; border-radius:14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); }
+.risk-window-title { font-size:10px; color:var(--text-muted); font-weight:600; margin-bottom:6px; }
+.risk-window-value { font-size:24px; font-weight:800; color:var(--accent-cyan); font-family:var(--font-mono); }
+.risk-window-value.risk-24 { color: var(--risk-high); }
+.risk-window-sub { font-size:11px; color:var(--text-muted); margin-top:4px; }
+
+.radial-container { width:100%; min-height:180px; display:flex; align-items:center; justify-content:center; }
+.prediction-empty { color:var(--text-muted); font-size:12px; text-align:center; }
+.prediction-error { color:var(--risk-critical); font-size:12px; line-height:1.6; }
+
+.prediction-details { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.prediction-factors .section-title, .prediction-actions .section-title { font-size:12px; color:var(--text-muted); font-weight:700; }
+.factor-card { padding:12px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+.factor-row { display:flex; justify-content:space-between; gap:10px; margin-bottom:6px; align-items:center; }
+.factor-name { font-size:12px; color:var(--text-primary); font-weight:700; }
+.factor-value { font-size:12px; color:var(--text-muted); font-family:var(--font-mono); }
+.factor-context { font-size:11px; color:var(--text-muted); margin-bottom:4px; }
+.factor-severity { font-size:10px; font-weight:700; }
+.factor-severity.high { color:var(--risk-critical); }
+.factor-severity.medium { color:var(--risk-medium); }
+.factor-severity.low { color:var(--risk-low); }
+
+.recommendation-card, .incident-card { padding:14px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+.recommendation-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.recommendation-title { font-size:12px; color:var(--text-primary); font-weight:700; }
+.recommendation-list { font-size:12px; color:var(--text-muted); line-height:1.6; }
+.recommendation-item { margin-bottom:8px; }
+.incident-label { color:var(--text-muted); font-size:10px; font-weight:700; letter-spacing:0.08em; }
+.incident-value { color:var(--text-primary); font-size:13px; font-weight:800; line-height:1.4; }
+
+.prediction-empty-small { color:var(--text-muted); font-size:12px; }
 .sensor-meta { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
 .sensor-meta-left { min-width:0; }
 .sensor-meta-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
