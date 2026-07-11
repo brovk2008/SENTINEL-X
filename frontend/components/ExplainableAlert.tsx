@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { CheckCircle2, ChevronDown, ChevronRight, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ShieldCheck, Check } from "lucide-react";
 
 const severityColors: Record<string, string> = {
   CRITICAL: "#ff3b3b",
@@ -145,15 +145,15 @@ export function ExplainableAlert({ alert, onAcknowledge }: ExplainableAlertProps
             </div>
             <div style={{ display: "grid", gap: "8px" }}>
               <div style={{ display: "flex", gap: "8px", alignItems: "center", color: "var(--text-secondary)", fontSize: "12px" }}>
-                <span style={{ color: "var(--risk-low)" }}>✓</span>
+                <Check size={12} color="var(--risk-low)" />
                 Confirmed sensor fusion across multiple sources
               </div>
               <div style={{ display: "flex", gap: "8px", alignItems: "center", color: "var(--text-secondary)", fontSize: "12px" }}>
-                <span style={{ color: "var(--risk-low)" }}>✓</span>
+                <Check size={12} color="var(--risk-low)" />
                 Historical risk pattern matches prior zone incidents
               </div>
               <div style={{ display: "flex", gap: "8px", alignItems: "center", color: "var(--text-secondary)", fontSize: "12px" }}>
-                <span style={{ color: "var(--risk-low)" }}>✓</span>
+                <Check size={12} color="var(--risk-low)" />
                 Confidence high and alarms are not correlated to isolated maintenance noise
               </div>
             </div>
