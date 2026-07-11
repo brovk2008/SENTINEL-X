@@ -11,7 +11,7 @@ export function CameraMap() {
       {stream ? (
         <div style={{ position: 'relative', paddingTop: '56.25%' }}>
           <div style={{ position: 'absolute', inset: 0 }}>
-            <ReactPlayer url={stream} width="100%" height="100%" controls playing={false} />
+            <ReactPlayer {...({ url: stream, width: '100%', height: '100%', controls: true, playing: false } as any)} />
           </div>
         </div>
       ) : (
