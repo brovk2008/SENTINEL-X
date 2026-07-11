@@ -14,7 +14,7 @@ export function ThemeToggle() {
       const initial = stored === "light" || stored === "dark" ? stored : "dark";
       setTheme(initial);
       document.documentElement.dataset.theme = initial;
-    } catch (e) {
+    } catch {
       // ignore
     }
 
@@ -33,7 +33,7 @@ export function ThemeToggle() {
   const applyTheme = (next: ThemeMode) => {
     try {
       window.localStorage.setItem("safetyos-theme", next);
-    } catch (e) {}
+    } catch {}
     const doApply = () => (document.documentElement.dataset.theme = next);
     if ("startViewTransition" in document) document.startViewTransition(doApply);
     else doApply();

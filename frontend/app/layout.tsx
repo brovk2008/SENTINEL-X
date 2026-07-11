@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { NotificationToast } from "@/components/ui/NotificationToast";
@@ -8,6 +9,12 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import { NotificationPanel } from "@/components/NotificationPanel";
 import { DemoController } from "@/components/DemoController";
 import { TopBar } from "@/components/layout/TopBar";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-poppins",
+});
 
 export const metadata: Metadata = {
   title: "SafetyOS — AI Operating System for Industrial Safety",
@@ -21,12 +28,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={poppins.variable}>
       <head>
         <link rel="icon" href="/favicon.ico" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('safetyos-theme'); if(t==='light' || t==='dark'){document.documentElement.dataset.theme=t;} }catch(e){} })();` }} />
       </head>
       <body>
