@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { safetyWS } from "@/lib/websocket";
+import { useStore } from "../lib/store";
 
 const zoneDefinitions = [
   { id: "ZA", label: "Tank Farm", x: 50, y: 50, width: 180, height: 120, workers: 5 },
@@ -12,11 +12,11 @@ const zoneDefinitions = [
 ];
 
 const getZoneFill = (score: number) => {
-  if (score >= 80) return "#ff3b3b";
-  if (score >= 60) return "#ff6600";
-  if (score >= 40) return "#ffaa00";
-  if (score >= 20) return "#ffdd00";
-  return "#00ff88";
+  if (score >= 80) return "#dc2626";
+  if (score >= 60) return "#d97706";
+  if (score >= 40) return "#eab308";
+  if (score >= 20) return "#84cc16";
+  return "#16a34a";
 };
 
 const getScoreLabel = (score: number) => {
@@ -27,69 +27,42 @@ const getScoreLabel = (score: number) => {
   return "Safe";
 };
 
-interface RiskEvent {
-  zone?: string;
-  risk_probability?: number;
-  risk_score?: number;
-}
-
-interface SensorEvent {
-  zone?: string;
-  sensor_id?: string;
-  value?: number;
-}
-
 export function PlantMap() {
-  const [zoneRisk, setZoneRisk] = useState<Record<string, number>>({ ZA: 38, ZB: 52, ZC: 84, ZD: 25, ZE: 46, ZF: 29 });
-  const [pulsingZones, setPulsingZones] = useState<Set<string>>(new Set(["ZC"]));
+  const { sensors, compoundRisks, demoHighlight } = useStore();
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
 
-  useEffect(() => {
-    safetyWS.connect();
+  const zoneRisk = useMemo(() => {
+    const base: Record<string, number> = { ZA: 22, ZB: 38, ZC: 52, ZD: 18, ZE: 30, ZF: 25 };
+    Object.values(sensors).forEach((s) => {
+      const zoneId = s.zone?.startsWith("Z") ? s.zone : `Z${s.zone}`;
+      if (base[zoneId] !== undefined) {
+        const weight = s.risk_level === "CRITICAL" ? 35 : s.risk_level === "HIGH" ? 20 : s.risk_level === "MEDIUM" ? 10 : 0;
+        base[zoneId] = Math.min(100, base[zoneId] + weight);
+      }
+    });
+    compoundRisks.forEach((r) => {
+      const zoneId = r.zone?.startsWith("Z") ? r.zone : `Z${r.zone}`;
+      if (base[zoneId] !== undefined) {
+        base[zoneId] = Math.min(100, base[zoneId] + Math.round(r.risk_probability * 0.3));
+      }
+    });
+    return base;
+  }, [sensors, compoundRisks]);
 
-    const compoundHandler = (eventData: unknown) => {
-      const data = eventData as RiskEvent;
-      const zone = data.zone || "ZC";
-      const score = Math.min(100, Math.max(0, data.risk_probability ?? data.risk_score ?? 84));
-      setZoneRisk((prev) => ({ ...prev, [zone]: score }));
-      setPulsingZones((prev) => new Set(prev).add(zone));
-      window.setTimeout(() => {
-        setPulsingZones((prev) => {
-          const next = new Set(prev);
-          next.delete(zone);
-          return next;
-        });
-      }, 5000);
-    };
-
-    const sensorHandler = (eventData: unknown) => {
-      const data = eventData as SensorEvent;
-      const zone = data.zone || (typeof data.sensor_id === "string" ? data.sensor_id.split("-")[1] : "ZC");
-      setZoneRisk((prev) => {
-        const current = prev[zone] ?? 28;
-        const delta = typeof data.value === "number" ? Math.min(10, Math.max(-8, Math.round((data.value / 100) * 8))) : 4;
-        return { ...prev, [zone]: Math.min(100, Math.max(0, current + delta)) };
-      });
-    };
-
-    const unsubCompound = safetyWS.on("compound_risk", compoundHandler);
-    const unsubSensor = safetyWS.on("sensor_update", sensorHandler);
-
-    return () => {
-      unsubCompound();
-      unsubSensor();
-    };
-  }, []);
+  const pulsingZones = useMemo(() => {
+    const set = new Set<string>();
+    compoundRisks.forEach((r) => {
+      const zoneId = r.zone?.startsWith("Z") ? r.zone : `Z${r.zone}`;
+      set.add(zoneId);
+    });
+    return set;
+  }, [compoundRisks]);
 
   const selectedInfo = useMemo(() => {
     if (!selectedZone) return null;
     const zone = zoneDefinitions.find((z) => z.id === selectedZone);
     if (!zone) return null;
-    return {
-      ...zone,
-      risk: zoneRisk[zone.id] ?? 0,
-      workers: zone.workers,
-    };
+    return { ...zone, risk: zoneRisk[zone.id] ?? 0 };
   }, [selectedZone, zoneRisk]);
 
   const pipePaths = [
@@ -106,168 +79,136 @@ export function PlantMap() {
     return zone ? { x: zone.x + zone.width / 2, y: zone.y + zone.height / 2 } : { x: 0, y: 0 };
   };
 
-  const workerCircles = zoneDefinitions.flatMap((zone) => {
-    return Array.from({ length: Math.max(2, Math.min(6, zone.workers)) }, (_, idx) => {
-      const x = zone.x + 16 + (idx % 3) * 40;
-      const y = zone.y + 24 + Math.floor(idx / 3) * 32;
-      return {
-        key: `${zone.id}-worker-${idx}`,
-        cx: x,
-        cy: y,
-        delay: idx * 0.35,
-      };
-    });
-  });
+  const workerCircles = zoneDefinitions.flatMap((zone) =>
+    Array.from({ length: Math.max(2, Math.min(6, zone.workers)) }, (_, idx) => ({
+      key: `${zone.id}-worker-${idx}`,
+      cx: zone.x + 16 + (idx % 3) * 40,
+      cy: zone.y + 24 + Math.floor(idx / 3) * 32,
+      delay: idx * 0.35,
+    }))
+  );
+
+  useEffect(() => {
+    if (demoHighlight === "plant-map") {
+      setSelectedZone("ZC");
+    }
+  }, [demoHighlight]);
 
   return (
     <div style={{ position: "relative" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px", flexWrap: "wrap", gap: "14px" }}>
-        <div>
-          <div style={{ fontSize: "12px", letterSpacing: "0.18em", textTransform: "uppercase", color: "#00ff88", marginBottom: "6px" }}>
-            LIVE PLANT MAP
+      <svg viewBox="0 0 720 360" style={{ width: "100%", height: "auto", maxHeight: "420px" }}>
+        {pipePaths.map((pipe) => {
+          const source = getCenter(pipe.from);
+          const target = getCenter(pipe.to);
+          return (
+            <path
+              key={`${pipe.from}-${pipe.to}`}
+              d={`M ${source.x} ${source.y} C ${source.x + 60} ${source.y} ${target.x - 60} ${target.y} ${target.x} ${target.y}`}
+              fill="none"
+              stroke="var(--border-strong)"
+              strokeWidth="1.5"
+              strokeOpacity="0.5"
+            />
+          );
+        })}
+
+        {zoneDefinitions.map((zone) => {
+          const score = zoneRisk[zone.id] ?? 0;
+          const fill = getZoneFill(score);
+          const opacity = 0.12 + (score / 100) * 0.25;
+          const isPulsing = pulsingZones.has(zone.id);
+          return (
+            <g key={zone.id}>
+              {isPulsing && (
+                <rect
+                  x={zone.x - 6}
+                  y={zone.y - 6}
+                  width={zone.width + 12}
+                  height={zone.height + 12}
+                  rx={14}
+                  ry={14}
+                  fill="none"
+                  stroke={fill}
+                  strokeWidth="2"
+                  opacity="0.6"
+                >
+                  <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite" />
+                </rect>
+              )}
+              <rect
+                className="zone-shape"
+                x={zone.x}
+                y={zone.y}
+                width={zone.width}
+                height={zone.height}
+                rx={10}
+                ry={10}
+                fill={fill}
+                fillOpacity={opacity}
+                stroke={fill}
+                strokeWidth="1"
+                strokeOpacity="0.4"
+                onClick={() => setSelectedZone(zone.id)}
+              />
+              <text className="zone-label" x={zone.x + 12} y={zone.y + 26} fill="var(--text-primary)" fontSize="12" fontWeight="700">
+                {zone.id}
+              </text>
+              <text className="zone-label" x={zone.x + 12} y={zone.y + 44} fill="var(--text-secondary)" fontSize="11">
+                {zone.label}
+              </text>
+              <text className="zone-label" x={zone.x + 12} y={zone.y + 62} fill={fill} fontSize="11" fontWeight="600" fontFamily="var(--font-mono)">
+                {score}% · {getScoreLabel(score)}
+              </text>
+            </g>
+          );
+        })}
+
+        {workerCircles.map((worker) => (
+          <circle
+            key={worker.key}
+            cx={worker.cx}
+            cy={worker.cy}
+            r={2.5}
+            fill="var(--accent)"
+            opacity="0.5"
+          />
+        ))}
+      </svg>
+
+      {selectedInfo && (
+        <div style={{
+          position: "absolute", left: 16, right: 16, bottom: 12,
+          background: "var(--bg-surface)", borderRadius: "var(--radius-lg)",
+          padding: "14px 16px", border: "1px solid var(--border)",
+          boxShadow: "var(--shadow-md)",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div>
+              <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>
+                {selectedInfo.label} — Zone {selectedInfo.id}
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-primary)" }}>
+                Risk: {selectedInfo.risk}% · {getScoreLabel(selectedInfo.risk)}
+              </div>
+            </div>
+            <button type="button" onClick={() => setSelectedZone(null)} className="btn btn-ghost btn-sm">
+              Close
+            </button>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-            <div style={{ fontSize: "20px", fontWeight: 800, color: "white" }}>INDOIL VIZAG UNIT 3</div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", color: "rgba(255,255,255,0.8)" }}>
-              <span className="pulse-dot" style={{ width: "12px", height: "12px", borderRadius: "50%", background: "#00ff88" }} />
-              <span style={{ fontSize: "12px" }}>Live feed</span>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
+            <div style={{ padding: 10, background: "var(--bg-subtle)", borderRadius: "var(--radius)" }}>
+              <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 4 }}>Workers Present</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", fontFamily: "var(--font-mono)" }}>{selectedInfo.workers}</div>
+            </div>
+            <div style={{ padding: 10, background: "var(--bg-subtle)", borderRadius: "var(--radius)" }}>
+              <div style={{ fontSize: 10, color: "var(--text-muted)", marginBottom: 4 }}>Risk Level</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: getZoneFill(selectedInfo.risk) }}>
+                {getScoreLabel(selectedInfo.risk)}
+              </div>
             </div>
           </div>
         </div>
-        <button
-          onClick={async () => {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/agents/simulate-risk`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ rule_id: 1 }),
-            });
-          }}
-          className="btn btn-primary btn-sm"
-          style={{ alignSelf: "flex-start" }}
-        >
-          Simulate Zone C Alert
-        </button>
-      </div>
-
-      <div style={{ position: "relative", background: "rgba(255,255,255,0.04)", borderRadius: "24px", padding: "18px" }}>
-        <svg viewBox="0 0 720 360" style={{ width: "100%", height: "420px" }}>
-          <defs>
-            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          {pipePaths.map((pipe) => {
-            const source = getCenter(pipe.from);
-            const target = getCenter(pipe.to);
-            return (
-              <path
-                key={`${pipe.from}-${pipe.to}`}
-                d={`M ${source.x} ${source.y} C ${source.x + 60} ${source.y} ${target.x - 60} ${target.y} ${target.x} ${target.y}`}
-                fill="none"
-                stroke="cyan"
-                strokeWidth="2"
-                strokeOpacity="0.25"
-              />
-            );
-          })}
-
-          {zoneDefinitions.map((zone) => {
-            const score = zoneRisk[zone.id] ?? 0;
-            const fill = getZoneFill(score);
-            const opacity = 0.15 + (score / 100) * 0.4;
-            const isPulsing = pulsingZones.has(zone.id);
-            return (
-              <g key={zone.id}>
-                <rect
-                  x={zone.x}
-                  y={zone.y}
-                  width={zone.width}
-                  height={zone.height}
-                  rx={16}
-                  ry={16}
-                  fill={fill}
-                  fillOpacity={opacity}
-                  stroke="rgba(255,255,255,0.14)"
-                  strokeWidth="1.5"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setSelectedZone(zone.id)}
-                />
-                {isPulsing && (
-                  <rect
-                    x={zone.x - 8}
-                    y={zone.y - 8}
-                    width={zone.width + 16}
-                    height={zone.height + 16}
-                    rx={20}
-                    ry={20}
-                    fill="none"
-                    stroke={fill}
-                    strokeWidth="3"
-                    className="pulse-ring"
-                  />
-                )}
-                <text x={zone.x + 14} y={zone.y + 28} fill="white" fontSize="12" fontWeight="700">
-                  {zone.id}
-                </text>
-                <text x={zone.x + 14} y={zone.y + 46} fill="rgba(255,255,255,0.85)" fontSize="11">
-                  {zone.label}
-                </text>
-                <text x={zone.x + 14} y={zone.y + 64} fill="rgba(255,255,255,0.75)" fontSize="11">
-                  {score}% · {getScoreLabel(score)}
-                </text>
-              </g>
-            );
-          })}
-
-          {workerCircles.map((worker) => (
-            <circle
-              key={worker.key}
-              cx={worker.cx}
-              cy={worker.cy}
-              r={3}
-              fill="#4da5ff"
-              style={{ animation: `drift ${6 + worker.delay}s ease-in-out infinite`, animationDelay: `${worker.delay}s` }}
-            />
-          ))}
-        </svg>
-
-        {selectedInfo && (
-          <div style={{ position: "absolute", left: 20, right: 20, bottom: 16, background: "rgba(6,9,20,0.95)", borderRadius: "18px", padding: "16px", border: "1px solid rgba(255,255,255,0.08)" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-              <div>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "6px" }}>{selectedInfo.label} — {selectedInfo.id}</div>
-                <div style={{ fontSize: "18px", fontWeight: 700, color: "white" }}>Zone {selectedInfo.id}</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedZone(null)}
-                className="btn btn-ghost btn-sm"
-              >
-                Close
-              </button>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "12px", marginTop: "14px" }}>
-              <div style={{ padding: "12px", background: "rgba(255,255,255,0.04)", borderRadius: "14px" }}>
-                <div style={{ fontSize: "10px", color: "var(--text-muted)", marginBottom: "4px" }}>Risk Score</div>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: getZoneFill(selectedInfo.risk) }}>{selectedInfo.risk}%</div>
-              </div>
-              <div style={{ padding: "12px", background: "rgba(255,255,255,0.04)", borderRadius: "14px" }}>
-                <div style={{ fontSize: "10px", color: "var(--text-muted)", marginBottom: "4px" }}>Workers</div>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: "#00ff88" }}>{selectedInfo.workers}</div>
-              </div>
-              <div style={{ padding: "12px", background: "rgba(255,255,255,0.04)", borderRadius: "14px" }}>
-                <div style={{ fontSize: "10px", color: "var(--text-muted)", marginBottom: "4px" }}>Status</div>
-                <div style={{ fontSize: "16px", fontWeight: 700, color: getZoneFill(selectedInfo.risk) }}>{getScoreLabel(selectedInfo.risk)}</div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

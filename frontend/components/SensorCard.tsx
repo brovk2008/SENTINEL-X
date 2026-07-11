@@ -2,12 +2,9 @@
 import { useMemo } from "react";
 import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
+import { SensorHistoryPoint } from "../lib/store";
 
-export interface SensorHistoryPoint {
-  timestamp: string;
-  value: number;
-  risk_level: string;
-}
+export type { SensorHistoryPoint };
 
 export interface SensorCardProps {
   sensor: {
@@ -28,89 +25,98 @@ export interface SensorCardProps {
   onExpand?: () => void;
 }
 
-const riskColors: Record<string, string> = {
-  CRITICAL: "#ff3b3b",
-  HIGH: "#ff6600",
-  MEDIUM: "#ffaa00",
-  LOW: "#00ff88",
+const severityClass: Record<string, string> = {
+  CRITICAL: "critical",
+  HIGH: "high",
+  MEDIUM: "medium",
+  LOW: "low",
 };
 
 export function SensorCard({ sensor, history, onExpand }: SensorCardProps) {
-  const chartData = history.slice(-20).map((point) => ({ ...point, label: new Date(point.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }));
+  const chartData = history.slice(-20).map((p) => ({
+    ...p,
+    label: new Date(p.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  }));
 
   const trend = useMemo(() => {
-    const recent = history.slice(-5).map((point) => point.value);
-    if (recent.length < 2) return { direction: "steady", color: "rgba(255,255,255,0.65)", icon: Minus };
+    const recent = history.slice(-5).map((p) => p.value);
+    if (recent.length < 2) return { direction: "steady", color: "var(--text-muted)", icon: Minus };
     const delta = recent[recent.length - 1] - recent[0];
-    if (Math.abs(delta) < sensor.normal_range[1] * 0.02) return { direction: "steady", color: "rgba(255,255,255,0.65)", icon: Minus };
-    if (delta > 0) return { direction: "rising", color: "#ffcc00", icon: ArrowUpRight };
-    return { direction: "falling", color: "#4ab1ff", icon: ArrowDownRight };
+    if (Math.abs(delta) < sensor.normal_range[1] * 0.02) return { direction: "steady", color: "var(--text-muted)", icon: Minus };
+    if (delta > 0) return { direction: "rising", color: "var(--warning)", icon: ArrowUpRight };
+    return { direction: "falling", color: "var(--info)", icon: ArrowDownRight };
   }, [history, sensor.normal_range]);
 
-  const statusLabel = sensor.risk_level === "CRITICAL" ? "CRITICAL" : sensor.risk_level === "HIGH" ? "WARNING" : sensor.risk_level === "MEDIUM" ? "WARNING" : "NORMAL";
-  const statusColor = sensor.risk_level === "CRITICAL" ? "#ff3b3b" : sensor.risk_level === "HIGH" ? "#ff6600" : sensor.risk_level === "MEDIUM" ? "#ffaa00" : "#00ff88";
+  const severity = severityClass[sensor.risk_level] || "low";
+  const statusLabel = sensor.risk_level === "CRITICAL" ? "CRITICAL" : sensor.risk_level === "HIGH" ? "WARNING" : sensor.risk_level === "MEDIUM" ? "CAUTION" : "NORMAL";
 
   return (
     <button
       type="button"
       onClick={onExpand}
+      className="card"
       style={{
         width: "100%",
         textAlign: "left",
-        padding: "16px",
-        borderRadius: "18px",
-        border: "1px solid rgba(255,255,255,0.08)",
-        background: "rgba(255,255,255,0.04)",
-        color: "white",
+        padding: 14,
         cursor: onExpand ? "pointer" : "default",
         display: "grid",
-        gap: "14px",
+        gap: 12,
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "start" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
         <div style={{ minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.65)", fontFamily: "var(--font-mono)" }}>{sensor.sensor_id}</span>
-            <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.08)", padding: "4px 8px", borderRadius: "999px" }}>{sensor.zone}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+            <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+              {sensor.sensor_id}
+            </span>
+            <span style={{
+              fontSize: 10, color: "var(--text-muted)", background: "var(--bg-subtle)",
+              padding: "2px 6px", borderRadius: "var(--radius-full)", fontWeight: 500,
+            }}>
+              {sensor.zone}
+            </span>
           </div>
-          <div style={{ fontSize: "14px", fontWeight: 700, color: "white", marginTop: "6px" }}>{sensor.name}</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {sensor.name}
+          </div>
         </div>
-        <div style={{ display: "grid", gap: "6px", textAlign: "right" }}>
-          <div style={{ fontSize: "28px", fontWeight: 800, color: riskColors[sensor.risk_level] }}>{sensor.value.toFixed(1)}</div>
-          <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.65)" }}>{sensor.unit}</div>
+        <div style={{ textAlign: "right", flexShrink: 0 }}>
+          <div className={`sensor-value ${severity}`}>{sensor.value.toFixed(1)}</div>
+          <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>{sensor.unit}</div>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "11px", color: statusColor, fontWeight: 700, background: "rgba(255,255,255,0.06)", padding: "5px 10px", borderRadius: "999px" }}>
-          {statusLabel}
-        </span>
-        <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.65)" }}>
-          Trend: {trend.direction}
-        </span>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <span className={`badge badge--${severity}`}>{statusLabel}</span>
         {sensor.is_anomaly && (
-          <span style={{ fontSize: "11px", color: "#00ff88", background: "rgba(0,255,136,0.08)", padding: "5px 10px", borderRadius: "999px" }}>
-            Last anomaly: 2h ago
-          </span>
+          <span className="badge badge--info" style={{ fontSize: 9 }}>Anomaly</span>
         )}
+        <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: "auto" }}>
+          {trend.icon === ArrowUpRight ? <ArrowUpRight size={13} color={trend.color} /> :
+           trend.icon === ArrowDownRight ? <ArrowDownRight size={13} color={trend.color} /> :
+           <Minus size={13} color={trend.color} />}
+          <span style={{ fontSize: 11, color: trend.color, fontWeight: 600, textTransform: "capitalize" }}>
+            {trend.direction}
+          </span>
+        </div>
       </div>
 
-      <div style={{ height: "40px" }}>
+      <div style={{ height: 40 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-            <Line type="monotone" dataKey="value" stroke={riskColors[sensor.risk_level]} strokeWidth={2} dot={false} />
+            <Line
+              type="monotone" dataKey="value"
+              stroke={severity === "critical" ? "var(--danger)" : severity === "high" || severity === "medium" ? "var(--warning)" : "var(--success)"}
+              strokeWidth={2} dot={false}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
-        <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.65)" }}>
-          Threshold: {sensor.warning_threshold}/{sensor.critical_threshold}
-        </div>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: trend.color, fontWeight: 700, fontSize: "12px" }}>
-          {trend.icon === ArrowUpRight ? <ArrowUpRight size={14} /> : trend.icon === ArrowDownRight ? <ArrowDownRight size={14} /> : <Minus size={14} />}
-          {trend.direction === "rising" ? "Increasing" : trend.direction === "falling" ? "Decreasing" : "Stable"}
-        </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 11, color: "var(--text-muted)" }}>
+        <span>Threshold: {sensor.warning_threshold} / {sensor.critical_threshold}</span>
+        <span style={{ fontFamily: "var(--font-mono)" }}>Range: {sensor.normal_range[0]}–{sensor.normal_range[1]}</span>
       </div>
     </button>
   );

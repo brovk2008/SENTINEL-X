@@ -41,7 +41,7 @@ export default function SettingsPage() {
 
   const save = () => {
     const preset = LLM_PRESETS.find((p) => p.id === selectedPreset);
-    if (preset) setLLMConfig(preset.provider, preset.model);
+    if (preset) setLLMConfig({ provider: preset.provider, model: preset.model });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   };

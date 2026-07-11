@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, Tooltip } from "recharts";
-import { RefreshCcw, Shield } from "lucide-react";
+import { RefreshCcw, Shield, TrendingUp } from "lucide-react";
 
 interface PredictionFactor {
   factor: string;
@@ -47,121 +47,157 @@ export function PredictionWidget() {
     loadPrediction();
   }, []);
 
-  const chartData = [
-    {
-      name: "24h Incident Risk",
-      value: prediction?.probability_24h ?? 0,
-      fill: "#ff8800",
-    },
-  ];
+  const chartData = [{ name: "24h Risk", value: prediction?.probability_24h ?? 0, fill: "#d97706" }];
+  const getSeverityColor = (s: string) => s === "HIGH" ? "var(--danger)" : s === "MEDIUM" ? "var(--warning)" : "var(--success)";
 
   return (
-    <div className="glass-card" style={{ padding: "20px", minHeight: "360px", display: "flex", flexDirection: "column", gap: "18px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", gap: "16px" }}>
-        <div>
-          <div style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em" }}>
-            Predictive Safety Insights
+    <div className="card" style={{ padding: 0 }}>
+      <div className="card-header">
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: "var(--radius-sm)",
+            background: "var(--accent-subtle)", display: "grid", placeItems: "center",
+          }}>
+            <TrendingUp size={14} color="var(--accent)" />
           </div>
-          <h2 style={{ fontSize: "18px", fontWeight: 800, marginTop: "6px", color: "var(--text-primary)" }}>
-            Incident Prediction
-          </h2>
-          <p style={{ marginTop: "8px", fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.6 }}>
-            Forecast the next 4h/24h incident risk using the SafetyOS incident prediction engine.
-          </p>
+          <div>
+            <div className="card-title">Incident Prediction</div>
+            <div className="card-subtitle">AI-powered 4h / 24h risk forecast</div>
+          </div>
         </div>
-        <button onClick={loadPrediction} disabled={loading} className="btn btn-ghost btn-sm" style={{ alignSelf: "flex-start" }}>
-          <RefreshCcw size={14} />
+        <button onClick={loadPrediction} disabled={loading} className="btn btn-ghost btn-sm">
+          <RefreshCcw size={13} />
           Refresh
         </button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 220px", gap: "16px", alignItems: "center" }}>
-        <div style={{ display: "grid", gap: "10px" }}>
-          <div style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>Risk Window</div>
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <div style={{ flex: "1 1 120px", padding: "14px", borderRadius: "14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: 600, marginBottom: "6px" }}>4 HOUR</div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--accent-cyan)", fontFamily: "var(--font-mono)" }}>
-                {prediction ? `${prediction.probability_4h}%` : "--"}
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>Short-term exposure risk</div>
+      <div style={{ padding: 16, display: "grid", gridTemplateColumns: "1fr 200px", gap: 16, alignItems: "center" }}>
+        <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ flex: 1, padding: 14, borderRadius: "var(--radius)", background: "var(--bg-subtle)", border: "1px solid var(--border)" }}>
+            <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 600, marginBottom: 6, letterSpacing: "0.05em" }}>
+              4 HOUR
             </div>
-            <div style={{ flex: "1 1 120px", padding: "14px", borderRadius: "14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <div style={{ fontSize: "10px", color: "var(--text-muted)", fontWeight: 600, marginBottom: "6px" }}>24 HOUR</div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "var(--risk-high)", fontFamily: "var(--font-mono)" }}>
-                {prediction ? `${prediction.probability_24h}%` : "--"}
-              </div>
-              <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>Compound risk trend</div>
+            <div style={{
+              fontSize: 26, fontWeight: 700, color: "var(--info)",
+              fontFamily: "var(--font-mono)", lineHeight: 1, marginBottom: 4,
+            }}>
+              {prediction ? `${prediction.probability_4h}%` : "--"}
             </div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>Short-term exposure</div>
+          </div>
+          <div style={{ flex: 1, padding: 14, borderRadius: "var(--radius)", background: "var(--bg-subtle)", border: "1px solid var(--border)" }}>
+            <div style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 600, marginBottom: 6, letterSpacing: "0.05em" }}>
+              24 HOUR
+            </div>
+            <div style={{
+              fontSize: 26, fontWeight: 700, color: "var(--warning)",
+              fontFamily: "var(--font-mono)", lineHeight: 1, marginBottom: 4,
+            }}>
+              {prediction ? `${prediction.probability_24h}%` : "--"}
+            </div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)" }}>Compound risk trend</div>
           </div>
         </div>
-        <div style={{ width: "100%", minHeight: "180px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+
+        <div style={{ width: "100%", height: 160, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {prediction ? (
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={160}>
               <RadialBarChart innerRadius="70%" outerRadius="100%" data={chartData} startAngle={180} endAngle={-180}>
                 <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                <RadialBar
-                  background
-                  dataKey="value"
-                  cornerRadius={20}
-                  fill="#ff8800"
+                <RadialBar background dataKey="value" cornerRadius={20} fill="#d97706" />
+                <Tooltip
+                  cursor={{ fill: "var(--bg-hover)" }}
+                  contentStyle={{
+                    background: "var(--bg-surface)", border: "1px solid var(--border)",
+                    borderRadius: "var(--radius)", color: "var(--text-primary)",
+                    fontSize: 12,
+                  }}
                 />
-                <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} contentStyle={{ background: "var(--bg-surface)", border: "1px solid var(--glass-border)", borderRadius: "12px", color: "var(--text-primary)" }} />
               </RadialBarChart>
             </ResponsiveContainer>
           ) : (
-            <div style={{ color: "var(--text-muted)", fontSize: "12px", textAlign: "center" }}>
-              {loading ? "Fetching prediction data..." : error ? "Unable to render chart." : "No data available."}
-            </div>
+            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+              {loading ? "Loading..." : "No data"}
+            </span>
           )}
         </div>
       </div>
 
       {error && (
-        <div style={{ color: "var(--risk-critical)", fontSize: "12px", lineHeight: 1.6 }}>
-          {error}
+        <div style={{ padding: "0 16px 12px", fontSize: 12, color: "var(--danger)" }}>{error}</div>
+      )}
+
+      {prediction && (
+        <div style={{ padding: "0 16px 16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <div style={{
+              fontSize: 10, color: "var(--text-muted)", fontWeight: 600,
+              letterSpacing: "0.05em", marginBottom: 10,
+            }}>
+              TOP FACTORS
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {prediction.top_factors.slice(0, 3).map((factor) => (
+                <div key={factor.factor} style={{
+                  padding: 10, borderRadius: "var(--radius)",
+                  background: "var(--bg-subtle)", border: "1px solid var(--border)",
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 4, alignItems: "center" }}>
+                    <span style={{ fontSize: 12, color: "var(--text-primary)", fontWeight: 600 }}>{factor.factor}</span>
+                    <span style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-mono)", fontWeight: 600 }}>
+                      +{factor.contribution}%
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>{factor.context}</div>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: getSeverityColor(factor.severity) }}>
+                    {factor.severity}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div style={{
+              fontSize: 10, color: "var(--text-muted)", fontWeight: 600,
+              letterSpacing: "0.05em", marginBottom: 10,
+            }}>
+              RECOMMENDED ACTION
+            </div>
+            <div style={{
+              padding: 12, borderRadius: "var(--radius)", background: "var(--bg-subtle)",
+              border: "1px solid var(--border)", marginBottom: 8,
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                <Shield size={13} color="var(--accent)" />
+                <span style={{ fontSize: 12, color: "var(--text-primary)", fontWeight: 600 }}>Preventive steps</span>
+              </div>
+              {prediction.recommended_preventive_actions.slice(0, 2).map((action) => (
+                <div key={action} style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 6, lineHeight: 1.5 }}>
+                  • {action}
+                </div>
+              ))}
+            </div>
+            <div style={{
+              padding: 12, borderRadius: "var(--radius)", background: "var(--bg-subtle)",
+              border: "1px solid var(--border)",
+            }}>
+              <div style={{
+                fontSize: 10, color: "var(--text-muted)", fontWeight: 600,
+                marginBottom: 4, letterSpacing: "0.05em",
+              }}>
+                LIKELY INCIDENT
+              </div>
+              <div style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 600, lineHeight: 1.4 }}>
+                {prediction.predicted_incident_type}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
-      {prediction ? (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 700 }}>TOP FACTORS</div>
-            {prediction.top_factors.slice(0, 3).map((factor) => (
-              <div key={factor.factor} style={{ padding: "12px", borderRadius: "14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "10px", marginBottom: "6px", alignItems: "center" }}>
-                  <div style={{ fontSize: "12px", color: "var(--text-primary)", fontWeight: 700 }}>{factor.factor}</div>
-                  <div style={{ fontSize: "12px", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>+{factor.contribution}%</div>
-                </div>
-                <div style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>{factor.context}</div>
-                <div style={{ fontSize: "10px", color: factor.severity === "HIGH" ? "var(--risk-critical)" : factor.severity === "MEDIUM" ? "var(--risk-medium)" : "var(--risk-low)", fontWeight: 700 }}>
-                  {factor.severity}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            <div style={{ fontSize: "12px", color: "var(--text-muted)", fontWeight: 700 }}>RECOMMENDED ACTION</div>
-            <div style={{ padding: "14px", borderRadius: "14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                <Shield size={14} color="var(--accent-cyan)" />
-                <span style={{ fontSize: "12px", color: "var(--text-primary)", fontWeight: 700 }}>Preventive action</span>
-              </div>
-              <div style={{ fontSize: "12px", color: "var(--text-muted)", lineHeight: 1.6 }}>
-                {prediction.recommended_preventive_actions.slice(0, 2).map((action) => (
-                  <div key={action} style={{ marginBottom: "8px" }}>• {action}</div>
-                ))}
-              </div>
-            </div>
-            <div style={{ display: "grid", gap: "8px", padding: "14px", borderRadius: "14px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ color: "var(--text-muted)", fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em" }}>LIKELY INCIDENT</div>
-              <div style={{ color: "var(--text-primary)", fontSize: "13px", fontWeight: 800, lineHeight: 1.4 }}>{prediction.predicted_incident_type}</div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div style={{ color: "var(--text-muted)", fontSize: "12px" }}>
+      {!prediction && !error && (
+        <div style={{ padding: "0 16px 16px", fontSize: 12, color: "var(--text-muted)" }}>
           {loading ? "Waiting for prediction engine..." : "Prediction could not be loaded."}
         </div>
       )}

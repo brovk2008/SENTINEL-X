@@ -1,12 +1,12 @@
 "use client";
 import { useState } from "react";
-import { CheckCircle2, ChevronDown, ChevronRight, ShieldCheck } from "lucide-react";
+import { CircleCheck as CheckCircle2, ChevronDown, ChevronRight, ShieldCheck } from "lucide-react";
 
 const severityColors: Record<string, string> = {
-  CRITICAL: "#ff3b3b",
-  HIGH: "#ff6600",
-  MEDIUM: "#ffaa00",
-  LOW: "#00ff88",
+  CRITICAL: "var(--danger)",
+  HIGH: "var(--warning)",
+  MEDIUM: "var(--warning)",
+  LOW: "var(--success)",
 };
 
 export interface ExplainableAlertProps {
@@ -33,8 +33,10 @@ export function ExplainableAlert({ alert, onAcknowledge }: ExplainableAlertProps
   const [debateRunning, setDebateRunning] = useState(false);
   const [acknowledged, setAcknowledged] = useState(alert.read ?? false);
 
-  const color = severityColors[alert.severity] || "#ffaa00";
-  const handleRunDebate = async () => {
+  const color = severityColors[alert.severity] || "var(--warning)";
+
+  const handleRunDebate = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     setDebateRunning(true);
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/agents/debate`, {
@@ -59,144 +61,115 @@ export function ExplainableAlert({ alert, onAcknowledge }: ExplainableAlertProps
     }
   };
 
-  const handleAcknowledge = () => {
-    if (onAcknowledge) {
-      onAcknowledge();
-    }
+  const handleAcknowledge = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onAcknowledge?.();
     setAcknowledged(true);
   };
 
   return (
     <div
+      className="card"
       onClick={() => setExpanded((prev) => !prev)}
       style={{
-        borderRadius: "16px",
-        overflow: "hidden",
-        border: `1px solid ${color}22`,
-        boxShadow: "0 14px 40px rgba(0, 0, 0, 0.08)",
-        background: "rgba(255,255,255,0.05)",
         cursor: "pointer",
+        borderLeft: `3px solid ${color}`,
+        overflow: "hidden",
       }}
     >
-      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "16px", padding: "18px 18px 14px" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-            <div style={{ width: "6px", height: "24px", background: color, borderRadius: "999px" }} />
-            <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", flex: 1 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 16, padding: "14px 16px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", flex: 1 }}>
               {alert.title}
-            </div>
-            <div style={{ fontSize: "12px", fontWeight: 700, color: color, textTransform: "uppercase" }}>
-              {alert.severity}
-            </div>
+            </span>
+            <span className={`badge badge--${alert.severity.toLowerCase()}`}>{alert.severity}</span>
           </div>
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
             {alert.zone && (
-              <span style={{ fontSize: "11px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "4px 10px", borderRadius: "999px" }}>
+              <span style={{ fontSize: 10, color: "var(--text-muted)", background: "var(--bg-subtle)", padding: "3px 8px", borderRadius: "var(--radius-full)" }}>
                 {alert.zone}
               </span>
             )}
             {typeof alert.risk_score === "number" && (
-              <span style={{ fontSize: "11px", color: "var(--text-secondary)", background: "rgba(255,255,255,0.05)", padding: "4px 10px", borderRadius: "999px" }}>
-                Risk Score: {alert.risk_score}%
+              <span style={{ fontSize: 10, color: "var(--text-muted)", background: "var(--bg-subtle)", padding: "3px 8px", borderRadius: "var(--radius-full)" }}>
+                Risk: {alert.risk_score}%
               </span>
             )}
             {acknowledged && (
-              <span style={{ fontSize: "11px", color: "var(--risk-low)", background: "rgba(0,255,136,0.08)", padding: "4px 10px", borderRadius: "999px" }}>
-                Acknowledged
-              </span>
+              <span className="badge badge--low" style={{ fontSize: 9 }}>Acknowledged</span>
             )}
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "32px", height: "32px", borderRadius: "50%", background: "rgba(255,255,255,0.06)" }}>
-          {expanded ? <ChevronDown size={18} color="white" /> : <ChevronRight size={18} color="white" />}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, color: "var(--text-muted)" }}>
+          {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
         </div>
       </div>
 
       {expanded && (
-        <div style={{ borderTop: `1px solid ${color}18`, padding: "16px 18px 18px", display: "grid", gap: "16px" }}>
+        <div style={{ borderTop: "1px solid var(--border-subtle)", padding: "14px 16px 16px", display: "grid", gap: 14 }}>
           <div>
-            <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--text-muted)", marginBottom: "10px" }}>
-              WHY DID AI FLAG THIS?
+            <div style={{
+              fontSize: 10, textTransform: "uppercase", letterSpacing: "0.06em",
+              color: "var(--text-muted)", fontWeight: 600, marginBottom: 8,
+            }}>
+              Why did AI flag this?
             </div>
-            <div style={{ fontSize: "13px", color: "var(--text-primary)", lineHeight: 1.7 }}>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.6 }}>
               {alert.explanation || "The compound risk engine detected a dangerous combination of environmental and operational factors that elevate worker and equipment risk."}
             </div>
           </div>
 
           {alert.factors && alert.factors.length > 0 && (
-            <div style={{ display: "grid", gap: "12px" }}>
+            <div style={{ display: "grid", gap: 10 }}>
               {alert.factors.map((factor, index) => (
-                <div key={index} style={{ display: "grid", gap: "8px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "var(--text-muted)" }}>
+                <div key={index} style={{ display: "grid", gap: 6 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "var(--text-muted)" }}>
                     <span>{factor.label}</span>
-                    <span>{factor.value}%</span>
+                    <span style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}>{factor.value}%</span>
                   </div>
-                  <div style={{ height: "6px", borderRadius: "999px", background: "rgba(255,255,255,0.08)" }}>
-                    <div style={{ width: `${factor.value}%`, height: "100%", background: color, borderRadius: "999px" }} />
+                  <div style={{ height: 4, borderRadius: "var(--radius-full)", background: "var(--bg-subtle)" }}>
+                    <div style={{ width: `${factor.value}%`, height: "100%", background: color, borderRadius: "var(--radius-full)" }} />
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          <div style={{ display: "grid", gap: "10px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", fontWeight: 700, color: "var(--risk-low)" }}>
-              <CheckCircle2 size={14} /> WHY THIS IS NOT A FALSE ALARM
+          <div style={{ display: "grid", gap: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, fontWeight: 700, color: "var(--success)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+              <CheckCircle2 size={13} /> Why this is not a false alarm
             </div>
-            <div style={{ display: "grid", gap: "8px" }}>
-              <div style={{ display: "flex", gap: "8px", alignItems: "center", color: "var(--text-secondary)", fontSize: "12px" }}>
-                <span style={{ color: "var(--risk-low)" }}>✓</span>
-                Confirmed sensor fusion across multiple sources
+            <div style={{ display: "grid", gap: 6 }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--text-secondary)", fontSize: 12 }}>
+                <span style={{ color: "var(--success)" }}>✓</span> Confirmed sensor fusion across multiple sources
               </div>
-              <div style={{ display: "flex", gap: "8px", alignItems: "center", color: "var(--text-secondary)", fontSize: "12px" }}>
-                <span style={{ color: "var(--risk-low)" }}>✓</span>
-                Historical risk pattern matches prior zone incidents
+              <div style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--text-secondary)", fontSize: 12 }}>
+                <span style={{ color: "var(--success)" }}>✓</span> Historical risk pattern matches prior zone incidents
               </div>
-              <div style={{ display: "flex", gap: "8px", alignItems: "center", color: "var(--text-secondary)", fontSize: "12px" }}>
-                <span style={{ color: "var(--risk-low)" }}>✓</span>
-                Confidence high and alarms are not correlated to isolated maintenance noise
+              <div style={{ display: "flex", gap: 8, alignItems: "center", color: "var(--text-secondary)", fontSize: 12 }}>
+                <span style={{ color: "var(--success)" }}>✓</span> Confidence high and alarms are not correlated to isolated maintenance noise
               </div>
             </div>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
-            <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, display: "flex", gap: "8px", alignItems: "center" }}>
-              <ShieldCheck size={14} />
-              CONFIDENCE: {alert.confidence ?? 94}% | MODEL: Compound Risk Engine v2.0
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600, display: "flex", gap: 6, alignItems: "center" }}>
+              <ShieldCheck size={13} />
+              CONFIDENCE: {alert.confidence ?? 94}% | Compound Risk Engine v2.0
             </div>
 
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleAcknowledge();
-                }}
-                className="btn btn-ghost btn-sm"
-                style={{ minWidth: "120px" }}
-              >
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <button type="button" onClick={handleAcknowledge} className="btn btn-ghost btn-sm">
                 Acknowledge
               </button>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleRunDebate();
-                }}
-                className="btn btn-warning btn-sm"
-                disabled={debateRunning}
-                style={{ minWidth: "120px" }}
-              >
-                {debateRunning ? "Debating…" : "Run Debate"}
+              <button type="button" onClick={handleRunDebate} className="btn btn-warning btn-sm" disabled={debateRunning}>
+                {debateRunning ? "Debating..." : "Run Debate"}
               </button>
               <button
                 type="button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  if (typeof window !== "undefined") window.location.href = "/agents";
-                }}
+                onClick={(e) => { e.stopPropagation(); window.location.href = "/agents"; }}
                 className="btn btn-primary btn-sm"
-                style={{ minWidth: "120px" }}
               >
                 View Details
               </button>

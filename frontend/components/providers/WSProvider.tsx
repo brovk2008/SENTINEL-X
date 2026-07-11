@@ -40,7 +40,14 @@ export function WSProvider({ children }: { children: ReactNode }) {
         case "alert": {
           const alert = msg.data as Parameters<typeof addAlert>[0];
           addAlert(alert);
-          addNotification(alert);
+          addNotification({
+            id: alert.id,
+            title: alert.title,
+            severity: alert.severity,
+            timestamp: alert.timestamp ?? new Date().toISOString(),
+            description: alert.description,
+            zone: alert.zone,
+          });
           break;
         }
         case "compound_risk": {

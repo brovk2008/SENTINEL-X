@@ -110,7 +110,7 @@ export function DemoController() {
   return (
     <div>
       {demoMode && (
-        <div style={{ position: "fixed", top: "18px", right: "18px", zIndex: 10010, padding: "8px 12px", borderRadius: "999px", background: "rgba(0,255,136,0.18)", color: "#00ff88", fontSize: "11px", fontWeight: 700, boxShadow: "0 10px 30px rgba(0,255,136,0.15)" }}>
+        <div style={{ position: "fixed", top: "18px", right: "18px", zIndex: 10010, padding: "6px 12px", borderRadius: "var(--radius-full)", background: "var(--success-subtle)", color: "var(--success)", fontSize: "11px", fontWeight: 700, border: "1px solid var(--success-border)", letterSpacing: "0.05em" }}>
           DEMO MODE
         </div>
       )}
@@ -126,14 +126,14 @@ export function DemoController() {
           width: "68px",
           height: "68px",
           borderRadius: "20px",
-          background: "linear-gradient(135deg, #5a8dee, #29d6ff)",
+          background: "var(--accent)",
           color: "white",
           border: "none",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           gap: "5px",
-          boxShadow: "0 24px 70px rgba(0,0,0,0.28)",
+          boxShadow: "var(--shadow-lg)",
           cursor: "pointer",
           fontSize: "14px",
           fontWeight: 700,
@@ -153,8 +153,8 @@ export function DemoController() {
             width: "320px",
             borderRadius: "20px",
             background: "var(--bg-surface)",
-            border: "1px solid var(--glass-border)",
-            boxShadow: "var(--clay-shadow)",
+            border: "1px solid var(--border)",
+            boxShadow: "var(--shadow-lg)",
             color: "var(--text-primary)",
             overflow: "hidden",
           }}
@@ -165,10 +165,10 @@ export function DemoController() {
               setDragging(true);
               dragRef.current = { startX: event.clientX, startY: event.clientY, originX: position.x, originY: position.y };
             }}
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "16px 18px", background: "var(--glass-sm)", cursor: "grab" }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "16px 18px", background: "var(--bg-subtle)", cursor: "grab" }}
           >
             <div>
-              <div style={{ fontSize: "12px", color: "var(--accent-cyan)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: "4px" }}>
+              <div style={{ fontSize: "12px", color: "var(--accent)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: "4px" }}>
                 Demo Controller
               </div>
               <div style={{ fontSize: "16px", fontWeight: 700, lineHeight: 1.2 }}>Playbook</div>
@@ -193,22 +193,22 @@ export function DemoController() {
                     width: "100%",
                     padding: "14px",
                     borderRadius: "16px",
-                    background: "var(--glass-sm)",
-                    border: `1px solid ${demoStep === index + 1 ? "#00ff88" : "rgba(255,255,255,0.08)"}`,
+                    background: "var(--bg-subtle)",
+                    border: `1px solid ${demoStep === index + 1 ? "var(--success)" : "var(--border)"}`,
                     color: "var(--text-primary)",
                     cursor: "pointer",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontSize: "14px", color: "var(--accent-cyan)" }}>{index + 1}</span>
+                      <span style={{ fontSize: "14px", color: "var(--accent)" }}>{index + 1}</span>
                       <span style={{ fontSize: "14px", fontWeight: 700 }}>{step.title}</span>
                     </div>
-                    <span style={{ fontSize: "11px", color: status === "Done" ? "#00ff88" : status === "Active" ? "#ffaa00" : "rgba(255,255,255,0.65)", textTransform: "uppercase", fontWeight: 700 }}>
+                    <span style={{ fontSize: "11px", color: status === "Done" ? "var(--success)" : status === "Active" ? "var(--warning)" : "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>
                       {status}
                     </span>
                   </div>
-                  <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>{step.description}</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>{step.description}</div>
                 </button>
               );
             })}
