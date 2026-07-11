@@ -49,3 +49,10 @@ body{margin:0;font-family:var(--font-poppins);background:linear-gradient(180deg,
 /* Responsive */
 @media (max-width:1024px){.cards-grid{grid-template-columns:repeat(2,1fr)}.stats-grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:640px){.cards-grid,.stats-grid{grid-template-columns:1fr}.sidebar{display:none}}
+
+/* Accessibility focus styles */
+a:focus, button:focus { outline: 3px solid rgba(74,128,255,0.16); outline-offset: 3px; }
+
+/* Tooltips (simple) */
+[data-tooltip]{position:relative}
+[data-tooltip]:hover::after{content:attr(data-tooltip);position:absolute;left:0;top:calc(100% + 8px);background:rgba(0,0,0,0.75);color:white;padding:6px 8px;border-radius:6px;white-space:nowrap;font-size:12px}
