@@ -30,14 +30,24 @@ export function TopBar() {
       </div>
 
       <nav className="topbar-nav" aria-label="Primary">
-        {TOP_NAV.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <Link key={item.href} href={item.href} className={`topbar-nav__link ${active ? "active" : ""}`}>
-              {item.label}
-            </Link>
-          );
-        })}
+        <ul className="topbar-nav-list" role="menubar">
+          {TOP_NAV.map((item) => {
+            const active = pathname === item.href;
+            return (
+              <li key={item.href} role="none">
+                <Link
+                  role="menuitem"
+                  aria-current={active ? "page" : undefined}
+                  href={item.href}
+                  className={`topbar-nav__link ${active ? "active" : ""}`}
+                  title={item.label}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
       <div className="topbar__actions">

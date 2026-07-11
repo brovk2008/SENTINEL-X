@@ -1144,15 +1144,26 @@ body {
 
 .clay-nav-title {
   position: absolute;
+  left: calc(var(--sidebar-collapsed-width) + 12px);
   color: #fff;
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 900;
   white-space: nowrap;
   transform: scale(0);
   transition: transform 0.5s ease;
   transition-delay: 0s;
+  max-width: calc(100vw - var(--sidebar-collapsed-width) - 96px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure title scales and stays within viewport when nav expands */
+.clay-nav-item:hover .clay-nav-title,
+.clay-nav-item.active .clay-nav-title {
+  transform: scale(1);
+  transition-delay: 0.25s;
 }
 
 .clay-nav-item:hover .clay-nav-title,

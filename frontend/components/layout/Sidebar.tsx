@@ -118,14 +118,22 @@ export function Sidebar() {
                 className={`clay-nav-item ${active ? "active" : ""}`}
                 style={{ "--i": item.from, "--j": item.to } as CSSProperties}
               >
-                <Link href={item.href} title={collapsed ? item.label : undefined}>
-                  <span className="clay-nav-icon">
-                    <Icon size={17} />
-                  </span>
-                  {!collapsed && <span className="clay-nav-title">{item.label}</span>}
-                  {!collapsed && item.badge && <span className="clay-nav-badge">{item.badge}</span>}
-                  {!collapsed && item.href === "/" && unreadCount > 0 && <span className="clay-nav-count">{unreadCount}</span>}
-                </Link>
+                    <Link
+                    href={item.href}
+                    title={collapsed ? item.label : undefined}
+                    aria-current={active ? "page" : undefined}
+                  >
+                    <span className="clay-nav-icon">
+                      <Icon size={17} />
+                    </span>
+                    {!collapsed && (
+                      <span className="clay-nav-title truncate" title={item.label}>
+                        {item.label}
+                      </span>
+                    )}
+                    {!collapsed && item.badge && <span className="clay-nav-badge">{item.badge}</span>}
+                    {!collapsed && item.href === "/" && unreadCount > 0 && <span className="clay-nav-count">{unreadCount}</span>}
+                  </Link>
               </li>
             );
           })}
