@@ -7,6 +7,7 @@ import { DemoModeToggle } from "@/components/DemoModeToggle";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { NotificationPanel } from "@/components/NotificationPanel";
 import { DemoController } from "@/components/DemoController";
+import { TopBar } from "@/components/layout/TopBar";
 
 export const metadata: Metadata = {
   title: "SafetyOS — AI Operating System for Industrial Safety",
@@ -33,7 +34,10 @@ export default function RootLayout({
             <div className="app-layout">
               <Sidebar />
               <main className="main-content">
-                {children}
+                <TopBar />
+                <div className="content-stage">
+                  {children}
+                </div>
               </main>
             </div>
             <NotificationPanel />

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useStore } from "../../lib/store";
+import { AlertTriangle, Info, Siren } from "lucide-react";
 
 export function NotificationToast() {
   const { notifications } = useStore();
@@ -26,6 +27,7 @@ export function NotificationToast() {
   };
 
   const c = colors[visible.severity] || colors.MEDIUM;
+  const ToastIcon = visible.severity === "CRITICAL" ? Siren : visible.severity === "HIGH" ? AlertTriangle : Info;
 
   return (
     <div
@@ -46,9 +48,7 @@ export function NotificationToast() {
       onClick={() => setVisible(null)}
     >
       <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-        <span style={{ fontSize: "18px" }}>
-          {visible.severity === "CRITICAL" ? "🚨" : visible.severity === "HIGH" ? "⚠️" : "ℹ️"}
-        </span>
+        <ToastIcon size={18} color={c.text} />
         <div>
           <div style={{ fontSize: "13px", fontWeight: "600", color: c.text, marginBottom: "3px" }}>
             {visible.title}

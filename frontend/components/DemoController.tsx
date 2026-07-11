@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clapperboard, RotateCcw, X } from "lucide-react";
 import { useStore } from "../lib/store";
 
 const demoSteps = [
@@ -20,8 +20,15 @@ export function DemoController() {
   const { demoMode, demoStep, setDemoStep, setDemoMode, setDemoHighlight } = useStore();
   const [panelOpen, setPanelOpen] = useState(false);
   const [dragging, setDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 24, y: 220 });
+  const [position, setPosition] = useState({ x: 260, y: 520 });
   const dragRef = useRef<{ startX: number; startY: number; originX: number; originY: number } | null>(null);
+
+  useEffect(() => {
+    setPosition({
+      x: Math.max(260, window.innerWidth - 110),
+      y: Math.max(120, window.innerHeight - 110),
+    });
+  }, []);
 
   useEffect(() => {
     const handleMove = (event: MouseEvent) => {
@@ -118,19 +125,22 @@ export function DemoController() {
           zIndex: 10000,
           width: "68px",
           height: "68px",
-          borderRadius: "24px",
-          background: "linear-gradient(135deg, #44ff99, #18a6ff)",
+          borderRadius: "20px",
+          background: "linear-gradient(135deg, #5a8dee, #29d6ff)",
           color: "white",
           border: "none",
-          display: "grid",
-          placeItems: "center",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "5px",
           boxShadow: "0 24px 70px rgba(0,0,0,0.28)",
           cursor: "pointer",
           fontSize: "14px",
           fontWeight: 700,
         }}
       >
-        🎬 DEMO
+        <Clapperboard size={18} />
+        DEMO
       </button>
 
       {panelOpen && (
@@ -141,11 +151,11 @@ export function DemoController() {
             top: position.y + 80,
             zIndex: 10000,
             width: "320px",
-            borderRadius: "26px",
-            background: "rgba(10,12,24,0.96)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow: "0 32px 120px rgba(0,0,0,0.35)",
-            color: "white",
+            borderRadius: "20px",
+            background: "var(--bg-surface)",
+            border: "1px solid var(--glass-border)",
+            boxShadow: "var(--clay-shadow)",
+            color: "var(--text-primary)",
             overflow: "hidden",
           }}
         >
@@ -155,15 +165,15 @@ export function DemoController() {
               setDragging(true);
               dragRef.current = { startX: event.clientX, startY: event.clientY, originX: position.x, originY: position.y };
             }}
-            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "16px 18px", background: "rgba(255,255,255,0.04)", cursor: "grab" }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "16px 18px", background: "var(--glass-sm)", cursor: "grab" }}
           >
             <div>
-              <div style={{ fontSize: "12px", color: "#00ff88", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: "4px" }}>
+              <div style={{ fontSize: "12px", color: "var(--accent-cyan)", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: "4px" }}>
                 Demo Controller
               </div>
               <div style={{ fontSize: "16px", fontWeight: 700, lineHeight: 1.2 }}>Playbook</div>
             </div>
-            <button type="button" onClick={() => setPanelOpen(false)} style={{ border: "none", background: "transparent", color: "white", cursor: "pointer" }}>
+            <button type="button" onClick={() => setPanelOpen(false)} style={{ border: "none", background: "transparent", color: "var(--text-primary)", cursor: "pointer" }}>
               <X size={18} />
             </button>
           </div>
@@ -183,22 +193,22 @@ export function DemoController() {
                     width: "100%",
                     padding: "14px",
                     borderRadius: "16px",
-                    background: "rgba(255,255,255,0.04)",
+                    background: "var(--glass-sm)",
                     border: `1px solid ${demoStep === index + 1 ? "#00ff88" : "rgba(255,255,255,0.08)"}`,
-                    color: "white",
+                    color: "var(--text-primary)",
                     cursor: "pointer",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontSize: "14px", color: "#00ff88" }}>{index + 1}</span>
+                      <span style={{ fontSize: "14px", color: "var(--accent-cyan)" }}>{index + 1}</span>
                       <span style={{ fontSize: "14px", fontWeight: 700 }}>{step.title}</span>
                     </div>
                     <span style={{ fontSize: "11px", color: status === "Done" ? "#00ff88" : status === "Active" ? "#ffaa00" : "rgba(255,255,255,0.65)", textTransform: "uppercase", fontWeight: 700 }}>
                       {status}
                     </span>
                   </div>
-                  <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.65)" }}>{step.description}</div>
+                  <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>{step.description}</div>
                 </button>
               );
             })}
@@ -211,7 +221,7 @@ export function DemoController() {
               className="btn btn-ghost btn-sm"
               style={{ flex: 1 }}
             >
-              ← Prev
+              <ChevronLeft size={14} /> Prev
             </button>
             <button
               type="button"
@@ -227,7 +237,7 @@ export function DemoController() {
               className="btn btn-primary btn-sm"
               style={{ flex: 1 }}
             >
-              Next →
+              Next <ChevronRight size={14} />
             </button>
           </div>
         </div>

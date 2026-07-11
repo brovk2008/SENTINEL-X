@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Camera, RefreshCcw } from "lucide-react";
+import { AlertTriangle, Camera, Check, RefreshCcw, ShieldAlert, X } from "lucide-react";
 
 interface CameraItem {
   id: string;
@@ -106,17 +106,17 @@ export default function CamerasPage() {
                     <div style={{ display: "flex", gap: "6px", marginTop: "6px" }}>
                       {hasViolation && (
                         <span style={{ fontSize: "9px", background: "var(--risk-critical-bg)", color: "var(--risk-critical)", padding: "1px 6px", borderRadius: "4px", fontWeight: "700" }}>
-                          🚨 ZONE INTRUSION
+                          <ShieldAlert size={10} /> ZONE INTRUSION
                         </span>
                       )}
                       {nonCompliant > 0 && (
                         <span style={{ fontSize: "9px", background: "var(--risk-medium-bg)", color: "var(--risk-medium)", padding: "1px 6px", borderRadius: "4px", fontWeight: "700" }}>
-                          ⚠️ PPE MISSING ({nonCompliant})
+                          <AlertTriangle size={10} /> PPE MISSING ({nonCompliant})
                         </span>
                       )}
                       {!hasViolation && nonCompliant === 0 && (
                         <span style={{ fontSize: "9px", background: "var(--risk-low-bg)", color: "var(--risk-low)", padding: "1px 6px", borderRadius: "4px", fontWeight: "700" }}>
-                          ✓ SECURE
+                          <Check size={10} /> SECURE
                         </span>
                       )}
                     </div>
@@ -192,7 +192,7 @@ export default function CamerasPage() {
                         whiteSpace: "nowrap",
                         borderRadius: "2px 2px 0 0",
                       }}>
-                        {det.in_restricted_zone ? "INTRUDER 🚨" : det.ppe_compliant ? "Worker (PPE) ✓" : "Worker (NO PPE) ⚠️"}
+                        {det.in_restricted_zone ? "INTRUDER" : det.ppe_compliant ? "Worker (PPE)" : "Worker (NO PPE)"}
                       </div>
                     </div>
                   ))}
@@ -228,13 +228,13 @@ export default function CamerasPage() {
                     <div style={{ display: "flex", gap: "4px", flexDirection: "column" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px" }}>
                         <span style={{ color: det.ppe_compliant ? "var(--risk-low)" : "var(--risk-high)" }}>
-                          {det.ppe_compliant ? "✓" : "✗"}
+                          {det.ppe_compliant ? <Check size={12} /> : <X size={12} />}
                         </span>
                         <span style={{ color: "var(--text-secondary)" }}>PPE Compliance</span>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "11px" }}>
                         <span style={{ color: det.in_restricted_zone ? "var(--risk-critical)" : "var(--risk-low)" }}>
-                          {det.in_restricted_zone ? "🚨" : "✓"}
+                          {det.in_restricted_zone ? <ShieldAlert size={12} /> : <Check size={12} />}
                         </span>
                         <span style={{ color: "var(--text-secondary)" }}>Restricted Zone</span>
                       </div>
