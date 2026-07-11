@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../../lib/store";
 import { Camera, AlertTriangle, Shield, Check, RefreshCcw } from "lucide-react";
 
 interface CameraItem {

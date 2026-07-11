@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { useStore, AgentMessage } from "@/lib/store";
+import { useStore, AgentMessage } from "../../lib/store";
 import { Brain, Play, RotateCcw, Zap } from "lucide-react";
 
 const AGENT_META: Record<string, { emoji: string; color: string; tagline: string }> = {

@@ -1,5 +1,5 @@
 "use client";
-import { CompoundRisk } from "@/lib/store";
+import { CompoundRisk } from "../lib/store";
 import { AlertTriangle, Clock, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../lib/store";
 
 export function NotificationToast() {
   const { notifications } = useStore();

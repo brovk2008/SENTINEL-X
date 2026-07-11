@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, RotateCcw } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../lib/store";
 
 const demoSteps = [
   { title: "Trigger Zone C Alert", description: "Call the risk simulator and navigate to Mission Control" },

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Settings, Check, TestTube, Cpu, Camera, Bell, Shield } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../../lib/store";
 
 const LLM_PRESETS = [
   { id: "gemini-flash", provider: "gemini", model: "gemini-2.0-flash-exp", label: "Gemini Flash 2.0 (FREE)", badge: "Recommended", speed: "Fast", cost: "Free" },

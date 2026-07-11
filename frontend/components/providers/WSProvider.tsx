@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, ReactNode } from "react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../../lib/store";
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8000";
 

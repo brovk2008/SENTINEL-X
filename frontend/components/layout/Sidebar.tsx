@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../../lib/store";
 import {
   LayoutDashboard, Brain, Activity, Camera, BookOpen, Clock,
   FileText, Shield, Network, TrendingUp, Smartphone, BarChart3,

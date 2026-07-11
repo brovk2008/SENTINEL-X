@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { X, CheckCircle2, Eye, Trash2 } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../lib/store";
 
 const severityOrder = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
 

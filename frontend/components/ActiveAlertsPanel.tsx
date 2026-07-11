@@ -1,5 +1,5 @@
 "use client";
-import { useStore } from "@/lib/store";
+import { useStore } from "../lib/store";
 import { ExplainableAlert } from "@/components/ExplainableAlert";
 import { AlertTriangle, CheckCircle } from "lucide-react";
 

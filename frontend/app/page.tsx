@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../lib/store";
 import { PlantMap } from "@/components/PlantMap";
 import { RiskGauge } from "@/components/RiskGauge";
 import { SensorTicker } from "@/components/SensorTicker";

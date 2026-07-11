@@ -1,6 +1,6 @@
 'use client';
 
-import { useStore } from '@/lib/store';
+import { useStore } from '../lib/store';
 import { useEffect, useState } from 'react';
 
 export function DemoModeToggle() {
