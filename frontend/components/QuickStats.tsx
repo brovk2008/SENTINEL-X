@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { GlassCard } from "./ui/GlassCard";
-import { useStore } from "@/lib/store";
+import { useStore } from "../lib/store";
 
 export function QuickStats() {
   const sensors = useStore((s) => s.sensors);

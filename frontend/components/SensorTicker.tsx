@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-import { useStore } from "@/lib/store";
+import { useStore } from "../lib/store";
 
 export function SensorTicker() {
   const sensors = useStore((s) => s.sensors);

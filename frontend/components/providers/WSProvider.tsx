@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { useStore } from "@/lib/store";
+import { useStore } from "../../lib/store";
 
 export function WSProvider({ children }: { children: React.ReactNode }) {
   const updateSensor = useStore((s) => s.updateSensor);
