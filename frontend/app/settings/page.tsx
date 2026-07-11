@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Settings, Check, TestTube, Cpu, Camera, Bell, Shield } from "lucide-react";
+import { useState } from "react";
+import { Check, TestTube, Cpu, Camera, Bell, Shield } from "lucide-react";
 import { useStore } from "../../lib/store";
 
 const LLM_PRESETS = [
@@ -15,7 +15,7 @@ const LLM_PRESETS = [
 const PLANT_TYPES = ["Petroleum Refinery", "Chemical Plant", "Steel Plant", "Pharmaceutical", "Power Plant", "Fertilizer Plant", "Gas Processing Plant", "Petrochemical Complex"];
 
 export default function SettingsPage() {
-  const { llmProvider, llmModel, setLLMConfig } = useStore();
+  const { setLLMConfig } = useStore();
   const [testResult, setTestResult] = useState<{ status: string; response?: string; error?: string } | null>(null);
   const [testing, setTesting] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState("gemini-flash");
@@ -32,7 +32,7 @@ export default function SettingsPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/settings/llm/test?provider=${preset?.provider}&model=${preset?.model}`);
       const d = await res.json();
       setTestResult(d);
-    } catch (e) {
+    } catch {
       setTestResult({ status: "error", error: "Backend not reachable" });
     } finally {
       setTesting(false);

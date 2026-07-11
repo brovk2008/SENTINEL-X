@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { BookOpen, Search, Send, Mic, MicOff, FileText, ChevronRight } from "lucide-react";
+import { BookOpen, Send, Mic, MicOff, FileText, ChevronRight } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
@@ -51,7 +51,7 @@ export default function KnowledgePage() {
         confidence: data.confidence,
         timestamp: new Date().toISOString(),
       }]);
-    } catch (e) {
+    } catch {
       setMessages((prev) => [...prev, {
         role: "assistant",
         content: "Knowledge system temporarily unavailable. Please ensure the backend is running.",

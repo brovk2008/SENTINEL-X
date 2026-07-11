@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Shield, AlertTriangle, CheckCircle, RefreshCcw } from "lucide-react";
+import { AlertTriangle, CheckCircle, RefreshCcw } from "lucide-react";
 import { ExplainableAlert } from "@/components/ExplainableAlert";
 
 interface ComplianceCheck {
@@ -127,7 +127,7 @@ export default function CompliancePage() {
         {/* Violations first */}
         {status?.checks
           .slice()
-          .sort((a, b) => (a.is_compliant ? 1 : -1))
+          .sort((a, b) => Number(a.is_compliant) - Number(b.is_compliant))
           .map((check) => (
             <div
               key={check.id}

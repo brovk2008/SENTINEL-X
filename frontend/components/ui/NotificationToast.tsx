@@ -5,15 +5,16 @@ import { useStore } from "../../lib/store";
 export function NotificationToast() {
   const { notifications } = useStore();
   const [visible, setVisible] = useState<typeof notifications[0] | null>(null);
+  const latestNotification = notifications[0];
+  const latestTimestamp = latestNotification?.timestamp;
 
   useEffect(() => {
-    if (notifications.length > 0) {
-      const latest = notifications[0];
-      setVisible(latest);
+    if (latestNotification) {
+      setVisible(latestNotification);
       const timer = setTimeout(() => setVisible(null), 5000);
       return () => clearTimeout(timer);
     }
-  }, [notifications[0]?.timestamp]);
+  }, [latestNotification, latestTimestamp]);
 
   if (!visible) return null;
 

@@ -3,8 +3,12 @@
  * Centralized HTTP client with environment variable support
  */
 
-const API_BASE = typeof window !== 'undefined' && (window as any).NEXT_PUBLIC_API_URL
-  ? (window as any).NEXT_PUBLIC_API_URL
+const runtimeWindow = typeof window !== "undefined"
+  ? (window as Window & { NEXT_PUBLIC_API_URL?: string })
+  : undefined;
+
+const API_BASE = runtimeWindow?.NEXT_PUBLIC_API_URL
+  ? runtimeWindow.NEXT_PUBLIC_API_URL
   : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const API_TIMEOUT = 8000; // 8 seconds

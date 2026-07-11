@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Network, Info, Layers, RefreshCcw } from "lucide-react";
+import { Info, RefreshCcw } from "lucide-react";
 
 interface Node { id: string; label: string; group: string; x?: number; y?: number }
 interface Link { source: string; target: string; type: string }

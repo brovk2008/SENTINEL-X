@@ -164,6 +164,11 @@ export default function SensorsPage() {
             </div>
 
             <div style={{ display: "grid", gap: "14px" }}>
+              {loadingHistory && (
+                <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                  Loading sensor history...
+                </div>
+              )}
               <div style={{ display: "grid", gap: "10px", padding: "16px", background: "rgba(255,255,255,0.04)", borderRadius: "18px" }}>
                 <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Latest reading</div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "10px" }}>

@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useStore } from "../../lib/store";
-import { Camera, AlertTriangle, Shield, Check, RefreshCcw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Camera, RefreshCcw } from "lucide-react";
 
 interface CameraItem {
   id: string;
@@ -28,17 +27,15 @@ export default function CamerasPage() {
   const [detections, setDetections] = useState<Detection[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadCameras = async () => {
+  const loadCameras = useCallback(async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cameras/`);
       const d = await res.json();
       setCameras(d.cameras || []);
-      if (d.cameras?.length > 0 && !selected) {
-        setSelected(d.cameras[2]); // Default select Zone C
-      }
+      setSelected((current) => current ?? d.cameras?.[2] ?? d.cameras?.[0] ?? null);
     } catch {}
     setLoading(false);
-  };
+  }, []);
 
   const loadDetections = async (camId: string) => {
     try {
@@ -52,7 +49,7 @@ export default function CamerasPage() {
     loadCameras();
     const t = setInterval(loadCameras, 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [loadCameras]);
 
   useEffect(() => {
     if (selected) {
@@ -60,7 +57,7 @@ export default function CamerasPage() {
       const t = setInterval(() => loadDetections(selected.id), 2000);
       return () => clearInterval(t);
     }
-  }, [selected?.id]);
+  }, [selected]);
 
   if (loading && cameras.length === 0) return <div style={{ padding: 24 }}><div className="skeleton" style={{ height: 200 }} /></div>;
 

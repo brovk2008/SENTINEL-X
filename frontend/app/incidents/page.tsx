@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Clock, Play, Pause, RotateCcw, AlertTriangle, Brain, ChevronRight } from "lucide-react";
+import { Clock, Play, Pause, RotateCcw, Brain, ChevronRight } from "lucide-react";
 
 interface Incident {
   id: string;
@@ -126,7 +126,7 @@ export default function IncidentsPage() {
                     </span>
                     {inc.ai_would_have_caught && (
                       <span style={{ fontSize: "10px", color: "var(--risk-low)", display: "flex", gap: "3px", alignItems: "center" }}>
-                        🤖 AI would've caught it
+                        🤖 AI would&apos;ve caught it
                       </span>
                     )}
                   </div>

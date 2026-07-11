@@ -1,6 +1,6 @@
 "use client";
-import { useStore, SensorReading } from "../lib/store";
-import { useEffect, useRef, useState } from "react";
+import { useStore } from "../lib/store";
+import { useRef } from "react";
 
 export function SensorTicker() {
   const { sensors } = useStore();

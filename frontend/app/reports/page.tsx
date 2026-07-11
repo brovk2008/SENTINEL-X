@@ -1,12 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-import { FileText, Download, Play, RefreshCcw, Check, Sparkles } from "lucide-react";
+import { FileText, Download, Sparkles } from "lucide-react";
 
 interface ReportType { id: string; name: string; description: string }
 
 export default function ReportsPage() {
   const [types, setTypes] = useState<ReportType[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string>("");
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<{ download_url: string; content_preview: string } | null>(null);
@@ -18,7 +17,6 @@ export default function ReportsPage() {
       setTypes(d.report_types || []);
       if (d.report_types?.length > 0) setSelected(d.report_types[0].id);
     } catch {}
-    setLoading(false);
   };
 
   useEffect(() => { loadTypes(); }, []);
@@ -117,7 +115,7 @@ export default function ReportsPage() {
           ) : (
             <div style={{ textAlign: "center", padding: "60px 0", opacity: 0.4 }}>
               <FileText size={40} style={{ margin: "0 auto 12px" }} />
-              <div style={{ fontSize: "13px" }}>Choose a report type and click "Generate AI Report"</div>
+              <div style={{ fontSize: "13px" }}>Choose a report type and click &quot;Generate AI Report&quot;</div>
             </div>
           )}
         </div>

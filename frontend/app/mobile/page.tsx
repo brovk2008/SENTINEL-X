@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useStore } from "../../lib/store";
-import { Smartphone, QrCode, Bell, User, MapPin } from "lucide-react";
+import { Smartphone, QrCode, Bell, User } from "lucide-react";
 
 export default function MobilePage() {
   const { alerts, sensors } = useStore();

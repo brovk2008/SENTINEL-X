@@ -27,6 +27,18 @@ const getScoreLabel = (score: number) => {
   return "Safe";
 };
 
+interface RiskEvent {
+  zone?: string;
+  risk_probability?: number;
+  risk_score?: number;
+}
+
+interface SensorEvent {
+  zone?: string;
+  sensor_id?: string;
+  value?: number;
+}
+
 export function PlantMap() {
   const [zoneRisk, setZoneRisk] = useState<Record<string, number>>({ ZA: 38, ZB: 52, ZC: 84, ZD: 25, ZE: 46, ZF: 29 });
   const [pulsingZones, setPulsingZones] = useState<Set<string>>(new Set(["ZC"]));
@@ -35,7 +47,8 @@ export function PlantMap() {
   useEffect(() => {
     safetyWS.connect();
 
-    const compoundHandler = (data: any) => {
+    const compoundHandler = (eventData: unknown) => {
+      const data = eventData as RiskEvent;
       const zone = data.zone || "ZC";
       const score = Math.min(100, Math.max(0, data.risk_probability ?? data.risk_score ?? 84));
       setZoneRisk((prev) => ({ ...prev, [zone]: score }));
@@ -49,7 +62,8 @@ export function PlantMap() {
       }, 5000);
     };
 
-    const sensorHandler = (data: any) => {
+    const sensorHandler = (eventData: unknown) => {
+      const data = eventData as SensorEvent;
       const zone = data.zone || (typeof data.sensor_id === "string" ? data.sensor_id.split("-")[1] : "ZC");
       setZoneRisk((prev) => {
         const current = prev[zone] ?? 28;

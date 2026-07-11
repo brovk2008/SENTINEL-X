@@ -20,8 +20,11 @@ class SafetyOSWebSocket {
       this.url = url;
     } else {
       // Use environment variable if available, fall back to current window hostname
-      const wsUrl = typeof window !== "undefined" && (window as any).NEXT_PUBLIC_WS_URL 
-        ? (window as any).NEXT_PUBLIC_WS_URL 
+      const runtimeWindow = typeof window !== "undefined"
+        ? (window as Window & { NEXT_PUBLIC_WS_URL?: string })
+        : undefined;
+      const wsUrl = runtimeWindow?.NEXT_PUBLIC_WS_URL
+        ? runtimeWindow.NEXT_PUBLIC_WS_URL
         : process.env.NEXT_PUBLIC_WS_URL 
         ? process.env.NEXT_PUBLIC_WS_URL 
         : `ws://${typeof window !== "undefined" ? window.location.hostname : "localhost"}:8000/ws/live`;

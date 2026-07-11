@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { FileText, AlertTriangle, CheckCircle, Brain, Clock } from "lucide-react";
+import { AlertTriangle, CheckCircle, Brain, Clock } from "lucide-react";
 
 interface Permit {
   id: string;

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { CheckCircle2, ChevronDown, ChevronRight, Info, RefreshCcw, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ShieldCheck } from "lucide-react";
 
 const severityColors: Record<string, string> = {
   CRITICAL: "#ff3b3b",

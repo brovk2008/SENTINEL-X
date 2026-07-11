@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useStore, AgentMessage } from "../../lib/store";
-import { Brain, Play, RotateCcw, Zap } from "lucide-react";
+import { Brain, RotateCcw } from "lucide-react";
 
 const AGENT_META: Record<string, { emoji: string; color: string; tagline: string }> = {
   safety: { emoji: "🔴", color: "#ff4444", tagline: "Life first. Always." },
@@ -182,7 +182,7 @@ export default function AgentsPage() {
           }}>
             <Brain size={40} style={{ opacity: 0.3, margin: "0 auto 12px" }} />
             <div style={{ fontSize: "14px", marginBottom: "6px" }}>
-              Click <strong>"Run Debate on Current Risk"</strong> to watch 7 AI agents reason through the Zone C crisis
+              Click <strong>&quot;Run Debate on Current Risk&quot;</strong> to watch 7 AI agents reason through the Zone C crisis
             </div>
             <div style={{ fontSize: "12px", opacity: 0.6 }}>
               Each agent represents a different stakeholder perspective. The Executive AI synthesizes the final decision.

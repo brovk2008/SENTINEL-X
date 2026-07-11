@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Brain, FileText, Sparkles, TrendingUp, Shield, HelpCircle, Send } from "lucide-react";
+import { Brain, FileText, Sparkles, HelpCircle, Send } from "lucide-react";
 
 export default function ExecutivePage() {
   const [brief, setBrief] = useState("");
