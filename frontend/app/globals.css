@@ -165,20 +165,25 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Glass Card Components                                                         */
+/* Glass Card Components (polished)                                              */
 /* ─────────────────────────────────────────────────────────────────────────── */
 .glass-card {
-  background: var(--glass-sm);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    var(--bg-surface);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   backdrop-filter: var(--blur-md);
   -webkit-backdrop-filter: var(--blur-md);
   box-shadow: var(--shadow-card);
-  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+  padding: 16px;
 }
 
 .glass-card:hover {
   border-color: var(--glass-border-bright);
+  transform: translateY(-6px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.38), inset 1px 1px 0 rgba(255,255,255,0.04);
 }
 
 .glass-card.critical {
@@ -190,6 +195,14 @@ body {
 .glass-card.high { border-color: var(--risk-high); box-shadow: var(--shadow-glow-amber); }
 .glass-card.medium { border-color: var(--risk-medium); }
 .glass-card.low { border-color: rgba(0, 230, 118, 0.3); }
+
+/* Content helpers inside cards */
+.card-title { font-size: 14px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px; }
+.card-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
+.card-row { display:flex; align-items:center; gap:12px; }
+
+/* Responsive card grid */
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* Risk Badges                                                                   */
@@ -393,27 +406,33 @@ body {
 .btn-lg { padding: 10px 20px; font-size: 14px; }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
-/* Input / Textarea                                                              */
+/* Input / Textarea (polished form styles)                                       */
 /* ─────────────────────────────────────────────────────────────────────────── */
+.form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+.form-label { font-size:12px; font-weight:700; color:var(--text-secondary); }
+
 .input {
   width: 100%;
-  padding: 10px 14px;
+  padding: 12px 14px;
   background: var(--glass-sm);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 14px;
   outline: none;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .input:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(74, 128, 255, 0.15);
+  box-shadow: 0 6px 20px rgba(74,128,255,0.12), 0 0 0 3px rgba(74, 128, 255, 0.08);
+  transform: translateY(-1px);
 }
 
 .input::placeholder { color: var(--text-muted); }
+
+.textarea { min-height:120px; resize:vertical; padding:12px; }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* Divider                                                                       */
@@ -467,6 +486,22 @@ body {
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
   border-radius: var(--radius-md);
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* Modal (global)                                                                */
+/* ─────────────────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(2,6,23,0.6); backdrop-filter: blur(6px); z-index: 9000; display:grid; place-items:center; padding:24px;
+}
+
+.modal-panel {
+  width: 100%; max-width: 920px; border-radius: 16px; background: var(--bg-elevated); border: 1px solid var(--glass-border); box-shadow: 0 40px 80px rgba(0,0,0,0.6); padding: 20px;
+}
+
+.modal-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.modal-title { font-weight:900; font-size:18px; }
+.modal-body { max-height: calc(100vh - 240px); overflow:auto; }
+.modal-footer { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
 
 @keyframes skeleton-shimmer {
   0% { background-position: 200% 0; }

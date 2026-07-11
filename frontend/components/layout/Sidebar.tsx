@@ -24,8 +24,8 @@ import {
   Smartphone,
   Sparkles,
   TrendingUp,
-  Zap,
 } from "lucide-react";
+import { BrandMark } from "./BrandMark";
 import { useStore } from "../../lib/store";
 
 const NAV_ITEMS = [
@@ -64,7 +64,7 @@ export function Sidebar() {
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="sidebar-brand">
         <div className="brand-mark">
-          <Zap size={18} />
+          <BrandMark size={42} />
         </div>
         {!collapsed && (
           <div className="brand-copy">
