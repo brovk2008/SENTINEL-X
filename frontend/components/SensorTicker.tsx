@@ -16,11 +16,7 @@ export function SensorTicker() {
 
   if (readings.length === 0) {
     return (
-      <div style={{
-        background: "var(--glass-xs)", border: "1px solid var(--glass-border)",
-        borderRadius: "10px", padding: "10px 16px", fontSize: "12px", color: "var(--text-muted)",
-        display: "flex", alignItems: "center", gap: "8px",
-      }}>
+      <div className="sensor-ticker-empty">
         <div className="live-dot" style={{ opacity: 0.5 }} />
         Waiting for live sensor data...
       </div>
@@ -28,70 +24,19 @@ export function SensorTicker() {
   }
 
   return (
-    <div style={{
-      background: "var(--glass-xs)",
-      border: "1px solid var(--glass-border)",
-      borderRadius: "10px",
-      overflow: "hidden",
-      display: "flex",
-      alignItems: "center",
-      height: "40px",
-    }}>
-      <div style={{
-        padding: "0 12px",
-        fontSize: "10px",
-        fontWeight: "700",
-        color: "var(--text-muted)",
-        letterSpacing: "0.08em",
-        borderRight: "1px solid var(--glass-border)",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        whiteSpace: "nowrap",
-        background: "var(--glass-xs)",
-      }}>
-        <div className="live-dot" style={{ marginRight: "6px" }} />
+    <div className="sensor-ticker">
+      <div className="ticker-left">
+        <div className="live-dot" style={{ marginRight: 6 }} />
         LIVE
       </div>
-      <div style={{ overflow: "hidden", flex: 1 }}>
-        <div
-          ref={tickerRef}
-          style={{
-            display: "flex",
-            gap: "0",
-            animation: "ticker-scroll 40s linear infinite",
-          }}
-        >
+      <div className="ticker-track-wrapper">
+        <div ref={tickerRef} className="ticker-track">
           {[...readings, ...readings].map((sensor, i) => (
-            <div key={i} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "0 20px",
-              borderRight: "1px solid var(--glass-border)",
-              whiteSpace: "nowrap",
-              height: "40px",
-            }}>
-              <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{sensor.sensor_id}</span>
-              <span style={{
-                fontSize: "13px",
-                fontWeight: "700",
-                fontFamily: "var(--font-mono)",
-                color: getColor(sensor.risk_level),
-              }}>
-                {sensor.value?.toFixed(1)} {sensor.unit}
-              </span>
+            <div key={i} className="ticker-item">
+              <span className="ticker-item-id">{sensor.sensor_id}</span>
+              <span className="ticker-item-value" style={{ color: getColor(sensor.risk_level) }}>{sensor.value?.toFixed(1)} {sensor.unit}</span>
               {sensor.risk_level !== "LOW" && (
-                <span style={{
-                  fontSize: "9px",
-                  fontWeight: "700",
-                  color: getColor(sensor.risk_level),
-                  background: `${getColor(sensor.risk_level)}15`,
-                  padding: "1px 4px",
-                  borderRadius: "3px",
-                }}>
-                  {sensor.risk_level}
-                </span>
+                <span className="ticker-item-badge" style={{ color: getColor(sensor.risk_level), background: `${getColor(sensor.risk_level)}15` }}>{sensor.risk_level}</span>
               )}
             </div>
           ))}

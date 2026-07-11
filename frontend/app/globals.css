@@ -584,6 +584,17 @@ body {
   100% { background-position: -200% 0; }
 }
 
+/* Sensor ticker */
+.sensor-ticker { background: var(--glass-xs); border:1px solid var(--glass-border); border-radius:10px; overflow:hidden; display:flex; align-items:center; height:40px; }
+.ticker-left { padding:0 12px; font-size:10px; font-weight:700; color:var(--text-muted); letter-spacing:0.08em; border-right:1px solid var(--glass-border); height:100%; display:flex; align-items:center; white-space:nowrap; background:var(--glass-xs); }
+.ticker-track-wrapper { overflow:hidden; flex:1; }
+.ticker-track { display:flex; gap:0; animation: ticker-scroll 40s linear infinite; }
+.ticker-item { display:flex; align-items:center; gap:6px; padding:0 20px; border-right:1px solid var(--glass-border); white-space:nowrap; height:40px; }
+.ticker-item-id { font-size:11px; color:var(--text-muted); }
+.ticker-item-value { font-size:13px; font-weight:700; font-family:var(--font-mono); }
+.ticker-item-badge { font-size:9px; font-weight:700; padding:1px 4px; border-radius:3px; }
+.sensor-ticker-empty { background: var(--glass-xs); border:1px solid var(--glass-border); border-radius:10px; padding:10px 16px; font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:8px; }
+
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* SVG Plant Map                                                                 */
 /* ─────────────────────────────────────────────────────────────────────────── */
