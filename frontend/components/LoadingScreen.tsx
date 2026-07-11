@@ -67,16 +67,26 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
           <div style={{ fontSize: "14px", letterSpacing: "0.28em", color: "#00ff88", textTransform: "uppercase", marginBottom: "14px" }}>
             SafetyOS INITIALIZING
           </div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
-            <div style={{ width: "48px", height: "48px", borderRadius: "14px", background: "rgba(0,255,136,0.12)", display: "grid", placeItems: "center" }}>
-              <span style={{ fontSize: "26px", fontWeight: 800, color: "#00ff88" }}>🏭</span>
-            </div>
-            <div style={{ textAlign: "left" }}>
-              <div style={{ fontSize: "26px", fontWeight: 800, letterSpacing: "-0.03em" }}>SafetyOS</div>
-              <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)" }}>AI Operating System for Industrial Safety</div>
-            </div>
-          </div>
-        </div>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
+                  <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: "rgba(90,141,238,0.12)", display: "grid", placeItems: "center" }}>
+                    {/* Replaced emoji with BrandMark for consistent SVG branding */}
+                    <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                      <defs>
+                        <linearGradient id="initG" x1="0" x2="1" y1="0" y2="1">
+                          <stop offset="0%" stopColor="#5a8dee" />
+                          <stop offset="100%" stopColor="#a955ff" />
+                        </linearGradient>
+                      </defs>
+                      <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#initG)" opacity="0.95" />
+                      <circle cx="32" cy="22" r="4" fill="rgba(255,255,255,0.95)" />
+                    </svg>
+                  </div>
+                  <div style={{ textAlign: "left" }}>
+                    <div style={{ fontSize: "26px", fontWeight: 800, letterSpacing: "-0.03em" }}>SafetyOS</div>
+                    <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)" }}>AI Operating System for Industrial Safety</div>
+                  </div>
+                </div>
+              </div>
 
         <div style={{ marginBottom: "22px", padding: "26px", borderRadius: "28px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>

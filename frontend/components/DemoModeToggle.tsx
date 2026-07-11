@@ -23,8 +23,9 @@ export function DemoModeToggle() {
           onChange={(e) => setDemoMode(e.target.checked)}
           className="w-4 h-4 rounded"
         />
-        <span className="text-xs text-gray-300 font-mono">
-          {demoMode ? '🟢 DEMO MODE' : '⚪ LIVE MODE'}
+        <span className="text-xs text-gray-300 font-mono" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ width: 10, height: 10, borderRadius: 999, display: 'inline-block', background: demoMode ? 'var(--risk-low)' : 'rgba(255,255,255,0.32)', boxShadow: demoMode ? '0 0 10px rgba(0,255,136,0.18)' : 'none' }} aria-hidden />
+          <span>{demoMode ? 'DEMO MODE' : 'LIVE MODE'}</span>
         </span>
       </label>
     </div>
