@@ -204,6 +204,39 @@ body {
 /* Responsive card grid */
 .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 
+/* Quick stats */
+
+/* Sensor card */
+.sensor-card { padding: 14px; display: grid; gap: 12px; text-align: left; }
+.sensor-meta { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+.sensor-meta-left { min-width:0; }
+.sensor-meta-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.sensor-id { font-size:11px; color: rgba(255,255,255,0.65); font-family: var(--font-mono); }
+.sensor-zone { font-size:10px; color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.08); padding:4px 8px; border-radius:999px; }
+.sensor-name { font-size:14px; font-weight:700; color:var(--text-primary); margin-top:6px; }
+.sensor-meta-right { display:grid; gap:6px; text-align:right; }
+.sensor-value { font-size:28px; font-weight:800; }
+.sensor-unit { font-size:11px; color: rgba(255,255,255,0.65); }
+
+.sensor-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.sensor-status { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; background: rgba(255,255,255,0.06); padding:5px 10px; border-radius:999px; }
+.sensor-trend, .sensor-anomaly { font-size:11px; color: rgba(255,255,255,0.65); }
+
+.sensor-chart { height:40px; }
+
+.sensor-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.sensor-threshold { font-size:11px; color: rgba(255,255,255,0.65); }
+.sensor-trend-visual { display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:12px; }
+.sensor-trend-text { margin-left:6px; }
+
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.stat-card { padding: 12px; --accent: linear-gradient(135deg, #5A8DEE, #29d6ff); background-image: var(--stat-gradient, var(--accent)); background-size: 200% 200%; color: var(--text-primary); }
+.stat-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+.stat-label { font-size: 10px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.05em; }
+.stat-value { font-size: 20px; font-weight: 800; font-family: var(--font-mono); line-height:1; margin-bottom:4px; }
+.stat-sub { font-size: 11px; color: var(--text-muted); }
+
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* Risk Badges                                                                   */
 /* ─────────────────────────────────────────────────────────────────────────── */

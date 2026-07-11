@@ -54,48 +54,32 @@ export function SensorCard({ sensor, history, onExpand }: SensorCardProps) {
     <button
       type="button"
       onClick={onExpand}
-      style={{
-        width: "100%",
-        textAlign: "left",
-        padding: "16px",
-        borderRadius: "18px",
-        border: "1px solid rgba(255,255,255,0.08)",
-        background: "rgba(255,255,255,0.04)",
-        color: "white",
-        cursor: onExpand ? "pointer" : "default",
-        display: "grid",
-        gap: "14px",
-      }}
+      className={`glass-card sensor-card`}
+      aria-pressed={!!onExpand}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "start" }}>
-        <div style={{ minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.65)", fontFamily: "var(--font-mono)" }}>{sensor.sensor_id}</span>
-            <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.55)", background: "rgba(255,255,255,0.08)", padding: "4px 8px", borderRadius: "999px" }}>{sensor.zone}</span>
+      <div className="sensor-meta">
+        <div className="sensor-meta-left">
+          <div className="sensor-meta-top">
+            <span className="sensor-id">{sensor.sensor_id}</span>
+            <span className="sensor-zone">{sensor.zone}</span>
           </div>
-          <div style={{ fontSize: "14px", fontWeight: 700, color: "white", marginTop: "6px" }}>{sensor.name}</div>
+          <div className="sensor-name">{sensor.name}</div>
         </div>
-        <div style={{ display: "grid", gap: "6px", textAlign: "right" }}>
-          <div style={{ fontSize: "28px", fontWeight: 800, color: riskColors[sensor.risk_level] }}>{sensor.value.toFixed(1)}</div>
-          <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.65)" }}>{sensor.unit}</div>
+        <div className="sensor-meta-right">
+          <div className="sensor-value" style={{ color: riskColors[sensor.risk_level] }}>{sensor.value.toFixed(1)}</div>
+          <div className="sensor-unit">{sensor.unit}</div>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "11px", color: statusColor, fontWeight: 700, background: "rgba(255,255,255,0.06)", padding: "5px 10px", borderRadius: "999px" }}>
-          {statusLabel}
-        </span>
-        <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.65)" }}>
-          Trend: {trend.direction}
-        </span>
+      <div className="sensor-row">
+        <span className="sensor-status" style={{ color: statusColor }}>{statusLabel}</span>
+        <span className="sensor-trend">Trend: {trend.direction}</span>
         {sensor.is_anomaly && (
-          <span style={{ fontSize: "11px", color: "#00ff88", background: "rgba(0,255,136,0.08)", padding: "5px 10px", borderRadius: "999px" }}>
-            Last anomaly: 2h ago
-          </span>
+          <span className="sensor-anomaly">Last anomaly: 2h ago</span>
         )}
       </div>
 
-      <div style={{ height: "40px" }}>
+      <div className="sensor-chart">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
             <Line type="monotone" dataKey="value" stroke={riskColors[sensor.risk_level]} strokeWidth={2} dot={false} />
@@ -103,13 +87,11 @@ export function SensorCard({ sensor, history, onExpand }: SensorCardProps) {
         </ResponsiveContainer>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
-        <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.65)" }}>
-          Threshold: {sensor.warning_threshold}/{sensor.critical_threshold}
-        </div>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: trend.color, fontWeight: 700, fontSize: "12px" }}>
+      <div className="sensor-footer">
+        <div className="sensor-threshold">Threshold: {sensor.warning_threshold}/{sensor.critical_threshold}</div>
+        <div className="sensor-trend-visual" style={{ color: trend.color }}>
           {trend.icon === ArrowUpRight ? <ArrowUpRight size={14} /> : trend.icon === ArrowDownRight ? <ArrowDownRight size={14} /> : <Minus size={14} />}
-          {trend.direction === "rising" ? "Increasing" : trend.direction === "falling" ? "Decreasing" : "Stable"}
+          <span className="sensor-trend-text">{trend.direction === "rising" ? "Increasing" : trend.direction === "falling" ? "Decreasing" : "Stable"}</span>
         </div>
       </div>
     </button>
