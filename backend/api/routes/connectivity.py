@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 
-from backend.integrations.connectivity_manager import manager, DataSource, ProtocolType
+from integrations.connectivity_manager import manager, DataSource, ProtocolType
 from fastapi import BackgroundTasks
 
 
