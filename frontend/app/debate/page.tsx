@@ -39,26 +39,56 @@ export default function DebatePage() {
     setMessages([]);
     setRunning(true);
 
-    const eventSource = new EventSource(
-      `${API}/agents/debate/stream?use_scripted_demo=${useScripted}`
-    );
+    try {
+      const response = await fetch(`${API}/agents/debate/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          zone: "ZC",
+          risk_level: "CRITICAL",
+          use_scripted_demo: useScripted,
+          scenario: "h2s_confined_space"
+        })
+      });
 
-    eventSource.onmessage = (e) => {
-      try {
-        const msg = JSON.parse(e.data);
-        if (msg.type === "debate_complete") {
-          setRunning(false);
-          eventSource.close();
-        } else if (msg.agent_key) {
-          setMessages((prev) => [...prev, msg as AgentMessage]);
+      if (!response.ok) {
+        throw new Error("HTTP error " + response.status);
+      }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      if (!reader) return;
+
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data: ")) continue;
+          const dataStr = trimmed.slice(6);
+          try {
+            const msg = JSON.parse(dataStr);
+            if (msg.type === "debate_complete") {
+              setRunning(false);
+            } else if (msg.agent_key) {
+              setMessages((prev) => [...prev, msg as AgentMessage]);
+            }
+          } catch (e) {
+            console.error("Failed to parse SSE JSON", e);
+          }
         }
-      } catch {}
-    };
-
-    eventSource.onerror = () => {
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
       setRunning(false);
-      eventSource.close();
-    };
+    }
   };
 
   const agentOrder = ["safety", "production", "compliance", "maintenance", "finance", "emergency", "executive"];
