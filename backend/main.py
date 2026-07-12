@@ -183,6 +183,16 @@ app.include_router(rtls.router, prefix="/rtls", tags=["RTLS"])
 app.include_router(dispersion.router, prefix="/dispersion", tags=["Dispersion"])
 
 
+@app.get("/")
+async def root_welcome():
+    return {
+        "status": "online",
+        "service": "SafetyOS API",
+        "version": "1.0.0",
+        "message": "The factory has a brain. Access API documentation at /docs or health status at /health"
+    }
+
+
 @app.get("/health")
 async def health_check():
     return {
