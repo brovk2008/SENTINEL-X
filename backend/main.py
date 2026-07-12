@@ -48,10 +48,18 @@ async def lifespan(app: FastAPI):
     try:
         from pathlib import Path
         hls_dir = Path(__file__).resolve().parents[1] / 'frontend' / 'public' / 'hls'
+        hls_dir.mkdir(parents=True, exist_ok=True)
         app.mount('/hls', StaticFiles(directory=str(hls_dir)), name='hls')
         logger.info(f"Mounted HLS static directory: {hls_dir}")
     except Exception:
-        logger.exception("Failed to mount HLS directory")
+        logger.warning("Could not mount default HLS directory, creating local fallback...")
+        try:
+            fallback_dir = Path(__file__).resolve().parent / 'hls_temp'
+            fallback_dir.mkdir(parents=True, exist_ok=True)
+            app.mount('/hls', StaticFiles(directory=str(fallback_dir)), name='hls')
+            logger.info(f"Mounted fallback HLS static directory: {fallback_dir}")
+        except Exception:
+            logger.exception("Failed to mount fallback HLS directory")
 
     # Register connectivity connectors (MQTT, Simulated)
     try:
