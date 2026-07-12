@@ -17,7 +17,9 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://localhost:80",
         "http://localhost",
-        "http://frontend:3000"
+        "http://frontend:3000",
+        "https://sentinel-x-pearl.vercel.app",
+        "https://sentinel-x-pearl-git-main-brovk2008s-projects.vercel.app"
     ]
 
     # Database
