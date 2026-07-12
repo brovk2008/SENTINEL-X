@@ -40,6 +40,12 @@ class Settings(BaseSettings):
     MQTT_PORT: int = 1883
     MQTT_TOPIC_PREFIX: str = "safetyos"
 
+    # Demo / connectivity helpers
+    DEMO_CONNECTIVITY: bool = True
+
+    # Fast demo start (skip heavy infra init when True)
+    DEMO_FAST_START: bool = True
+
     # LLM — Multi-provider
     DEFAULT_LLM_PROVIDER: str = "gemini"
     GEMINI_API_KEY: Optional[str] = None

@@ -2,9 +2,10 @@
 import logging
 import uuid
 from datetime import datetime, timedelta
-from typing import Optional, List
-from fastapi import APIRouter, Query
+from typing import Optional, List, Dict
+from fastapi import APIRouter, Query, Body
 from pydantic import BaseModel
+from intelligence.ptw_validator import ptw_validator
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -106,6 +107,56 @@ async def get_permit(permit_id: str):
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="Permit not found")
     return permit
+
+
+@router.post("/validate")
+async def validate_new_permit(payload: Dict = Body(...)) -> Dict:
+    """Validate a permit request using SCADA state + biometrics + SIMOPS checking."""
+    # Build default/synthetic inputs if not provided
+    permit_data = {
+        "id": payload.get("permit_id", "PTW-REQ-" + str(uuid.uuid4())[:8].upper()),
+        "permit_type": payload.get("permit_type", "HOT_WORK"),
+        "zone_id": payload.get("zone_id", "ZC"),
+        "loto_status": payload.get("loto_status", "CONFIRMED"),
+        "certifications_valid": payload.get("certifications_valid", True),
+        "rescue_observer_assigned": payload.get("rescue_observer_assigned", True),
+        "requested_expiry": (datetime.utcnow() + timedelta(hours=8)).isoformat(),
+    }
+
+    # Fetch current plant state from Redis or default
+    from core.redis_client import get_state, SENSOR_STATE_KEY
+    sensor_state = await get_state(SENSOR_STATE_KEY) or {}
+    h2s_val = float(sensor_state.get("H2S-ZC-01", {}).get("value", 3.2))
+
+    plant_state = {
+        "gas_levels": {"h2s_ppm": h2s_val, "co_ppm": 2.1},
+        "active_permits_in_zone": {
+            "ZA": 1,
+            "ZB": 1,
+            "ZC": 2,  # Conflicting SIMOPS if Zone C
+            "ZD": 0,
+            "ZE": 0,
+            "ZF": 0,
+        },
+        "zone_risks": {
+            "ZA": 12.0,
+            "ZB": 43.0,
+            "ZC": 84.0,
+            "ZD": 10.0,
+            "ZE": 35.0,
+            "ZF": 22.0,
+        }
+    }
+
+    # Mock biometric status of permit holder
+    worker_bio = {
+        "psi_score": float(payload.get("psi_score", 4.2)),
+        "shift_hours": float(payload.get("shift_hours", 6.5)),
+        "cognitive_load": float(payload.get("cognitive_load", 55.0)),
+    }
+
+    result = ptw_validator.validate(permit_data, plant_state, worker_bio)
+    return result
 
 
 @router.post("/{permit_id}/analyze")

@@ -65,3 +65,7 @@ Desktop.ini
 *.njsproj
 *.sln
 *.sw?
+
+# Backups
+backups/
+
