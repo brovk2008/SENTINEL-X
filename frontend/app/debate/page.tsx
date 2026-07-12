@@ -1,0 +1,235 @@
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+import { Brain, RotateCcw } from "lucide-react";
+
+interface AgentMessage {
+  session_id: string;
+  agent_key: string;
+  agent_name: string;
+  emoji: string;
+  message: string;
+  timestamp: string;
+  is_final?: boolean;
+}
+
+const AGENT_META: Record<string, { emoji: string; color: string; tagline: string }> = {
+  safety:      { emoji: "🔴", color: "#ff4444", tagline: "Life first. Always." },
+  production:  { emoji: "🟡", color: "#ffaa00", tagline: "Uptime matters." },
+  compliance:  { emoji: "⚖️", color: "#4488ff", tagline: "The law is non-negotiable." },
+  maintenance: { emoji: "🔧", color: "#00cc88", tagline: "Fix the root cause." },
+  finance:     { emoji: "💰", color: "#cc88ff", tagline: "Know the cost." },
+  emergency:   { emoji: "🚨", color: "#ff6644", tagline: "When triggered, act." },
+  executive:   { emoji: "🎯", color: "#44ffaa", tagline: "I decide. I act." },
+};
+
+const API = process.env.NEXT_PUBLIC_API_URL || "";
+
+export default function DebatePage() {
+  const [messages, setMessages] = useState<AgentMessage[]>([]);
+  const [running, setRunning] = useState(false);
+  const [useScripted, setUseScripted] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const runDebate = async () => {
+    if (running) return;
+    setMessages([]);
+    setRunning(true);
+
+    const eventSource = new EventSource(
+      `${API}/agents/debate/stream?use_scripted_demo=${useScripted}`
+    );
+
+    eventSource.onmessage = (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === "debate_complete") {
+          setRunning(false);
+          eventSource.close();
+        } else if (msg.agent_key) {
+          setMessages((prev) => [...prev, msg as AgentMessage]);
+        }
+      } catch {}
+    };
+
+    eventSource.onerror = () => {
+      setRunning(false);
+      eventSource.close();
+    };
+  };
+
+  const agentOrder = ["safety", "production", "compliance", "maintenance", "finance", "emergency", "executive"];
+
+  return (
+    <div style={{ padding: "0 20px 42px" }}>
+      {/* Header */}
+      <div className="page-header" style={{ padding: "20px 0 16px" }}>
+        <div>
+          <div className="page-title">AI Debate Chamber</div>
+          <div className="page-subtitle">
+            Observe SafetyOS multi-agent debate reasoning through complex, high-risk industrial safety dilemmas.
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => setMessages([])}
+            className="clay-btn"
+            disabled={running || messages.length === 0}
+          >
+            <RotateCcw size={13} style={{ marginRight: 6 }} /> Reset
+          </button>
+          <button
+            onClick={runDebate}
+            className="clay-btn primary"
+            disabled={running}
+          >
+            {running ? "Debating..." : "🤖 Run AI Debate"}
+          </button>
+        </div>
+      </div>
+
+      {/* Agents Avatars Row */}
+      <div style={{ display: "flex", gap: 8, justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap" }}>
+        {agentOrder.map((key) => {
+          const meta = AGENT_META[key];
+          const hasSpoken = messages.some((m) => m.agent_key === key);
+          const isSpeaking = running && messages[messages.length - 1]?.agent_key === key;
+
+          return (
+            <div
+              key={key}
+              className="clay-card"
+              style={{
+                flex: "1 1 100px",
+                padding: "10px 8px",
+                textAlign: "center",
+                background: isSpeaking ? `${meta.color}08` : undefined,
+                border: isSpeaking ? `1px solid ${meta.color}40` : undefined,
+                opacity: hasSpoken || isSpeaking ? 1 : 0.45,
+                transition: "all 0.25s",
+              }}
+            >
+              <div style={{ fontSize: "20px", marginBottom: "4px" }}>{meta.emoji}</div>
+              <div style={{ fontSize: "10px", fontWeight: "800", color: hasSpoken ? meta.color : "var(--text-secondary)", letterSpacing: "0.04em" }}>
+                {key.toUpperCase()}
+              </div>
+              {isSpeaking && (
+                <div style={{ display: "flex", gap: "2px", justifyContent: "center", marginTop: "4px" }}>
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      style={{
+                        width: 4, height: 4,
+                        borderRadius: "50%",
+                        background: meta.color,
+                        animation: `typing-dot 1.2s ${i * 0.2}s ease-in-out infinite`,
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Debate transcript */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        {messages.length === 0 && !running && (
+          <div
+            className="clay-card"
+            style={{
+              textAlign: "center",
+              padding: "60px 20px",
+            }}
+          >
+            <Brain size={40} style={{ opacity: 0.35, margin: "0 auto 12px", color: "var(--accent-blue)" }} />
+            <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "6px" }}>
+              Run Safety Debate
+            </div>
+            <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+              Watch 7 specialized AI agents discuss a critical Zone C H₂S gas release scenario.
+              The Executive AI will synthesize all inputs and make the final decision.
+            </div>
+          </div>
+        )}
+
+        {messages.map((msg, i) => {
+          const meta = AGENT_META[msg.agent_key];
+          const isExecutive = msg.is_final;
+
+          return (
+            <div
+              key={i}
+              className={`clay-card ${isExecutive ? "info" : ""}`}
+              style={{
+                display: "flex",
+                gap: "14px",
+                padding: "16px",
+                borderLeft: `4px solid ${meta?.color || "rgba(255,255,255,0.06)"}`,
+              }}
+            >
+              {/* Agent avatar */}
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  background: `${meta?.color || "#888"}15`,
+                  border: `1px solid ${meta?.color || "#888"}30`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                  fontSize: "18px",
+                }}
+              >
+                {msg.emoji}
+              </div>
+
+              {/* Message */}
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                  <span style={{ fontSize: "13px", fontWeight: "800", color: meta?.color || "var(--text-primary)" }}>
+                    {msg.agent_name}
+                  </span>
+                  {isExecutive && (
+                    <span
+                      style={{
+                        fontSize: "9px",
+                        fontWeight: "800",
+                        background: "rgba(68,255,170,0.15)",
+                        color: "#44ffaa",
+                        padding: "1px 6px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      FINAL DECISION
+                    </span>
+                  )}
+                  <span style={{ fontSize: "10px", color: "var(--text-muted)", marginLeft: "auto" }}>
+                    {new Date(msg.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    color: "var(--text-secondary)",
+                    lineHeight: 1.6,
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {msg.message}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={messagesEndRef} />
+      </div>
+    </div>
+  );
+}
