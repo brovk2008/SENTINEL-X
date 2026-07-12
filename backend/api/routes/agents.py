@@ -369,6 +369,60 @@ async def get_scenario_detail(scenario_id: str):
     }
 
 
+@router.get("/debate/stream")
+async def stream_debate_get(
+    use_scripted_demo: bool = True,
+    scenario: str = "h2s_confined_space",
+    zone: str = "ZC",
+    risk_level: str = "CRITICAL"
+):
+    session_id = str(uuid.uuid4())
+    compound_risk = await get_state(COMPOUND_RISK_KEY) or {}
+    sensor_state = await get_state(SENSOR_STATE_KEY) or {}
+
+    try:
+        h2s_zc = float(sensor_state.get("H2S-ZC-01", {}).get("value", 45.0))
+        vib_c301 = float(sensor_state.get("VIB-C301", {}).get("value", 9.2))
+    except Exception:
+        h2s_zc = 45.0
+        vib_c301 = 9.2
+
+    context = {
+        "plant_name": "Bharat Petrochemicals Refinery Unit 3",
+        "zone": zone or "Zone C — Compressor Bay",
+        "risk_level": risk_level or "CRITICAL",
+        "risk_score": compound_risk.get("plant_risk_score", 84),
+        "factors": [
+            f"H2S-ZC-01 reading: {h2s_zc:.1f} ppm (threshold: 25 ppm) — ELEVATED",
+            "Confined space permit PTW-2025-0847 — ACTIVE (2.5 hours)",
+            f"Compressor C-301 vibration: {vib_c301:.1f} mm/s (baseline: 3.4 mm/s)",
+            "Last inspection: 23 days ago (overdue by 8 days)",
+            "Similar incident: Vizag Refinery 2025 — matching conditions",
+        ],
+        "active_permits": [
+            "PTW-2025-0847: Confined Space — Zone C (Expires: 16:30)",
+            "PTW-2025-0851: Maintenance — Zone B (Expires: 18:00)",
+        ]
+    }
+
+    async def event_generator():
+        yield f"data: {json.dumps({'type': 'session_start', 'session_id': session_id})}\n\n"
+        async for msg in run_debate(context, session_id, use_scripted_demo, scenario):
+            yield f"data: {json.dumps(msg)}\n\n"
+            await asyncio.sleep(0.1)
+        yield f"data: {json.dumps({'type': 'debate_complete', 'session_id': session_id})}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        }
+    )
+
+
 @router.post("/debate/stream")
 async def stream_debate(request: DebateRequest):
     """
