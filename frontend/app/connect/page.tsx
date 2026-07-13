@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { Cloud, Globe, Zap, Radio, Flame, ShieldCheck, Plug, Sparkles } from "lucide-react";
+import { PIDVisionExtractorModal } from "../../components/PIDVisionExtractorModal";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -27,10 +29,6 @@ const DEMO_SOURCES: Source[] = [
   { id: "aws-iot",       name: "AWS IoT Core",                      protocol: "mqtt",     host: "xxxxxxx.iot.ap-south-1.amazonaws.com",   port: 8883,  status: "standby",      tags_count: 0,   last_seen: null },
   { id: "azure-iot",     name: "Azure IoT Hub",                     protocol: "mqtt",     host: "safetyos.azure-devices.net",             port: 8883,  status: "standby",      tags_count: 0,   last_seen: null },
 ];
-
-import { Cloud, Globe, Zap, Radio, Flame, ShieldCheck, Plug, Sparkles } from "lucide-react";
-import { PIDVisionExtractorModal } from "../../components/PIDVisionExtractorModal";
-
 
 const CLOUD_INTEGRATIONS = [
   { id: "aws",        name: "AWS IoT Core",        Icon: Cloud,       color: "#ff9900" },
@@ -100,7 +98,7 @@ function StatusDot({ status }: { status: string }) {
   );
 }
 
-function AddModal({ onClose }: { onClose: () => void }) {
+function AddModal({ onClose, onAdd }: { onClose: () => void; onAdd: (name: string, proto: string) => void }) {
   const [proto, setProto] = useState<ModalProto>("mqtt");
   const [form,  setForm]  = useState<Record<string, string>>({});
   const [name,  setName]  = useState("");
@@ -115,16 +113,19 @@ function AddModal({ onClose }: { onClose: () => void }) {
     setTested(true);
   };
 
-  const handleAdd = async () => {
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name) return;
     setAdding(true);
     await new Promise((r) => setTimeout(r, 800));
     setAdding(false);
+    onAdd(name, proto);
     onClose();
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-box" style={{ maxWidth: 500 }} onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 300 }}>
+      <div className="modal-box" style={{ maxWidth: 500, background: "var(--bg-panel)", border: "1px solid var(--border-bright)" }} onClick={(e) => e.stopPropagation()}>
         <div
           style={{
             padding: "20px 24px 16px",
@@ -133,18 +134,20 @@ function AddModal({ onClose }: { onClose: () => void }) {
           }}
         >
           <div style={{ fontWeight: 800, fontSize: 16 }}>Add Data Source</div>
-          <button onClick={onClose} className="clay-btn" style={{ padding: "7px 11px" }}>✕</button>
+          <button type="button" onClick={onClose} className="btn-ghost" style={{ border: "none", background: "none", cursor: "pointer", fontSize: 16 }}>✕</button>
         </div>
 
-        <div style={{ padding: "20px 24px" }}>
+        <form onSubmit={handleAdd} style={{ padding: "20px 24px" }}>
           {/* Name */}
           <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>Source Name</div>
             <input
+              required
               className="clay-input"
               placeholder="e.g. Plant Floor MQTT"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
             />
           </div>
 
@@ -154,6 +157,7 @@ function AddModal({ onClose }: { onClose: () => void }) {
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {(["mqtt", "opcua", "modbus", "rtsp", "http_poll"] as ModalProto[]).map((p) => (
                 <button
+                  type="button"
                   key={p}
                   className={`filter-pill ${proto === p ? "active" : ""}`}
                   onClick={() => setProto(p)}
@@ -174,6 +178,7 @@ function AddModal({ onClose }: { onClose: () => void }) {
                   placeholder={placeholder}
                   value={form[field] || ""}
                   onChange={(e) => setForm((f) => ({ ...f, [field]: e.target.value }))}
+                  style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
                 />
               </div>
             ))}
@@ -181,14 +186,14 @@ function AddModal({ onClose }: { onClose: () => void }) {
 
           {/* Actions */}
           <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-            <button className="clay-btn" onClick={handleTest}>
+            <button type="button" className="btn" onClick={handleTest}>
               {tested === null ? "🔌 Test Connection" : tested ? "✓ Connected" : "✕ Failed"}
             </button>
-            <button className="clay-btn primary" onClick={handleAdd} disabled={adding}>
+            <button type="submit" className="btn primary" disabled={adding}>
               {adding ? "Connecting..." : "Add Source"}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
@@ -200,7 +205,6 @@ export default function ConnectPage() {
   const [showVisionModal, setShowVisionModal] = useState(false);
   const [testing, setTesting] = useState<string | null>(null);
   const [testResult, setTestResult] = useState<Record<string, string>>({});
-
 
   useEffect(() => {
     if (!API) return;
@@ -360,7 +364,24 @@ export default function ConnectPage() {
       </div>
 
       {/* Modals */}
-      {showAdd && <AddModal onClose={() => setShowAdd(false)} />}
+      {showAdd && (
+        <AddModal
+          onClose={() => setShowAdd(false)}
+          onAdd={(name, proto) => {
+            const newSource: Source = {
+              id: `src-${Date.now()}`,
+              name: name,
+              protocol: proto as any,
+              host: "localhost",
+              port: proto === "mqtt" ? 1883 : proto === "opcua" ? 4840 : 502,
+              status: "connected",
+              tags_count: 12,
+              last_seen: new Date().toISOString(),
+            };
+            setSources((prev) => [newSource, ...prev]);
+          }}
+        />
+      )}
       <PIDVisionExtractorModal isOpen={showVisionModal} onClose={() => setShowVisionModal(false)} />
     </div>
   );

@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { HeartPulse, Siren, Phone, FileText, Users, MapPin } from "lucide-react";
+import { playIndustrialSiren, announceSafetyAlert } from "../../lib/audio-annunciator";
+import { useStore } from "../../lib/store";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -141,6 +143,7 @@ function statusColor(status: string): string {
 }
 
 export default function BiometricsPage() {
+  const addAlert = useStore((s) => s.addAlert);
   const [workers, setWorkers] = useState<WorkerBio[]>(MOCK_WORKERS);
   const [summary, setSummary] = useState<FleetSummary>(MOCK_SUMMARY);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -175,11 +178,34 @@ export default function BiometricsPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button
+            className="btn"
+            onClick={() => {
+              const logText = `SENTINEL X — WORKER BIOMETRIC HEALTH LOG\nDate: ${new Date().toLocaleString("en-IN")}\n` +
+                MOCK_WORKERS.map(w => `[${w.worker_id}] ${w.worker_name} (${w.zone_id}) — HR: ${w.heart_rate}bpm | PSI: ${w.psi_score} | H2S Dose: ${w.cumulative_dose_pct}% | Status: ${w.status}`).join("\n");
+              const blob = new Blob([logText], { type: "text/plain;charset=utf-8" });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = `WORKER_BIOMETRICS_LOG_${new Date().toISOString().slice(0,10)}.txt`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+            }}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
             <HeartPulse size={14} />
             <span>Export Health Log</span>
           </button>
-          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button
+            className="btn primary"
+            onClick={() => {
+              playIndustrialSiren(3000);
+              announceSafetyAlert("Attention all shift personnel: Mandatory hydration rotation cycle initiated for Zone C workers.");
+            }}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
             <Siren size={14} />
             <span>Broadcast Alert</span>
           </button>
@@ -347,11 +373,29 @@ export default function BiometricsPage() {
               )}
 
               <div style={{ display: "flex", gap: 8 }}>
-                <button className="clay-btn primary" style={{ flex: 1, justifyContent: "center", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <button
+                  className="btn primary"
+                  onClick={() => announceSafetyAlert(`Paging operator ${selected.worker_name} over Unit 3 channel 2.`)}
+                  style={{ flex: 1, justifyContent: "center", display: "inline-flex", alignItems: "center", gap: 6 }}
+                >
                   <Phone size={14} />
                   <span>Radio Operator</span>
                 </button>
-                <button className="clay-btn" style={{ flex: 1, justifyContent: "center", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                <button
+                  className="btn"
+                  onClick={() => {
+                    addAlert({
+                      id: `alert-${Date.now()}`,
+                      title: `Manual Incident Logged: ${selected.worker_name} physiological strain`,
+                      severity: "MEDIUM",
+                      zone: selected.zone_id,
+                      timestamp: new Date().toISOString(),
+                      read: false
+                    });
+                    announceSafetyAlert(`Logged safety incident report for operator ${selected.worker_name}.`);
+                  }}
+                  style={{ flex: 1, justifyContent: "center", display: "inline-flex", alignItems: "center", gap: 6 }}
+                >
                   <FileText size={14} />
                   <span>Log Incident</span>
                 </button>

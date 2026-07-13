@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { PlantMap } from "../../components/PlantMap";
 import { RefreshCw, Siren, AlertTriangle } from "lucide-react";
+import { playIndustrialSiren, announceSafetyAlert } from "../../lib/audio-annunciator";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -122,7 +123,14 @@ export default function DispersionPage() {
             <RefreshCw size={14} />
             <span>Recalibrate Plume</span>
           </button>
-          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button
+            className="btn danger"
+            onClick={() => {
+              playIndustrialSiren(4000);
+              announceSafetyAlert("Emergency Plume Evacuation Order Issued for Zone C and downwind perimeter.");
+            }}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
             <Siren size={14} />
             <span>Trigger Evacuation</span>
           </button>

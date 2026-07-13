@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { ShieldCheck, Siren, FileText, Users, AlertTriangle } from "lucide-react";
 import { DemoCameraFeed } from "../../components/DemoCameraFeed";
 import { DEMO_CAMERA_FEEDS } from "../../lib/demo-camera-feeds";
+import { playIndustrialSiren, announceSafetyAlert } from "../../lib/audio-annunciator";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -353,6 +354,16 @@ export default function CamerasPage() {
   const onlineCount = cameras.filter((c) => c.status === "online").length;
   const alertCount  = cameras.filter((c) => c.hasAlert).length;
 
+  const [checkingPPE, setCheckingPPE] = useState(false);
+
+  const handlePPECheckAll = () => {
+    setCheckingPPE(true);
+    setTimeout(() => {
+      setCheckingPPE(false);
+      announceSafetyAlert("Automated P P E compliance scan complete. Two violations flagged. Zone C and Main Gate.");
+    }, 1200);
+  };
+
   return (
     <div style={{ padding: "0 20px 24px" }}>
       {/* Page header */}
@@ -369,11 +380,18 @@ export default function CamerasPage() {
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--risk-critical)", animation: "live-pulse 2s infinite", display: "inline-block" }} />
             <span style={{ fontSize: 12, fontWeight: 700, color: "var(--risk-critical)" }}>REC ●</span>
           </div>
-          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button className="btn" onClick={handlePPECheckAll} disabled={checkingPPE} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <ShieldCheck size={14} />
-            <span>PPE Check All</span>
+            <span>{checkingPPE ? "Scanning PPE..." : "PPE Check All"}</span>
           </button>
-          <button className="clay-btn danger" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button
+            className="btn danger"
+            onClick={() => {
+              playIndustrialSiren(4000);
+              announceSafetyAlert("Attention. Emergency broadcast initiated. Standby for safety instruction from Unit 3 supervisor.");
+            }}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
             <Siren size={14} />
             <span>Emergency Broadcast</span>
           </button>

@@ -91,6 +91,8 @@ const ZONE_LIMITS = {
 
 export default function WorkersPage() {
   const [rtls, setRtls] = useState<RTLSData>(MOCK_RTLS);
+  const [calibrating, setCalibrating] = useState(false);
+  const [showRestricted, setShowRestricted] = useState(true);
 
   useEffect(() => {
     const fetchPositions = () => {
@@ -106,6 +108,11 @@ export default function WorkersPage() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleCalibrate = () => {
+    setCalibrating(true);
+    setTimeout(() => setCalibrating(false), 1200);
+  };
+
   return (
     <div style={{ padding: "0 20px 42px" }}>
       {/* Header */}
@@ -117,13 +124,17 @@ export default function WorkersPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button className="clay-btn" onClick={handleCalibrate} disabled={calibrating} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <Radio size={14} />
-            <span>Calibrate Anchors</span>
+            <span>{calibrating ? "Calibrating UWB..." : "Calibrate Anchors"}</span>
           </button>
-          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button 
+            className={`clay-btn ${showRestricted ? "primary" : ""}`}
+            onClick={() => setShowRestricted(!showRestricted)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
             <Map size={14} />
-            <span>Toggle Restricted Areas</span>
+            <span>{showRestricted ? "Hide Restricted Areas" : "Show Restricted Areas"}</span>
           </button>
         </div>
       </div>

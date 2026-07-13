@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { AlertTriangle, RefreshCcw, Sparkles, ShieldAlert, Wrench, Flame } from "lucide-react";
+import { useStore } from "../../lib/store";
+import { playIndustrialSiren, announceSafetyAlert } from "../../lib/audio-annunciator";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -69,6 +71,8 @@ const MOCK_DETAIL: Record<string, ScenarioDetail> = {
 };
 
 export default function ScenarioSimulatorPage() {
+  const setPlantRisk = useStore((s) => s.setPlantRisk);
+  const addAlert = useStore((s) => s.addAlert);
   const [scenarios, setScenarios] = useState<ScenarioSummary[]>(MOCK_SCENARIOS);
   const [selectedId, setSelectedId] = useState<string | null>("h2s_confined_space");
   const [detail, setDetail] = useState<ScenarioDetail | null>(MOCK_DETAIL["h2s_confined_space"]);
@@ -130,9 +134,26 @@ export default function ScenarioSimulatorPage() {
       setSimulation(payload);
     } catch (err) {
       setError("Risk demo simulated successfully (local fallback active).");
+      const name = scenarios.find((s) => RULE_MAP[s.id] === ruleId)?.name || "Vessel Gas Alarm";
+      
+      // Update global store state
+      setPlantRisk(94);
+      addAlert({
+        id: `simulation-${Date.now()}`,
+        title: `Simulated Alert: ${name}`,
+        severity: "CRITICAL",
+        zone: "ZC",
+        timestamp: new Date().toISOString(),
+        read: false
+      });
+
+      // Play audio siren & text-to-speech announcement
+      playIndustrialSiren(5000);
+      announceSafetyAlert(`Warning. Simulator has triggered scenario ${name} in Zone C. Standby for containment instructions.`);
+
       setSimulation({
         rule_id: ruleId,
-        rule_name: scenarios.find((s) => RULE_MAP[s.id] === ruleId)?.name || "Vessel Gas Alarm",
+        rule_name: name,
         severity: "CRITICAL",
         triggered: true,
         all_triggered_rules: 1,

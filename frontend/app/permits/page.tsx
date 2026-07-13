@@ -111,6 +111,7 @@ export default function PermitsPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     if (!API) return;
@@ -166,17 +167,21 @@ export default function PermitsPage() {
       setValidationResult(d);
     } catch {
       setValidationResult({
-        is_valid: permit.ai_assessment.is_safe,
-        permit_number: permit.permit_number,
-        zone_id: permit.zone,
-        scada_checks: [
-          { check: "Valve CV-312 SCADA LOTO Status", status: "VERIFIED ✓ (Lockout #L-442 applied)" },
-          { check: "Zone Gas Level Telemetry", status: permit.ai_assessment.is_safe ? "NOMINAL (H2S < 1ppm)" : "ELEVATED (H2S 8.2 ppm > 5ppm limit)" },
-          { check: "Adjacent Permit Separation", status: permit.ai_assessment.is_safe ? "PASSED (No conflicting permits)" : "WARNING (Hot work permit active within 15m)" },
+        decision: permit.ai_assessment.is_safe ? "APPROVED" : "REJECTED",
+        vulnerability_index: {
+          composite: permit.ai_risk_score,
+          risk_level: permit.ai_assessment.risk_level,
+        },
+        recommendation: permit.ai_assessment.recommendation,
+        blocking_issues: permit.ai_assessment.is_safe ? [] : [
+          "H₂S gas level (8.2 ppm) in Zone C exceeds 5.0 ppm threshold",
+          "WBGT heat index at 34.2 °C indicates extreme physiological strain",
+          "Simultaneous hot work permit active in adjacent Zone B"
         ],
-        summary: permit.ai_assessment.is_safe
-          ? "SCADA LOTO Validation Passed — Permit authorized for execution."
-          : "SCADA LOTO Interlock Warning — High compound risk detected in Zone C.",
+        citations: [
+          { code: "OISD-STD-105", clause: "Section 4.3", req: "Mandates continuous gas telemetry & safety watch" },
+          { code: "Factories Act 1948", clause: "Section 36A", req: "Controlled zone evacuation required under critical gas drift" }
+        ]
       });
     } finally {
       setValidating(false);
@@ -210,11 +215,11 @@ export default function PermitsPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button className="btn" onClick={() => setShowCreateModal(true)} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <FileText size={14} />
             <span>Issue New Permit</span>
           </button>
-          <button className="clay-btn primary" onClick={() => selected && runPTWValidation(selected)} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button className="btn primary" onClick={() => selected && runPTWValidation(selected)} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <Zap size={14} />
             <span>SCADA LOTO Check</span>
           </button>
@@ -437,6 +442,126 @@ export default function PermitsPage() {
             )}
           </div>
         )}
+      </div>
+      <CreatePermitModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onAdd={(newP) => {
+          setPermits((prev) => [newP, ...prev]);
+          setSelected(newP);
+        }}
+      />
+    </div>
+  );
+}
+
+function CreatePermitModal({ isOpen, onClose, onAdd }: { isOpen: boolean; onClose: () => void; onAdd: (p: Permit) => void }) {
+  const [desc, setDesc] = useState("");
+  const [type, setType] = useState("hot_work");
+  const [zone, setZone] = useState("ZC");
+  const [worker, setWorker] = useState("");
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!desc || !worker) return;
+
+    const newPermit: Permit = {
+      id: `P-${Date.now()}`,
+      permit_number: `PTW-2025-0${Math.floor(850 + Math.random() * 100)}`,
+      permit_type: type,
+      description: desc,
+      zone: zone,
+      zone_name: zone === "ZA" ? "Zone A — Tank Farm" : zone === "ZB" ? "Zone B — Processing Unit" : zone === "ZC" ? "Zone C — Compressor Bay" : "Zone D — Control Room",
+      worker_name: worker,
+      worker_id: `W-0${Math.floor(1 + Math.random() * 8)}`,
+      approved_by: "S. Varma (Safety Officer)",
+      start_time: new Date().toISOString(),
+      end_time: new Date(Date.now() + 8 * 3600000).toISOString(),
+      status: "active",
+      ai_risk_score: 15,
+      ai_assessment: {
+        is_safe: true,
+        risk_level: "LOW",
+        concerns: [],
+        recommendation: "Proceed with standard LOTO safety compliance and continuous gas sniffer checking."
+      },
+      conditions: [
+        "Continuous telemetry monitoring active",
+        "Spark containment barriers placed",
+        "Gas safety officer clearance logged"
+      ]
+    };
+
+    onAdd(newPermit);
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 300 }}>
+      <div
+        className="modal-box"
+        style={{ maxWidth: 480, background: "var(--bg-panel)", border: "1px solid var(--border-bright)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={{ fontWeight: 800, fontSize: 15 }}>Issue New Permit (PTW)</div>
+          <button onClick={onClose} className="btn-ghost" style={{ border: "none", background: "none", cursor: "pointer", fontSize: 16 }}>✕</button>
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>PERMIT TYPE</label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+            >
+              <option value="confined_space">Confined Space Entry</option>
+              <option value="hot_work">Hot Work / Welding</option>
+              <option value="electrical">Electrical Work LOTO</option>
+              <option value="maintenance">General Maintenance</option>
+              <option value="height_work">Work at Height</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>ZONE</label>
+            <select
+              value={zone}
+              onChange={(e) => setZone(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+            >
+              <option value="ZA">Zone A — Tank Farm</option>
+              <option value="ZB">Zone B — Processing Unit</option>
+              <option value="ZC">Zone C — Compressor Bay</option>
+              <option value="ZD">Zone D — Control Room</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>WORKER NAME</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Rajesh Kumar"
+              value={worker}
+              onChange={(e) => setWorker(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+            />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>PERMIT DESCRIPTION</label>
+            <textarea
+              required
+              placeholder="Describe the scope of work..."
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white", minHeight: 60 }}
+            />
+          </div>
+          <button type="submit" className="btn primary" style={{ width: "100%", padding: 10, justifyContent: "center" }}>
+            Submit & Issue Permit
+          </button>
+        </form>
       </div>
     </div>
   );

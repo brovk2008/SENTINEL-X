@@ -41,9 +41,12 @@ const INDIA_PATH = `
 `;
 
 export default function SitesPage() {
-  const [selected, setSelected] = useState<string | null>("viz");
+  const [plants, setPlants] = useState<Plant[]>(PLANTS);
+  const [selected, setSelected] = useState<string>("viz");
+  const [comparing, setComparing] = useState(false);
+  const [addingPlant, setAddingPlant] = useState(false);
 
-  const selPlant = PLANTS.find((p) => p.id === selected);
+  const selPlant = plants.find((p) => p.id === selected) || plants[0];
 
   return (
     <div style={{ padding: "0 20px 32px" }}>
@@ -52,15 +55,23 @@ export default function SitesPage() {
         <div>
           <div className="page-title">Multi-Site Overview</div>
           <div className="page-subtitle">
-            {PLANTS.length} plants · {PLANTS.reduce((s, p) => s + p.workers, 0)} workers · {PLANTS.filter((p) => p.risk >= 80).length} critical site{PLANTS.filter((p) => p.risk >= 80).length !== 1 ? "s" : ""}
+            {plants.length} plants · {plants.reduce((s, p) => s + p.workers, 0)} workers · {plants.filter((p) => p.risk >= 80).length} critical site{plants.filter((p) => p.risk >= 80).length !== 1 ? "s" : ""}
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button
+            className={`btn ${comparing ? "primary" : ""}`}
+            onClick={() => setComparing(!comparing)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
             <BarChart3 size={14} />
-            <span>Compare Sites</span>
+            <span>{comparing ? "Hide Comparison" : "Compare Sites"}</span>
           </button>
-          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button
+            className="btn primary"
+            onClick={() => setAddingPlant(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
             <Plus size={14} />
             <span>Add Plant</span>
           </button>
@@ -100,7 +111,7 @@ export default function SitesPage() {
               ))}
 
               {/* Plant dots */}
-              {PLANTS.map((p) => {
+              {plants.map((p) => {
                 const color = p.risk >= 80 ? "#ff3b3b" : p.risk >= 50 ? "#ffaa00" : "#00ff88";
                 const isSel = selected === p.id;
                 return (
@@ -230,7 +241,7 @@ export default function SitesPage() {
           className="stagger-children"
           style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}
         >
-          {PLANTS.map((p) => (
+          {plants.map((p) => (
             <div
               key={p.id}
               className={`clay-card ${riskClass(p.risk)} ${selected === p.id ? "info" : ""}`}
@@ -262,6 +273,138 @@ export default function SitesPage() {
             </div>
           ))}
         </div>
+      </div>
+      <AddPlantModal
+        isOpen={addingPlant}
+        onClose={() => setAddingPlant(false)}
+        onAdd={(p) => {
+          setPlants((prev) => [...prev, p]);
+          setSelected(p.id);
+        }}
+      />
+    </div>
+  );
+}
+
+function AddPlantModal({ isOpen, onClose, onAdd }: { isOpen: boolean; onClose: () => void; onAdd: (p: Plant) => void }) {
+  const [name, setName] = useState("");
+  const [loc, setLoc] = useState("");
+  const [city, setCity] = useState("");
+  const [risk, setRisk] = useState(25);
+  const [workers, setWorkers] = useState(50);
+  const [type, setType] = useState("Refinery");
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !loc || !city) return;
+
+    const rx = Math.floor(250 + Math.random() * 350);
+    const ry = Math.floor(150 + Math.random() * 250);
+
+    const newPlant: Plant = {
+      id: `plant-${Date.now()}`,
+      name,
+      location: loc,
+      city,
+      risk,
+      workers,
+      alerts: risk >= 80 ? 3 : risk >= 50 ? 1 : 0,
+      x: rx,
+      y: ry,
+      type
+    };
+
+    onAdd(newPlant);
+    onClose();
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose} style={{ zIndex: 300 }}>
+      <div
+        className="modal-box"
+        style={{ maxWidth: 480, background: "var(--bg-panel)", border: "1px solid var(--border-bright)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <div style={{ fontWeight: 800, fontSize: 15 }}>Add New Facility Site</div>
+          <button onClick={onClose} className="btn-ghost" style={{ border: "none", background: "none", cursor: "pointer", fontSize: 16 }}>✕</button>
+        </div>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>PLANT NAME</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Nayara Energy"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+            />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>LOCATION</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Vadinar, Gujarat"
+              value={loc}
+              onChange={(e) => setLoc(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+            />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>CITY</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Vadinar"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+            />
+          </div>
+          <div>
+            <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>FACILITY TYPE</label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+            >
+              <option value="Refinery">Oil Refinery</option>
+              <option value="Petrochemical">Petrochemical Complex</option>
+              <option value="Offshore">Offshore Rig</option>
+              <option value="Storage">LPG Depot / Storage</option>
+            </select>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>RISK SCORE (%)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={risk}
+                onChange={(e) => setRisk(parseInt(e.target.value))}
+                style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 4 }}>TOTAL WORKERS</label>
+              <input
+                type="number"
+                min="1"
+                value={workers}
+                onChange={(e) => setWorkers(parseInt(e.target.value))}
+                style={{ width: "100%", padding: 8, background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: 4, color: "white" }}
+              />
+            </div>
+          </div>
+          <button type="submit" className="btn primary" style={{ width: "100%", padding: 10, justifyContent: "center" }}>
+            Create Site & Deploy
+          </button>
+        </form>
       </div>
     </div>
   );
