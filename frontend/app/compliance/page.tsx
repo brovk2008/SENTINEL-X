@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { AlertTriangle, CheckCircle, RefreshCcw, FileText, Check } from "lucide-react";
+import { AuditReportModal } from "../../components/AuditReportModal";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -57,6 +58,7 @@ const MOCK_COMPLIANCE: ComplianceStatus = {
 export default function CompliancePage() {
   const [status, setStatus] = useState<ComplianceStatus | null>(MOCK_COMPLIANCE);
   const [loading, setLoading] = useState(false);
+  const [showAuditModal, setShowAuditModal] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -88,10 +90,14 @@ export default function CompliancePage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={load} className="clay-btn" disabled={loading}>
+          <button onClick={load} className="btn" disabled={loading}>
             <RefreshCcw size={13} style={{ marginRight: 6 }} /> Refresh
           </button>
-          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <button
+            onClick={() => setShowAuditModal(true)}
+            className="btn primary"
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
             <FileText size={14} />
             <span>Compliance Certificate</span>
           </button>
@@ -186,6 +192,7 @@ export default function CompliancePage() {
           ))}
         </div>
       </div>
+      <AuditReportModal isOpen={showAuditModal} onClose={() => setShowAuditModal(false)} />
     </div>
   );
 }
