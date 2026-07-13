@@ -87,15 +87,27 @@ const COMPOUND_RISKS = [
   },
 ];
 
+import {
+  ShieldAlert,
+  Cpu,
+  Scale,
+  Wrench,
+  DollarSign,
+  Siren,
+  BarChart3,
+  Bot,
+  Clock,
+} from "lucide-react";
+
 // ── Agent Avatars ──────────────────────────────────────────────────────────────
 const AGENTS = [
-  { name: "Safety",      emoji: "🛡️",  color: "#ff3b3b" },
-  { name: "Production",  emoji: "⚙️",  color: "#ff6b35" },
-  { name: "Compliance",  emoji: "⚖️",  color: "#9b59ff" },
-  { name: "Maintenance", emoji: "🔧",  color: "#4d8eff" },
-  { name: "Finance",     emoji: "💰",  color: "#ffaa00" },
-  { name: "Emergency",   emoji: "🚨",  color: "#ff4d9b" },
-  { name: "Executive",   emoji: "📊",  color: "#00ddff" },
+  { name: "Safety",      Icon: ShieldAlert, color: "#ff3b3b" },
+  { name: "Production",  Icon: Cpu,         color: "#ff6b35" },
+  { name: "Compliance",  Icon: Scale,       color: "#9b59ff" },
+  { name: "Maintenance", Icon: Wrench,      color: "#4d8eff" },
+  { name: "Finance",     Icon: DollarSign,  color: "#ffaa00" },
+  { name: "Emergency",   Icon: Siren,       color: "#ff4d9b" },
+  { name: "Executive",   Icon: BarChart3,   color: "#00ddff" },
 ];
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
@@ -303,7 +315,10 @@ export default function MissionControlPage() {
                     <div style={{ fontSize: 11, fontWeight: 600 }}>{type}</div>
                     <div style={{ fontSize: 9, color: "var(--text-muted)" }}>Zone {zone}</div>
                   </div>
-                  <div style={{ fontSize: 11, color, fontWeight: 700 }}>⏱ {exp}</div>
+                  <div style={{ fontSize: 11, color, fontWeight: 700, display: "flex", alignItems: "center", gap: 3 }}>
+                    <Clock size={11} />
+                    <span>{exp}</span>
+                  </div>
                 </div>
               ))}
               <div style={{ fontSize: 10, color: "var(--text-secondary)", marginTop: 4 }}>
@@ -365,36 +380,42 @@ export default function MissionControlPage() {
               7 agents online — debate active
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, flex: 1 }}>
-              {AGENTS.map((a) => (
-                <div
-                  key={a.name}
-                  style={{ textAlign: "center" }}
-                  data-tooltip={`${a.name} Agent — Online`}
-                >
+              {AGENTS.map((a) => {
+                const AgentIcon = a.Icon;
+                return (
                   <div
-                    className="agent-avatar"
-                    style={{
-                      background: `${a.color}18`,
-                      border: `2px solid ${a.color}30`,
-                      margin: "0 auto 4px",
-                      width: 40, height: 40,
-                      fontSize: 16,
-                    }}
+                    key={a.name}
+                    style={{ textAlign: "center" }}
+                    data-tooltip={`${a.name} Agent — Online`}
                   >
-                    {a.emoji}
+                    <div
+                      className="agent-avatar"
+                      style={{
+                        background: `${a.color}18`,
+                        border: `2px solid ${a.color}30`,
+                        margin: "0 auto 4px",
+                        width: 40, height: 40,
+                        display: "grid",
+                        placeItems: "center",
+                        color: a.color,
+                      }}
+                    >
+                      <AgentIcon size={18} />
+                    </div>
+                    <div style={{ fontSize: 9, color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                      {a.name}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 9, color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-                    {a.name}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
             <a
               href="/debate"
               className="clay-btn primary"
-              style={{ marginTop: 14, justifyContent: "center", textDecoration: "none" }}
+              style={{ marginTop: 14, justifyContent: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}
             >
-              🤖 Launch Debate Room
+              <Bot size={16} />
+              <span>Launch Debate Room</span>
             </a>
           </div>
         </div>

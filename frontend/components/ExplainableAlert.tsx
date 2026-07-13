@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { CheckCircle2, ChevronDown, ChevronRight, ShieldCheck, Check } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, ShieldCheck, Check, Bot } from "lucide-react";
 
 const severityColors: Record<string, string> = {
   CRITICAL: "var(--risk-critical)",
@@ -147,8 +147,9 @@ export function ExplainableAlert({ alert, onAcknowledge }: ExplainableAlertProps
               <div style={{ fontSize: 9, color: "var(--accent-blue)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
                 Recommended Safety Action
               </div>
-              <div style={{ fontSize: 11, color: "var(--text-primary)", lineHeight: 1.4 }}>
-                👉 {alert.recommended_action}
+              <div style={{ fontSize: 11, color: "var(--text-primary)", lineHeight: 1.4, display: "flex", alignItems: "center", gap: 6 }}>
+                <Check size={13} color="var(--risk-safe)" />
+                <span>{alert.recommended_action}</span>
               </div>
             </div>
           )}
@@ -162,10 +163,11 @@ export function ExplainableAlert({ alert, onAcknowledge }: ExplainableAlertProps
             <button
               onClick={handleRunDebate}
               className="clay-btn"
-              style={{ fontSize: 11, padding: "5px 12px" }}
+              style={{ fontSize: 11, padding: "5px 12px", display: "inline-flex", alignItems: "center", gap: 6 }}
               disabled={debateRunning}
             >
-              {debateRunning ? "Debating..." : "🤖 Run AI Debate"}
+              <Bot size={13} />
+              <span>{debateRunning ? "Debating..." : "Run AI Debate"}</span>
             </button>
           </div>
         </div>

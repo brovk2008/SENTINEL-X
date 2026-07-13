@@ -4,23 +4,43 @@ import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useStore } from "../../lib/store";
 
+import {
+  Factory,
+  Bot,
+  Radio,
+  Camera,
+  FileText,
+  HeartPulse,
+  Wind,
+  Users,
+  Scale,
+  FlaskConical,
+  BarChart3,
+  RefreshCw,
+  Brain,
+  Globe,
+  Network,
+  Settings,
+  Bell,
+} from "lucide-react";
+
 const NAV = [
-  { href: "/",           label: "Mission",    icon: "🏭" },
-  { href: "/debate",     label: "AI Debate",  icon: "🤖" },
-  { href: "/sensors",    label: "Sensors",    icon: "📡" },
-  { href: "/cameras",    label: "CCTV",       icon: "📹" },
-  { href: "/permits",    label: "Permits",    icon: "📋" },
-  { href: "/biometrics", label: "Biometrics", icon: "🩺" },
-  { href: "/dispersion", label: "Plume",      icon: "💨" },
-  { href: "/workers",    label: "Workers",    icon: "🚶" },
-  { href: "/compliance", label: "Compliance", icon: "⚖️" },
-  { href: "/simulator",  label: "Simulator",  icon: "🔬" },
-  { href: "/executive",  label: "Executive",  icon: "📊" },
-  { href: "/handover",   label: "Handover",   icon: "🔄" },
-  { href: "/knowledge",  label: "Knowledge",  icon: "🧠" },
-  { href: "/sites",      label: "Sites",      icon: "🗺️" },
-  { href: "/connect",    label: "Connect",    icon: "⚙️" },
-  { href: "/settings",   label: "Settings",   icon: "🔑" },
+  { href: "/",           label: "Mission",    Icon: Factory },
+  { href: "/debate",     label: "AI Debate",  Icon: Bot },
+  { href: "/sensors",    label: "Sensors",    Icon: Radio },
+  { href: "/cameras",    label: "CCTV",       Icon: Camera },
+  { href: "/permits",    label: "Permits",    Icon: FileText },
+  { href: "/biometrics", label: "Biometrics", Icon: HeartPulse },
+  { href: "/dispersion", label: "Plume",      Icon: Wind },
+  { href: "/workers",    label: "Workers",    Icon: Users },
+  { href: "/compliance", label: "Compliance", Icon: Scale },
+  { href: "/simulator",  label: "Simulator",  Icon: FlaskConical },
+  { href: "/executive",  label: "Executive",  Icon: BarChart3 },
+  { href: "/handover",   label: "Handover",   Icon: RefreshCw },
+  { href: "/knowledge",  label: "Knowledge",  Icon: Brain },
+  { href: "/sites",      label: "Sites",      Icon: Globe },
+  { href: "/connect",    label: "Connect",    Icon: Network },
+  { href: "/settings",   label: "Settings",   Icon: Settings },
 ];
 
 export function TopNav() {
@@ -95,23 +115,28 @@ export function TopNav() {
         {/* Right — quick chips + alerts */}
         <div className="right">
           <div className="clay-card" style={{ padding: "7px 12px", fontSize: 12, display: "flex", gap: 6, alignItems: "center" }}>
-            <span style={{ color: "var(--risk-medium)" }}>📡</span>
-            <span>32 Sensors</span>
-          </div>
-          <div className="clay-card" style={{ padding: "7px 12px", fontSize: 12, display: "flex", gap: 6, alignItems: "center" }}>
-            <span>👷</span>
-            <span>48 Workers</span>
+            <span className="live-dot" />
+            <span>UNS Active</span>
           </div>
 
           {/* Alert bell */}
           <div style={{ position: "relative" }}>
             <button
-              onClick={() => setAlertOpen((o) => !o)}
-              className="clay-btn"
-              style={{ padding: "8px 12px", position: "relative" }}
+              className="clay-button"
+              onClick={() => setAlertOpen(!alertOpen)}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "var(--r-md)",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 12,
+                position: "relative",
+                cursor: "pointer",
+              }}
               aria-label="Alerts"
             >
-              🔔
+              <Bell size={15} />
               {unread > 0 && (
                 <span
                   style={{
@@ -120,11 +145,11 @@ export function TopNav() {
                     right: -4,
                     background: "var(--risk-critical)",
                     color: "white",
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: 800,
-                    width: 16,
-                    height: 16,
-                    borderRadius: "50%",
+                    width: 18,
+                    height: 18,
+                    borderRadius: 999,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -220,15 +245,20 @@ export function TopNav() {
 
       {/* ── Pill nav ── */}
       <nav className="pill-nav" aria-label="Primary navigation">
-        {NAV.map((n) => (
-          <Link
-            key={n.href}
-            href={n.href}
-            className={pathname === n.href ? "active" : ""}
-          >
-            {n.icon} {n.label}
-          </Link>
-        ))}
+        {NAV.map((n) => {
+          const IconComp = n.Icon;
+          return (
+            <Link
+              key={n.href}
+              href={n.href}
+              className={pathname === n.href ? "active" : ""}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+            >
+              <IconComp size={14} />
+              <span>{n.label}</span>
+            </Link>
+          );
+        })}
       </nav>
     </header>
   );

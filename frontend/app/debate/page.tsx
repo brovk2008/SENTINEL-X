@@ -1,25 +1,35 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { Brain, RotateCcw } from "lucide-react";
+import {
+  Brain,
+  RotateCcw,
+  ShieldAlert,
+  Cpu,
+  Scale,
+  Wrench,
+  DollarSign,
+  Siren,
+  Award,
+  Bot,
+} from "lucide-react";
 
 interface AgentMessage {
   session_id: string;
   agent_key: string;
   agent_name: string;
-  emoji: string;
   message: string;
   timestamp: string;
   is_final?: boolean;
 }
 
-const AGENT_META: Record<string, { emoji: string; color: string; tagline: string }> = {
-  safety:      { emoji: "🔴", color: "#ff4444", tagline: "Life first. Always." },
-  production:  { emoji: "🟡", color: "#ffaa00", tagline: "Uptime matters." },
-  compliance:  { emoji: "⚖️", color: "#4488ff", tagline: "The law is non-negotiable." },
-  maintenance: { emoji: "🔧", color: "#00cc88", tagline: "Fix the root cause." },
-  finance:     { emoji: "💰", color: "#cc88ff", tagline: "Know the cost." },
-  emergency:   { emoji: "🚨", color: "#ff6644", tagline: "When triggered, act." },
-  executive:   { emoji: "🎯", color: "#44ffaa", tagline: "I decide. I act." },
+const AGENT_META: Record<string, { Icon: any; color: string; tagline: string }> = {
+  safety:      { Icon: ShieldAlert, color: "#ff4444", tagline: "Life first. Always." },
+  production:  { Icon: Cpu,         color: "#ffaa00", tagline: "Uptime matters." },
+  compliance:  { Icon: Scale,       color: "#4488ff", tagline: "The law is non-negotiable." },
+  maintenance: { Icon: Wrench,      color: "#00cc88", tagline: "Fix the root cause." },
+  finance:     { Icon: DollarSign,  color: "#cc88ff", tagline: "Know the cost." },
+  emergency:   { Icon: Siren,       color: "#ff6644", tagline: "When triggered, act." },
+  executive:   { Icon: Award,       color: "#44ffaa", tagline: "I decide. I act." },
 };
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
@@ -115,8 +125,10 @@ export default function DebatePage() {
             onClick={runDebate}
             className="clay-btn primary"
             disabled={running}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
           >
-            {running ? "Debating..." : "🤖 Run AI Debate"}
+            <Bot size={15} />
+            <span>{running ? "Debating..." : "Run AI Debate"}</span>
           </button>
         </div>
       </div>
@@ -125,6 +137,7 @@ export default function DebatePage() {
       <div style={{ display: "flex", gap: 8, justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap" }}>
         {agentOrder.map((key) => {
           const meta = AGENT_META[key];
+          const AgentIcon = meta.Icon;
           const hasSpoken = messages.some((m) => m.agent_key === key);
           const isSpeaking = running && messages[messages.length - 1]?.agent_key === key;
 
@@ -142,23 +155,28 @@ export default function DebatePage() {
                 transition: "all 0.25s",
               }}
             >
-              <div style={{ fontSize: "20px", marginBottom: "4px" }}>{meta.emoji}</div>
+              <div
+                style={{
+                  width: 32,
+                  height: 32,
+                  margin: "0 auto 6px",
+                  borderRadius: 8,
+                  background: `${meta.color}15`,
+                  display: "grid",
+                  placeItems: "center",
+                  color: meta.color,
+                }}
+              >
+                <AgentIcon size={16} />
+              </div>
               <div style={{ fontSize: "10px", fontWeight: "800", color: hasSpoken ? meta.color : "var(--text-secondary)", letterSpacing: "0.04em" }}>
                 {key.toUpperCase()}
               </div>
               {isSpeaking && (
                 <div style={{ display: "flex", gap: "2px", justifyContent: "center", marginTop: "4px" }}>
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      style={{
-                        width: 4, height: 4,
-                        borderRadius: "50%",
-                        background: meta.color,
-                        animation: `typing-dot 1.2s ${i * 0.2}s ease-in-out infinite`,
-                      }}
-                    />
-                  ))}
+                  <div className="typing-dot" />
+                  <div className="typing-dot" />
+                  <div className="typing-dot" />
                 </div>
               )}
             </div>
@@ -166,17 +184,14 @@ export default function DebatePage() {
         })}
       </div>
 
-      {/* Debate transcript */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {/* Main Debate Transcript Feed */}
+      <div className="debate-feed" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {messages.length === 0 && !running && (
           <div
-            className="clay-card"
-            style={{
-              textAlign: "center",
-              padding: "60px 20px",
-            }}
+            className="clay-card info"
+            style={{ padding: "32px", textAlign: "center", color: "var(--text-muted)" }}
           >
-            <Brain size={40} style={{ opacity: 0.35, margin: "0 auto 12px", color: "var(--accent-blue)" }} />
+            <Brain size={36} style={{ color: "var(--accent-blue)", marginBottom: "12px", opacity: 0.8 }} />
             <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "6px" }}>
               Run Safety Debate
             </div>
@@ -189,6 +204,7 @@ export default function DebatePage() {
 
         {messages.map((msg, i) => {
           const meta = AGENT_META[msg.agent_key];
+          const AgentIcon = meta?.Icon || Bot;
           const isExecutive = msg.is_final;
 
           return (
@@ -214,10 +230,10 @@ export default function DebatePage() {
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
-                  fontSize: "18px",
+                  color: meta?.color || "#fff",
                 }}
               >
-                {msg.emoji}
+                <AgentIcon size={18} />
               </div>
 
               {/* Message */}
