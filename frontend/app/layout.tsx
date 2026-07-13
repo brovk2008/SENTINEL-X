@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import { TopNav } from "../components/layout/TopNav";
 import { WSProvider } from "../components/providers/WSProvider";
 import { LoadingScreen } from "../components/layout/LoadingScreen";
+import { DemoControlBar } from "../components/DemoControlBar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div>
               <TopNav />
               <main className="content-stage">{children}</main>
+              <DemoControlBar />
             </div>
           </LoadingScreen>
         </WSProvider>
