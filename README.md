@@ -10,10 +10,15 @@
 
 <p align="center">
   <a href="https://sentinel-x-pearl.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
-  <a href="frontend/public/demo_video.webp"><img src="https://img.shields.io/badge/Demo%20Video-Watch-red?style=for-the-badge&logo=youtube&logoColor=white" alt="Demo Video" /></a>
+  <a href="frontend/public/demo_video.mp4"><img src="https://img.shields.io/badge/Demo%20Video-MP4-red?style=for-the-badge&logo=youtube&logoColor=white" alt="Demo Video MP4" /></a>
+  <a href="frontend/public/demo_video.gif"><img src="https://img.shields.io/badge/Demo%20GIF-Watch-ff69b4?style=for-the-badge" alt="Demo GIF" /></a>
   <a href="https://sentinel-x-52xs.onrender.com/docs"><img src="https://img.shields.io/badge/API%20Docs-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="API Docs" /></a>
   <a href="https://github.com/brovk2008/SENTINEL-X"><img src="https://img.shields.io/badge/ET%20AI%20Hackathon-2.0-blueviolet?style=for-the-badge" alt="ET AI Hackathon 2.0" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" /></a>
+</p>
+
+<p align="center">
+  <img src="frontend/public/demo_video.gif" alt="Sentinel X Demo Showcase Video" width="92%" style="border-radius: 12px; border: 1px solid rgba(0,255,136,0.3);" />
 </p>
 
 ---
