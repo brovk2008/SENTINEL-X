@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useStore } from "../../lib/store";
-import { FileText, Bot, Check } from "lucide-react";
+import { FileText, Bot, Check, Download } from "lucide-react";
+import { AuditReportModal } from "../../components/AuditReportModal";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -61,16 +62,58 @@ export default function HandoverPage() {
   const [checklist, setChecklist] = useState(CHECKLIST);
   const [generating, setGenerating] = useState(false);
   const [generated,  setGenerated]  = useState(false);
+  const [showModal,  setShowModal]  = useState(false);
 
   const completedCount = checklist.filter((c) => c.checked).length;
   const completionPct  = Math.round((completedCount / checklist.length) * 100);
 
   const handleGenerateReport = async () => {
     setGenerating(true);
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 600));
     setGenerating(false);
     setGenerated(true);
-    // In production: fetch(`${API}/reports/handover`) then trigger download
+    setShowModal(true);
+
+    // Trigger instant TXT file download
+    const reportText = `================================================================
+SENTINEL X — SHIFT HANDOVER REPORT & SAFETY AUDIT PACKAGE
+Bharat Petrochemicals Limited — Unit 3 (Vizag Facility)
+Date: ${new Date().toLocaleString("en-IN")}
+Shift Transfer: Day Shift → Night Shift
+================================================================
+
+1. EXECUTIVE SUMMARY & PLANT RISK STATUS
+----------------------------------------------------------------
+Current Plant Risk Score: 84% (CRITICAL)
+Status: Elevated Risk — Active Zone C H2S buildup & CSE permit active.
+
+${AI_SUMMARY}
+
+2. SHIFT COMPARISON & DELTA METRICS
+----------------------------------------------------------------
+${SHIFT_STATS.map(s => `${s.label.padEnd(28)} Current: ${String(s.current).padEnd(6)} Prev: ${String(s.previous).padEnd(6)} Delta: ${s.delta}`).join("\n")}
+
+3. SAFETY CHECKLIST STATUS (${completedCount}/${checklist.length} Completed — ${completionPct}%)
+----------------------------------------------------------------
+${checklist.map(c => `[${c.checked ? "✓" : " "}] (${c.zone.padEnd(4)}) ${c.label}`).join("\n")}
+
+4. SHIFT INCIDENT TIMELINE
+----------------------------------------------------------------
+${EVENTS.map(e => `${e.time} [Zone ${e.zone}] ${e.msg}`).join("\n")}
+
+================================================================
+LOGGED BY: Sentinel X Autonomous Safety Operating System
+================================================================`;
+
+    const blob = new Blob([reportText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `SHIFT_HANDOVER_REPORT_${new Date().toISOString().slice(0, 10)}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const toggleCheck = (id: string) => {
@@ -89,14 +132,24 @@ export default function HandoverPage() {
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button
-            className="clay-btn primary"
+            className="btn primary"
             onClick={handleGenerateReport}
             disabled={generating}
             style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
           >
             <FileText size={15} />
-            <span>{generated ? "Report Ready" : generating ? "Generating..." : "Generate Handover Report"}</span>
+            <span>{generating ? "Generating..." : "Generate & Download Handover Report"}</span>
           </button>
+          {generated && (
+            <button
+              className="btn"
+              onClick={() => setShowModal(true)}
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, borderColor: "var(--alarm-info)", color: "var(--alarm-info)" }}
+            >
+              <Download size={14} />
+              <span>View / Print Printable PDF</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -248,6 +301,7 @@ export default function HandoverPage() {
           ))}
         </div>
       </div>
+      <AuditReportModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }
