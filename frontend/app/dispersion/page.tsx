@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { PlantMap } from "../../components/PlantMap";
+import { RefreshCw, Siren, AlertTriangle } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -117,8 +118,14 @@ export default function DispersionPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn" onClick={handleCompute}>🔄 Recalibrate Plume</button>
-          <button className="clay-btn primary">🚨 Trigger Evacuation</button>
+          <button className="clay-btn" onClick={handleCompute} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <RefreshCw size={14} />
+            <span>Recalibrate Plume</span>
+          </button>
+          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Siren size={14} />
+            <span>Trigger Evacuation</span>
+          </button>
         </div>
       </div>
 
@@ -128,8 +135,9 @@ export default function DispersionPage() {
           <div style={{ padding: "14px 18px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ fontWeight: 800, fontSize: 14 }}>Real-Time Plume Overlay — Plant Map</div>
             {model && (
-              <div style={{ fontSize: 11, color: "var(--risk-critical)", fontWeight: 700 }}>
-                ⚠️ PLUME ACTIVE: {model.chemical_name} ({model.chemical_formula})
+              <div style={{ fontSize: 11, color: "var(--risk-critical)", fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}>
+                <AlertTriangle size={13} color="var(--risk-critical)" />
+                <span>PLUME ACTIVE: {model.chemical_name} ({model.chemical_formula})</span>
               </div>
             )}
           </div>
@@ -284,7 +292,7 @@ export default function DispersionPage() {
           {/* Assessment */}
           <div className="clay-card critical" style={{ padding: "20px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 18 }}>🚨</span>
+              <Siren size={18} color="var(--risk-critical)" />
               <div style={{ fontWeight: 800, fontSize: 14 }}>Plume Safety Assessment</div>
             </div>
             <div style={{ fontSize: 13, lineHeight: 1.6, color: "var(--text-primary)", whiteSpace: "pre-wrap" }}>

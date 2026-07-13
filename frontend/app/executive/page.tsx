@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Brain, FileText, Sparkles, Send } from "lucide-react";
+import { Brain, FileText, Sparkles, Send, RefreshCw } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -77,8 +77,9 @@ export default function ExecutivePage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={loadBrief} className="clay-btn" disabled={loading}>
-            🔄 Regenerate Brief
+          <button onClick={loadBrief} className="clay-btn" disabled={loading} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <RefreshCw size={14} />
+            <span>Regenerate Brief</span>
           </button>
           <button onClick={() => setChatOpen(!chatOpen)} className="clay-btn primary">
             {chatOpen ? "Hide Assistant" : "Open Assistant"}

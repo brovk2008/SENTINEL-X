@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { AlertTriangle, CheckCircle, Brain, Clock } from "lucide-react";
+import { AlertTriangle, CheckCircle, Brain, Clock, FileText, Zap, Search, Check } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -111,9 +111,13 @@ export default function PermitsPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn">📋 Issue New Permit</button>
-          <button className="clay-btn primary" onClick={() => selected && runPTWValidation(selected)}>
-            🔌 SCADA LOTO Check
+          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <FileText size={14} />
+            <span>Issue New Permit</span>
+          </button>
+          <button className="clay-btn primary" onClick={() => selected && runPTWValidation(selected)} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Zap size={14} />
+            <span>SCADA LOTO Check</span>
           </button>
         </div>
       </div>
@@ -272,11 +276,12 @@ export default function PermitsPage() {
 
               <button
                 className="clay-btn primary"
-                style={{ width: "100%", marginTop: 14, justifyContent: "center" }}
+                style={{ width: "100%", marginTop: 14, justifyContent: "center", display: "inline-flex", alignItems: "center", gap: 8 }}
                 onClick={() => runPTWValidation(selected)}
                 disabled={validating}
               >
-                {validating ? "Running PTW verification..." : "🔍 Run Digital PTW Validation"}
+                <Search size={14} />
+                <span>{validating ? "Running PTW verification..." : "Run Digital PTW Validation"}</span>
               </button>
             </div>
 
@@ -305,8 +310,9 @@ export default function PermitsPage() {
                   </div>
                 </div>
 
-                <div style={{ fontSize: 12, lineHeight: 1.5, color: "var(--text-secondary)", padding: "8px 10px", background: "rgba(255,255,255,0.02)", borderRadius: 6, marginBottom: 12 }}>
-                  👉 {validationResult.recommendation}
+                <div style={{ fontSize: 12, lineHeight: 1.5, color: "var(--text-secondary)", padding: "8px 10px", background: "rgba(255,255,255,0.02)", borderRadius: 6, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+                  <Check size={14} color="var(--risk-safe)" />
+                  <span>{validationResult.recommendation}</span>
                 </div>
 
                 {validationResult.blocking_issues.length > 0 && (

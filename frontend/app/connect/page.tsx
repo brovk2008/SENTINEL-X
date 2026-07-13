@@ -28,13 +28,15 @@ const DEMO_SOURCES: Source[] = [
   { id: "azure-iot",     name: "Azure IoT Hub",                     protocol: "mqtt",     host: "safetyos.azure-devices.net",             port: 8883,  status: "standby",      tags_count: 0,   last_seen: null },
 ];
 
+import { Cloud, Globe, Zap, Radio, Flame, ShieldCheck, Plug } from "lucide-react";
+
 const CLOUD_INTEGRATIONS = [
-  { id: "aws",        name: "AWS IoT Core",        emoji: "☁️", color: "#ff9900" },
-  { id: "azure",      name: "Azure IoT Hub",       emoji: "🔷", color: "#0078d4" },
-  { id: "google",     name: "Google Cloud IoT",    emoji: "🌐", color: "#4285f4" },
-  { id: "firebase",   name: "Firebase IoT",        emoji: "🔥", color: "#ff6c00" },
-  { id: "ignition",   name: "Ignition SCADA",      emoji: "⚡",  color: "#9b59ff" },
-  { id: "custom-mqtt",name: "Custom MQTT",         emoji: "📡", color: "#00ddff" },
+  { id: "aws",        name: "AWS IoT Core",        Icon: Cloud,       color: "#ff9900" },
+  { id: "azure",      name: "Azure IoT Hub",       Icon: ShieldCheck, color: "#0078d4" },
+  { id: "google",     name: "Google Cloud IoT",    Icon: Globe,       color: "#4285f4" },
+  { id: "firebase",   name: "Firebase IoT",        Icon: Flame,       color: "#ff6c00" },
+  { id: "ignition",   name: "Ignition SCADA",      Icon: Zap,         color: "#9b59ff" },
+  { id: "custom-mqtt",name: "Custom MQTT",         Icon: Radio,       color: "#00ddff" },
 ];
 
 type ModalProto = "mqtt" | "opcua" | "modbus" | "rtsp" | "http_poll";
@@ -318,6 +320,7 @@ export default function ConnectPage() {
           }}
         >
           {CLOUD_INTEGRATIONS.map((ci) => {
+            const CiIcon = ci.Icon;
             const existing = sources.find((s) => s.id.startsWith(ci.id));
             return (
               <div
@@ -326,7 +329,9 @@ export default function ConnectPage() {
                 style={{ padding: "16px", textAlign: "center", cursor: "pointer" }}
                 onClick={() => setShowAdd(true)}
               >
-                <div style={{ fontSize: 28, marginBottom: 8 }}>{ci.emoji}</div>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: `${ci.color}15`, display: "grid", placeItems: "center", margin: "0 auto 8px" }}>
+                  <CiIcon size={22} color={ci.color} />
+                </div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: ci.color }}>{ci.name}</div>
                 <button
                   className="clay-btn"

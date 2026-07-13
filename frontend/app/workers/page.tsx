@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { PlantMap } from "../../components/PlantMap";
+import { Radio, Map, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -116,8 +117,14 @@ export default function WorkersPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn">📡 Calibrate Anchors</button>
-          <button className="clay-btn primary">🗺 Toggle Restricted Areas</button>
+          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Radio size={14} />
+            <span>Calibrate Anchors</span>
+          </button>
+          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Map size={14} />
+            <span>Toggle Restricted Areas</span>
+          </button>
         </div>
       </div>
 

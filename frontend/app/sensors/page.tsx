@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from "react";
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RTooltip } from "recharts";
 import { useStore, SensorReading } from "../../lib/store";
+import { Radio } from "lucide-react";
 
 type FilterKey = "all" | "gas" | "temperature" | "pressure" | "vibration" | "flow" | "humidity" | "ZA" | "ZB" | "ZC" | "ZD" | "ZE" | "ZF";
 type SortKey = "risk" | "zone" | "type" | "updated";
@@ -253,7 +254,9 @@ export default function SensorsPage() {
             alignItems: "center",
           }}
         >
-          <div style={{ fontSize: 40 }}>📡</div>
+          <div style={{ width: 64, height: 64, borderRadius: 20, background: "rgba(255,255,255,0.05)", display: "grid", placeItems: "center", color: "var(--accent-blue)" }}>
+            <Radio size={32} />
+          </div>
           <div style={{ fontSize: 16, fontWeight: 700 }}>No sensors loaded</div>
           <div style={{ fontSize: 13 }}>Waiting for WebSocket connection or demo data...</div>
         </div>

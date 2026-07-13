@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useStore } from "../../lib/store";
+import { FileText, Bot, Check } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -91,8 +92,10 @@ export default function HandoverPage() {
             className="clay-btn primary"
             onClick={handleGenerateReport}
             disabled={generating}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
           >
-            {generated ? "✓ Report Ready" : generating ? "Generating..." : "📄 Generate Handover Report"}
+            <FileText size={15} />
+            <span>{generated ? "Report Ready" : generating ? "Generating..." : "Generate Handover Report"}</span>
           </button>
         </div>
       </div>
@@ -136,7 +139,7 @@ export default function HandoverPage() {
         {/* AI Summary */}
         <div className="clay-card info">
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-            <div style={{ fontSize: 18 }}>🤖</div>
+            <Bot size={18} color="var(--accent-blue)" />
             <div style={{ fontWeight: 700, fontSize: 14 }}>AI Handover Summary</div>
             <div className="live-dot" style={{ marginLeft: "auto" }} />
           </div>

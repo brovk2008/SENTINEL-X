@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { AlertTriangle, RefreshCcw, Sparkles } from "lucide-react";
+import { AlertTriangle, RefreshCcw, Sparkles, ShieldAlert, Wrench, Flame } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -8,7 +8,7 @@ interface ScenarioSummary {
   id: string;
   name: string;
   description: string;
-  emoji: string;
+  Icon: any;
   complexity: string;
 }
 
@@ -49,14 +49,14 @@ const RULE_MAP: Record<string, number> = {
 };
 
 const MOCK_SCENARIOS: ScenarioSummary[] = [
-  { id: "h2s_confined_space", name: "Confined Space H₂S Gas Intrusion", description: "Vessel entry during minor valve leakage.", emoji: "🕳️", complexity: "CRITICAL" },
-  { id: "equipment_failure", name: "Compressor Vibration Escalation", description: "Vibration drift leading to mechanical seal failure.", emoji: "⚙️", complexity: "HIGH" },
-  { id: "permit_conflict", name: "SIMOPS Hot Work & Venting", description: "Simultaneous welding and hydrocarbon venting.", emoji: "💥", complexity: "CRITICAL" }
+  { id: "h2s_confined_space", name: "Confined Space H₂S Gas Intrusion", description: "Vessel entry during minor valve leakage.", Icon: ShieldAlert, complexity: "CRITICAL" },
+  { id: "equipment_failure", name: "Compressor Vibration Escalation", description: "Vibration drift leading to mechanical seal failure.", Icon: Wrench, complexity: "HIGH" },
+  { id: "permit_conflict", name: "SIMOPS Hot Work & Venting", description: "Simultaneous welding and hydrocarbon venting.", Icon: Flame, complexity: "CRITICAL" }
 ];
 
 const MOCK_DETAIL: Record<string, ScenarioDetail> = {
   h2s_confined_space: {
-    id: "h2s_confined_space", name: "Confined Space H₂S Gas Intrusion", description: "Vessel entry during minor valve leakage.", emoji: "🕳️", complexity: "CRITICAL",
+    id: "h2s_confined_space", name: "Confined Space H₂S Gas Intrusion", description: "Vessel entry during minor valve leakage.", Icon: ShieldAlert, complexity: "CRITICAL",
     initial_risk: 42, final_risk: 94, probability_incident: 78, estimated_cost_inr: 4500000, confidence_pct: 92,
     recommendation: "Activate auxiliary fans, evacuate personnel within 10m downwind, and enforce SCBA breathing gear.",
     reasoning: "The combination of static venting failure and operator presence creates high inhalation risk.",
@@ -184,6 +184,7 @@ export default function ScenarioSimulatorPage() {
             ) : (
               <div style={{ display: "grid", gap: "10px" }}>
                 {scenarios.map((scenario) => {
+                  const ScIcon = scenario.Icon || ShieldAlert;
                   const isSel = selectedId === scenario.id;
                   return (
                     <button
@@ -200,7 +201,9 @@ export default function ScenarioSimulatorPage() {
                     >
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", marginBottom: "10px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                          <div style={{ fontSize: "22px" }}>{scenario.emoji}</div>
+                          <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(255,255,255,0.05)", display: "grid", placeItems: "center" }}>
+                            <ScIcon size={18} color={scenario.complexity === "CRITICAL" ? "var(--risk-critical)" : "var(--risk-high)"} />
+                          </div>
                           <div>
                             <div style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)" }}>{scenario.name}</div>
                             <div style={{ fontSize: "11px", color: "var(--text-secondary)", marginTop: "2px" }}>{scenario.description}</div>
@@ -241,8 +244,15 @@ export default function ScenarioSimulatorPage() {
                   Severity Level: <span style={{ color: "var(--risk-critical)", fontWeight: 800 }}>{simulation.severity}</span>
                 </div>
                 <div style={{ padding: "12px", borderRadius: "10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div style={{ fontSize: "12px", color: "var(--text-primary)", fontWeight: 700 }}>
-                    {simulation.triggered ? "⚠️ Risk Condition Triggered" : "Normal state"}
+                  <div style={{ fontSize: "12px", color: "var(--text-primary)", fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>
+                    {simulation.triggered ? (
+                      <>
+                        <AlertTriangle size={13} color="var(--risk-critical)" />
+                        <span>Risk Condition Triggered</span>
+                      </>
+                    ) : (
+                      <span>Normal state</span>
+                    )}
                   </div>
                   <div style={{ fontSize: "11px", color: "var(--text-secondary)", marginTop: 6 }}>
                     Recommendation: {simulation.scenario_suggestion}
@@ -261,8 +271,8 @@ export default function ScenarioSimulatorPage() {
             ) : detail ? (
               <>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-                  <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: "rgba(255,255,255,0.04)", display: "grid", placeItems: "center", fontSize: "22px" }}>
-                    {detail.emoji}
+                  <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: "rgba(255,255,255,0.04)", display: "grid", placeItems: "center" }}>
+                    <ShieldAlert size={22} color="var(--accent-blue)" />
                   </div>
                   <div>
                     <div style={{ fontSize: "10px", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 700 }}>

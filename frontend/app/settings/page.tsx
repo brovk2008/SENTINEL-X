@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { Key, Zap, Building, Check, AlertTriangle } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -139,7 +140,7 @@ export default function SettingsPage() {
         <div className="clay-card" style={{ padding: 24 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span style={{ fontSize: 20 }}>🔑</span>
+              <Key size={20} color="var(--accent-cyan)" />
               <h2 style={{ fontSize: 16, fontWeight: 800 }}>LLM Provider API Keys</h2>
             </div>
             <span style={{ fontSize: 11, background: "rgba(0,212,255,0.12)", color: "#00d4ff", padding: "3px 10px", borderRadius: 999, fontWeight: 700 }}>
@@ -320,7 +321,7 @@ export default function SettingsPage() {
           {/* Live Test Card */}
           <div className="clay-card" style={{ padding: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <span style={{ fontSize: 20 }}>⚡</span>
+              <Zap size={20} color="var(--accent-yellow)" />
               <h2 style={{ fontSize: 16, fontWeight: 800 }}>Live Connection Test</h2>
             </div>
             <p style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 16 }}>
@@ -386,7 +387,7 @@ export default function SettingsPage() {
           {/* Plant Info Card */}
           <div className="clay-card" style={{ padding: 24 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <span style={{ fontSize: 20 }}>🏭</span>
+              <Building size={20} color="var(--accent-purple)" />
               <h2 style={{ fontSize: 16, fontWeight: 800 }}>Plant & Intelligence Profile</h2>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 13 }}>

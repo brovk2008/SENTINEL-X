@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { AlertTriangle, CheckCircle, RefreshCcw } from "lucide-react";
+import { AlertTriangle, CheckCircle, RefreshCcw, FileText, Check } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -91,7 +91,10 @@ export default function CompliancePage() {
           <button onClick={load} className="clay-btn" disabled={loading}>
             <RefreshCcw size={13} style={{ marginRight: 6 }} /> Refresh
           </button>
-          <button className="clay-btn primary">📄 Compliance Certificate</button>
+          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <FileText size={14} />
+            <span>Compliance Certificate</span>
+          </button>
         </div>
       </div>
 
@@ -170,8 +173,9 @@ export default function CompliancePage() {
                       <div style={{ fontSize: 10, fontWeight: 800, color: "var(--risk-critical)", textTransform: "uppercase" }}>Violation Detail</div>
                       <div style={{ fontSize: 11, color: "var(--text-primary)", marginTop: 2 }}>{check.violation_detail}</div>
                       {check.recommended_action && (
-                        <div style={{ fontSize: 11, color: "var(--accent-blue)", fontWeight: 700, marginTop: 4 }}>
-                          👉 Action: {check.recommended_action}
+                        <div style={{ fontSize: 11, color: "var(--accent-blue)", fontWeight: 700, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                          <Check size={12} color="var(--accent-blue)" />
+                          <span>Action: {check.recommended_action}</span>
                         </div>
                       )}
                     </div>

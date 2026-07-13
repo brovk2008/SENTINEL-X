@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { HeartPulse, Siren, Phone, FileText, Users, MapPin } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -174,8 +175,14 @@ export default function BiometricsPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn">🩺 Export Health Log</button>
-          <button className="clay-btn primary">🚨 Broadcast Alert</button>
+          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <HeartPulse size={14} />
+            <span>Export Health Log</span>
+          </button>
+          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Siren size={14} />
+            <span>Broadcast Alert</span>
+          </button>
         </div>
       </div>
 
@@ -222,9 +229,9 @@ export default function BiometricsPage() {
                       <div style={{ fontWeight: 800, fontSize: 14 }}>{w.worker_name}</div>
                       <div style={{ fontSize: 11, fontWeight: 700, color }}>{w.status}</div>
                     </div>
-                    <div style={{ display: "flex", gap: 12, fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>
-                      <span>👷 {w.role}</span>
-                      <span>📍 Zone {w.zone_id}</span>
+                    <div style={{ display: "flex", gap: 10, fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><Users size={11} /> {w.role}</span>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><MapPin size={11} /> Zone {w.zone_id}</span>
                       <span>⏱ {w.shift_hours}h shift</span>
                     </div>
                   </div>
@@ -340,8 +347,14 @@ export default function BiometricsPage() {
               )}
 
               <div style={{ display: "flex", gap: 8 }}>
-                <button className="clay-btn primary" style={{ flex: 1, justifyContent: "center" }}>📞 Radio Operator</button>
-                <button className="clay-btn" style={{ flex: 1, justifyContent: "center" }}>📋 Log Incident</button>
+                <button className="clay-btn primary" style={{ flex: 1, justifyContent: "center", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <Phone size={14} />
+                  <span>Radio Operator</span>
+                </button>
+                <button className="clay-btn" style={{ flex: 1, justifyContent: "center", display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <FileText size={14} />
+                  <span>Log Incident</span>
+                </button>
               </div>
             </div>
           ) : (

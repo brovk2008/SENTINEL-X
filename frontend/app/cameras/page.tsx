@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
+import { ShieldCheck, Siren, FileText, Users, Check, AlertTriangle } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -211,7 +212,12 @@ function CamTile({ cam, onOpen }: { cam: Camera; onOpen: (c: Camera) => void }) 
         </div>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: "white" }}>
-            {cam.status === "offline" ? "—" : `👷 ${cam.workers_detected}`}
+            {cam.status === "offline" ? "—" : (
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                <Users size={11} />
+                <span>{cam.workers_detected}</span>
+              </span>
+            )}
           </div>
           {cam.hasAlert && (
             <div style={{ fontSize: 9, color: "var(--risk-critical)", fontWeight: 700, marginTop: 2 }}>
@@ -395,19 +401,22 @@ function CamModal({ cam, onClose }: { cam: Camera; onClose: () => void }) {
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, justifyContent: "flex-end" }}>
+          <div style={{ marginTop: 24, display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button
               className="clay-btn danger"
               onClick={() => { setAlertSent(true); }}
-              style={{ whiteSpace: "nowrap" }}
+              style={{ whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 6 }}
             >
-              {alertSent ? "✓ Alert Sent" : "🚨 Send Zone Alert"}
+              <Siren size={14} />
+              <span>{alertSent ? "Alert Sent" : "Send Zone Alert"}</span>
             </button>
-            <button className="clay-btn" style={{ whiteSpace: "nowrap" }}>
-              📋 Run PPE Check
+            <button className="clay-btn" style={{ whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <ShieldCheck size={14} />
+              <span>Run PPE Check</span>
             </button>
-            <button className="clay-btn" style={{ whiteSpace: "nowrap" }}>
-              📄 Generate Report
+            <button className="clay-btn" style={{ whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 6 }}>
+              <FileText size={14} />
+              <span>Generate Report</span>
             </button>
           </div>
         </div>
@@ -448,8 +457,14 @@ export default function CamerasPage() {
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--risk-critical)", animation: "live-pulse 2s infinite", display: "inline-block" }} />
             <span style={{ fontSize: 12, fontWeight: 700, color: "var(--risk-critical)" }}>REC ●</span>
           </div>
-          <button className="clay-btn">🛡️ PPE Check All</button>
-          <button className="clay-btn danger">🚨 Emergency Broadcast</button>
+          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <ShieldCheck size={14} />
+            <span>PPE Check All</span>
+          </button>
+          <button className="clay-btn danger" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Siren size={14} />
+            <span>Emergency Broadcast</span>
+          </button>
         </div>
       </div>
 

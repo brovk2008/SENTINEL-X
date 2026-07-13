@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { MapPin, Users, AlertTriangle, BarChart3, Plus, Factory } from "lucide-react";
 
 interface Plant {
   id: string;
@@ -55,8 +56,14 @@ export default function SitesPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn">📊 Compare Sites</button>
-          <button className="clay-btn primary">+ Add Plant</button>
+          <button className="clay-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <BarChart3 size={14} />
+            <span>Compare Sites</span>
+          </button>
+          <button className="clay-btn primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Plus size={14} />
+            <span>Add Plant</span>
+          </button>
         </div>
       </div>
 
@@ -153,7 +160,10 @@ export default function SitesPage() {
                 <div>
                   <div className="section-label">{selPlant.type}</div>
                   <div style={{ fontWeight: 800, fontSize: 18, marginTop: 2 }}>{selPlant.name}</div>
-                  <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>📍 {selPlant.location}</div>
+                  <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                    <MapPin size={12} color="var(--accent-blue)" />
+                    <span>{selPlant.location}</span>
+                  </div>
                 </div>
                 <div
                   className={`risk-badge ${riskClass(selPlant.risk)}`}
@@ -205,8 +215,9 @@ export default function SitesPage() {
               ))}
             </div>
 
-            <a href="/" className="clay-btn primary" style={{ justifyContent: "center", textDecoration: "none" }}>
-              🏭 Open Plant Dashboard
+            <a href="/" className="clay-btn primary" style={{ justifyContent: "center", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <Factory size={16} />
+              <span>Open Plant Dashboard</span>
             </a>
           </div>
         )}
@@ -228,15 +239,24 @@ export default function SitesPage() {
             >
               <div className="section-label">{p.type}</div>
               <div style={{ fontWeight: 700, fontSize: 14, marginTop: 4 }}>{p.name}</div>
-              <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>📍 {p.location}</div>
+              <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 2, display: "flex", alignItems: "center", gap: 4 }}>
+                <MapPin size={11} color="var(--text-muted)" />
+                <span>{p.location}</span>
+              </div>
               <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginTop: 12 }}>
                 <div style={{ fontSize: 32, fontWeight: 900, color: riskColor(p.risk) }}>{p.risk}%</div>
                 <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>risk</div>
               </div>
-              <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-                <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>👷 {p.workers}</div>
+              <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+                <div style={{ fontSize: 11, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+                  <Users size={12} />
+                  <span>{p.workers}</span>
+                </div>
                 {p.alerts > 0 && (
-                  <div style={{ fontSize: 11, color: "var(--risk-critical)", fontWeight: 700 }}>🚨 {p.alerts} alerts</div>
+                  <div style={{ fontSize: 11, color: "var(--risk-critical)", fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}>
+                    <AlertTriangle size={12} />
+                    <span>{p.alerts} alerts</span>
+                  </div>
                 )}
               </div>
             </div>
