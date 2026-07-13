@@ -20,6 +20,7 @@ const NAV = [
   { href: "/knowledge",  label: "Knowledge",  icon: "🧠" },
   { href: "/sites",      label: "Sites",      icon: "🗺️" },
   { href: "/connect",    label: "Connect",    icon: "⚙️" },
+  { href: "/settings",   label: "Settings",   icon: "🔑" },
 ];
 
 export function TopNav() {
@@ -41,25 +42,21 @@ export function TopNav() {
       {/* ── Top bar ── */}
       <div className="topnav">
         {/* Brand */}
-        <div className="brand">
-          <svg width="32" height="32" viewBox="0 0 64 64" fill="none" aria-hidden>
-            <defs>
-              <linearGradient id="ng" x1="0" x2="1" y1="0" y2="1">
-                <stop offset="0%" stopColor="#4d8eff" />
-                <stop offset="100%" stopColor="#9b59ff" />
-              </linearGradient>
-            </defs>
-            <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#ng)" />
-            <circle cx="32" cy="24" r="5" fill="rgba(255,255,255,0.9)" />
-            <path d="M22 42 Q32 30 42 42" stroke="rgba(255,255,255,0.6)" strokeWidth="3" fill="none" strokeLinecap="round" />
-          </svg>
-          <div>
-            <h1 style={{ fontSize: 16, fontWeight: 800 }}>SafetyOS</h1>
-            <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: -2 }}>
-              Bharat Petrochemicals · Unit 3
+        <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
+          <div className="brand" style={{ cursor: "pointer" }}>
+            <img
+              src="/logo.png"
+              alt="Sentinel X Logo"
+              style={{ width: 34, height: 34, objectFit: "contain", borderRadius: 8 }}
+            />
+            <div>
+              <h1 style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.02em" }}>Sentinel X</h1>
+              <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: -2 }}>
+                Bharat Petrochemicals · Unit 3
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
 
         {/* Center — Risk Score */}
         <div className="center">

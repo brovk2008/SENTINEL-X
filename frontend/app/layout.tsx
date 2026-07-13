@@ -19,10 +19,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: "SafetyOS — AI Operating System for Industrial Safety",
+  title: "Sentinel X — AI Operating System for Industrial Safety",
   description:
     "Real-time AI-powered industrial safety platform. Multi-agent debate, compound risk detection, sensor monitoring, and OISD compliance for high-risk facilities.",
-  keywords: "industrial safety, AI agents, sensor monitoring, OISD compliance, compound risk, safety OS",
+  keywords: "Sentinel X, industrial safety, AI agents, sensor monitoring, OISD compliance, compound risk",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -31,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#07070f" />
+        <link rel="icon" href="/logo.png" type="image/png" />
       </head>
       <body>
         <WSProvider>

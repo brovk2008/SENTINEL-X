@@ -4,7 +4,7 @@ import { Brain, FileText, Sparkles, Send } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
-const MOCK_BRIEF = `**SafetyOS Executive Safety Briefing**
+const MOCK_BRIEF = `**Sentinel X Executive Safety Briefing**
 Generated on: ${new Date().toLocaleDateString("en-IN")}
 
 ### 1. Plant Risk Status Summary

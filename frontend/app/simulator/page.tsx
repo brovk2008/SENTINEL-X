@@ -148,7 +148,7 @@ export default function ScenarioSimulatorPage() {
         <div>
           <div className="page-title">Scenario Simulator</div>
           <div className="page-subtitle">
-            Explore what-if safety scenarios and test SafetyOS compound risk detection rules.
+            Explore what-if safety scenarios and test Sentinel X compound risk detection rules.
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -325,7 +325,7 @@ export default function ScenarioSimulatorPage() {
               <div style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)" }}>Simulator Guidance</div>
             </div>
             <div style={{ color: "var(--text-secondary)", fontSize: "12px", lineHeight: 1.6 }}>
-              Use this preview to understand the escalation path of each risk scenario. Trigger a demo risk event to see how the SafetyOS compound risk engine responds.
+              Use this preview to understand the escalation path of each risk scenario. Trigger a demo risk event to see how the Sentinel X compound risk engine responds.
             </div>
           </div>
         </div>

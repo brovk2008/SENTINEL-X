@@ -18,26 +18,57 @@ class LLMProviderUpdate(BaseModel):
     is_default: bool = False
 
 
-class SettingsUpdate(BaseModel):
-    providers: List[LLMProviderUpdate]
-    default_provider: str
+class APIKeysUpdate(BaseModel):
+    gemini_key: Optional[str] = None
+    openrouter_key: Optional[str] = None
+    anthropic_key: Optional[str] = None
+    ollama_url: Optional[str] = None
+    default_provider: Optional[str] = "gemini"
 
 
 @router.get("/llm")
 async def get_llm_settings():
     """Get current LLM configuration and available providers."""
-    config = get_active_config()
+    def mask_key(k: Optional[str]):
+        if not k: return ""
+        if len(k) <= 8: return "••••••••"
+        return k[:4] + "••••••••" + k[-4:]
+
     return {
-        "current_config": config,
         "active_provider": settings.DEFAULT_LLM_PROVIDER,
+        "gemini_configured": bool(settings.GEMINI_API_KEY),
+        "openrouter_configured": bool(settings.OPENROUTER_API_KEY),
+        "anthropic_configured": bool(settings.ANTHROPIC_API_KEY),
+        "gemini_key_masked": mask_key(settings.GEMINI_API_KEY),
+        "openrouter_key_masked": mask_key(settings.OPENROUTER_API_KEY),
+        "anthropic_key_masked": mask_key(settings.ANTHROPIC_API_KEY),
+        "ollama_url": settings.OLLAMA_BASE_URL,
+        "available_providers": get_active_config().get("providers", []),
     }
 
 
 @router.post("/llm")
-async def update_llm_settings(update: SettingsUpdate):
-    """Update LLM provider configuration at runtime (no restart needed)."""
-    set_active_providers([p.dict() for p in update.providers])
-    return {"message": "LLM settings updated", "new_default": update.default_provider}
+async def update_llm_settings(update: APIKeysUpdate):
+    """Update LLM provider API keys at runtime (no server restart needed)."""
+    if update.gemini_key is not None and update.gemini_key.strip():
+        settings.GEMINI_API_KEY = update.gemini_key.strip()
+    if update.openrouter_key is not None and update.openrouter_key.strip():
+        settings.OPENROUTER_API_KEY = update.openrouter_key.strip()
+    if update.anthropic_key is not None and update.anthropic_key.strip():
+        settings.ANTHROPIC_API_KEY = update.anthropic_key.strip()
+    if update.ollama_url is not None and update.ollama_url.strip():
+        settings.OLLAMA_BASE_URL = update.ollama_url.strip()
+    if update.default_provider:
+        settings.DEFAULT_LLM_PROVIDER = update.default_provider
+
+    return {
+        "status": "success",
+        "message": "API keys and LLM settings updated successfully",
+        "default_provider": settings.DEFAULT_LLM_PROVIDER,
+        "gemini_configured": bool(settings.GEMINI_API_KEY),
+        "openrouter_configured": bool(settings.OPENROUTER_API_KEY),
+        "anthropic_configured": bool(settings.ANTHROPIC_API_KEY),
+    }
 
 
 @router.get("/llm/test")
@@ -46,7 +77,7 @@ async def test_llm_connection(provider: str = "gemini", model: Optional[str] = N
     from core.llm_router import chat
     try:
         response = await chat(
-            messages=[{"role": "user", "content": "Respond with exactly: 'SafetyOS LLM connection successful'"}],
+            messages=[{"role": "user", "content": "Respond with exactly: 'Sentinel X LLM connection successful'"}],
             provider=provider,
             model=model,
             max_tokens=50,

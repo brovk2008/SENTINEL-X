@@ -100,7 +100,7 @@ export default function DebatePage() {
         <div>
           <div className="page-title">AI Debate Chamber</div>
           <div className="page-subtitle">
-            Observe SafetyOS multi-agent debate reasoning through complex, high-risk industrial safety dilemmas.
+            Observe Sentinel X multi-agent debate reasoning through complex, high-risk industrial safety dilemmas.
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>

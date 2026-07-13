@@ -8,7 +8,7 @@ const statusSteps = [
   { threshold: 60, label: "Analyzing compound risks..." },
   { threshold: 75, label: "Running compliance checks..." },
   { threshold: 90, label: "Calibrating risk models..." },
-  { threshold: 100, label: "SafetyOS Online. The factory has a brain." },
+  { threshold: 100, label: "Sentinel X Online. The factory has a brain." },
 ];
 
 export function LoadingScreen({ children }: { children: React.ReactNode }) {
@@ -18,13 +18,13 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const alreadySeen = window.localStorage.getItem("safetyos_loading_shown");
+    const alreadySeen = window.localStorage.getItem("sentinel_loading_shown");
     if (alreadySeen) {
       setActive(false);
       return;
     }
 
-    window.localStorage.setItem("safetyos_loading_shown", "true");
+    window.localStorage.setItem("sentinel_loading_shown", "true");
     const start = performance.now();
     const interval = window.setInterval(() => {
       const elapsed = Math.min(3000, performance.now() - start);
@@ -65,24 +65,16 @@ export function LoadingScreen({ children }: { children: React.ReactNode }) {
       <div style={{ maxWidth: "620px", width: "100%", textAlign: "center" }}>
         <div style={{ marginBottom: "28px" }}>
           <div style={{ fontSize: "14px", letterSpacing: "0.28em", color: "#00ff88", textTransform: "uppercase", marginBottom: "14px" }}>
-            SafetyOS INITIALIZING
+            Sentinel X INITIALIZING
           </div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
-            <div style={{ width: "56px", height: "56px", borderRadius: "14px", background: "rgba(90,141,238,0.12)", display: "grid", placeItems: "center" }}>
-              {/* Small brand placeholder */}
-              <svg width="40" height="40" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                <defs>
-                  <linearGradient id="initG" x1="0" x2="1" y1="0" y2="1">
-                    <stop offset="0%" stopColor="#5a8dee" />
-                    <stop offset="100%" stopColor="#a955ff" />
-                  </linearGradient>
-                </defs>
-                <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#initG)" opacity="0.95" />
-                <circle cx="32" cy="22" r="4" fill="rgba(255,255,255,0.95)" />
-              </svg>
-            </div>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "16px", marginBottom: "14px" }}>
+            <img
+              src="/logo.png"
+              alt="Sentinel X Logo"
+              style={{ width: 64, height: 64, objectFit: "contain", filter: "drop-shadow(0 0 16px rgba(0,255,136,0.35))" }}
+            />
             <div style={{ textAlign: "left" }}>
-              <div style={{ fontSize: "26px", fontWeight: 800, letterSpacing: "-0.03em" }}>SafetyOS</div>
+              <div style={{ fontSize: "28px", fontWeight: 900, letterSpacing: "-0.03em" }}>Sentinel X</div>
               <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)" }}>AI Operating System for Industrial Safety</div>
             </div>
           </div>
