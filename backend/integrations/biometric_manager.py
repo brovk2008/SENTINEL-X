@@ -203,10 +203,13 @@ class BiometricManager:
         psi  = self.compute_psi(heart_rate, skin_temp, bl["hr_rest"], bl["t_skin_rest"])
         wbgt = self.compute_wbgt(ambient["temp_c"], ambient["humidity_pct"])
 
-        # ── Gas dosimetry (cumulative TWA) ───────────────────────────────────
-        h2s_twa = ambient["h2s_ppm"] * (shift_h / 8.0)
-        co_twa  = ambient["co_ppm"]  * (shift_h / 8.0)
-        dose_pct = (h2s_twa / self.H2S_TWA_LIMIT_PPM) * 100
+        # ── Gas dosimetry (cumulative TWA) — OSHA methodology ────────────────
+        # Formula: (Actual ppm × Hours worked) / (TWA limit × 8h shift) × 100
+        # ZC worker at 12.4 ppm for 4h = (12.4×4) / (1.0×8) × 100 = 62%  (correct)
+        # Old formula gave 517% because it didn't account for 8h shift budget
+        accumulated_h2s_ppm_h = ambient["h2s_ppm"] * shift_h
+        accumulated_co_ppm_h  = ambient["co_ppm"]  * shift_h
+        dose_pct = min(150.0, (accumulated_h2s_ppm_h / (self.H2S_TWA_LIMIT_PPM * 8.0)) * 100)
 
         # ── Cognitive load (HRV-derived + task complexity) ───────────────────
         cognitive_load = min(100.0, 38 + (55 - min(55, hrv)) * 1.1

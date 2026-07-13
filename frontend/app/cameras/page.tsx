@@ -1,6 +1,8 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
-import { ShieldCheck, Siren, FileText, Users, Check, AlertTriangle } from "lucide-react";
+import { ShieldCheck, Siren, FileText, Users, AlertTriangle } from "lucide-react";
+import { DemoCameraFeed } from "../../components/DemoCameraFeed";
+import { DEMO_CAMERA_FEEDS } from "../../lib/demo-camera-feeds";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -108,124 +110,34 @@ function DetectionCanvas({ cam }: { cam: Camera }) {
   );
 }
 
-// ── Camera Tile ────────────────────────────────────────────────────────────────
+// ── Camera Tile (uses DemoCameraFeed YouTube embed) ───────────────────────────
 function CamTile({ cam, onOpen }: { cam: Camera; onOpen: (c: Camera) => void }) {
-  const ppeColor =
-    cam.ppe_compliance === 100 ? "var(--risk-safe)" :
-    cam.ppe_compliance >= 80   ? "var(--risk-medium)" :
-    "var(--risk-critical)";
+  // Find matching demo feed config
+  const feedConfig = DEMO_CAMERA_FEEDS.find((f) => f.camera_id === cam.id);
 
   return (
-    <div
-      className={`cam-tile ${cam.hasAlert ? "alert-cam" : ""} ${cam.status === "offline" ? "offline-cam" : ""}`}
-      onClick={() => cam.status === "online" && onOpen(cam)}
-      role="button"
-      tabIndex={0}
-      aria-label={`Camera ${cam.id} — ${cam.name}`}
-    >
-      {/* Video placeholder — dark gradient background simulating camera feed */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: cam.status === "offline"
-            ? "#050508"
-            : `linear-gradient(${135 + parseInt(cam.id.slice(-2)) * 7}deg, #060612 0%, #0a0a18 50%, #070710 100%)`,
-        }}
+    <div style={{ position: 'relative' }}>
+      {/* YouTube embed with CCTV overlays */}
+      <DemoCameraFeed
+        cameraId={cam.id}
+        youtubeId={feedConfig?.youtube_id ?? null}
+        startSeconds={feedConfig?.start_seconds ?? 0}
+        offline={cam.status === 'offline'}
+        hasAlert={cam.hasAlert}
+        alertText={cam.alertText}
+        workerCount={cam.workers_detected}
+        ppePct={cam.ppe_compliance}
+        name={cam.name}
+        zone={cam.zone}
+        onClick={() => cam.status === 'online' && onOpen(cam)}
       />
 
-      {/* Simulated camera noise/scanlines */}
-      {cam.status === "online" && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px)`,
-            pointerEvents: "none",
-            zIndex: 1,
-          }}
-        />
-      )}
-
-      {/* Detection overlay canvas */}
-      {cam.status === "online" && <DetectionCanvas cam={cam} />}
-
-      {/* Gradient overlay */}
-      <div className="cam-overlay" style={{ zIndex: 4 }} />
-
-      {/* Top-right badges */}
-      <div style={{ position: "absolute", top: 8, left: 10, zIndex: 6, display: "flex", gap: 5 }}>
-        {cam.status === "offline" ? (
-          <span className="cam-badge" style={{ color: "var(--risk-offline)" }}>OFFLINE</span>
-        ) : (
-          <span
-            className="cam-badge"
-            style={{ background: "rgba(0,0,0,0.8)", color: "var(--risk-safe)", display: "flex", alignItems: "center", gap: 4 }}
-          >
-            <span
-              style={{
-                width: 6, height: 6, borderRadius: "50%",
-                background: "var(--risk-critical)",
-                boxShadow: "0 0 6px var(--risk-critical)",
-                animation: "live-pulse 2s infinite",
-              }}
-            />
-            LIVE
-          </span>
-        )}
-      </div>
-
-      {/* PPE badge top-right */}
-      {cam.status === "online" && (
-        <div style={{ position: "absolute", top: 8, right: 8, zIndex: 6 }}>
-          <span
-            className="cam-badge"
-            style={{ color: ppeColor, background: "rgba(0,0,0,0.8)", border: `1px solid ${ppeColor}40` }}
-          >
-            PPE {cam.ppe_compliance}%
-          </span>
+      {/* Detection canvas overlay on top of video */}
+      {cam.status === 'online' && (
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
+          <DetectionCanvas cam={cam} />
         </div>
       )}
-
-      {/* Alert indicator */}
-      {cam.hasAlert && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            border: "2px solid rgba(255,59,59,0.5)",
-            borderRadius: "inherit",
-            animation: "risk-pulse 1.5s infinite",
-            zIndex: 3,
-            pointerEvents: "none",
-          }}
-        />
-      )}
-
-      {/* Footer */}
-      <div className="cam-footer" style={{ zIndex: 6 }}>
-        <div>
-          <div className="cam-id">{cam.id}</div>
-          <div className="cam-info" style={{ maxWidth: 150, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-            {cam.name}
-          </div>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: "white" }}>
-            {cam.status === "offline" ? "—" : (
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                <Users size={11} />
-                <span>{cam.workers_detected}</span>
-              </span>
-            )}
-          </div>
-          {cam.hasAlert && (
-            <div style={{ fontSize: 9, color: "var(--risk-critical)", fontWeight: 700, marginTop: 2 }}>
-              ● ALERT
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
 }
@@ -368,7 +280,7 @@ function CamModal({ cam, onClose }: { cam: Camera; onClose: () => void }) {
                   display: "flex", alignItems: "center", gap: 8,
                 }}
               >
-                🚨 {cam.alertText}
+                <AlertTriangle size={13} style={{ flexShrink: 0 }} /> {cam.alertText}
               </div>
             )}
           </div>

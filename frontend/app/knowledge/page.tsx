@@ -19,8 +19,27 @@ const SUGGESTED = [
 
 const API = process.env.NEXT_PUBLIC_API_URL || "";
 
+const SAMPLE_QA: Message[] = [
+  {
+    role: "user",
+    content: "What is the safe re-entry procedure after H2S detection in Zone C?",
+    timestamp: new Date(Date.now() - 8 * 60000).toISOString(),
+  },
+  {
+    role: "assistant",
+    content: "Per OISD-STD-105 Section 4.3 and Factories Act 1948 Section 36:\n\nZone re-entry after H₂S detection requires:\n\n1. Continuous atmospheric monitoring showing H₂S < 1 ppm (OSHA TWA limit) for a minimum of 30 consecutive minutes before any re-entry attempt.\n\n2. Re-testing must be conducted by a certified Gas Safety Officer (GSO) using a calibrated 4-gas detector. Sensor calibration records must be within 6-month validity period.\n\n3. A fresh Confined Space Entry (CSE) permit must be issued — the original permit is invalidated upon emergency evacuation.\n\n4. A standby rescue team with full SCBA equipment must be positioned at the zone entry point before any worker re-enters. Minimum team size: 2 rescuers per entrant.\n\n5. Workers must carry SCBA units until two independent readings confirm H₂S below 1 ppm TWA. Air-purifying respirators (APR) are NOT permitted for H₂S above 0.1 ppm.\n\nReference: OISD-STD-105 Section 4.3, OISD-GDN-206, Factories Act 1948 Section 36A, OSHA 29 CFR 1910.146(k).",
+    sources: [
+      { source: "OISD-STD-105", section: "Section 4.3", relevance_score: 0.97, document_type: "PDF" },
+      { source: "Factories Act 1948", section: "Section 36A", relevance_score: 0.91, document_type: "Legal" },
+      { source: "OISD-GDN-206", section: "Clause 8.2", relevance_score: 0.88, document_type: "PDF" },
+    ],
+    confidence: "97%",
+    timestamp: new Date(Date.now() - 7 * 60000).toISOString(),
+  },
+];
+
 export default function KnowledgePage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(SAMPLE_QA);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -28,6 +47,7 @@ export default function KnowledgePage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
 
   const sendQuery = async (q: string) => {
     if (!q.trim() || loading) return;

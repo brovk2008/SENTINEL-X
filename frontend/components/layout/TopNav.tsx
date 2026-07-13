@@ -51,109 +51,84 @@ export function TopNav() {
   const unread = alerts.filter((a) => !a.read).length;
   const [alertOpen, setAlertOpen] = useState(false);
 
-  const riskColor =
-    plantRisk >= 80 ? "var(--risk-critical)" :
-    plantRisk >= 60 ? "var(--risk-high)" :
-    plantRisk >= 40 ? "var(--risk-medium)" :
-    "var(--risk-safe)";
+  const riskSeverity =
+    plantRisk >= 80 ? "critical" :
+    plantRisk >= 60 ? "high" :
+    plantRisk >= 40 ? "warning" :
+    "normal";
 
   return (
-    <header>
+    <header style={{ position: "sticky", top: 0, zIndex: 100 }}>
       {/* ── Top bar ── */}
       <div className="topnav">
         {/* Brand */}
         <Link href="/" style={{ textDecoration: "none", color: "inherit" }}>
-          <div className="brand" style={{ cursor: "pointer" }}>
+          <div className="topnav-brand" style={{ cursor: "pointer" }}>
             <img
               src="/logo.png"
               alt="Sentinel X Logo"
-              style={{ width: 34, height: 34, objectFit: "contain", borderRadius: 8 }}
+              style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 6 }}
             />
             <div>
-              <h1 style={{ fontSize: 16, fontWeight: 800, letterSpacing: "-0.02em" }}>Sentinel X</h1>
-              <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: -2 }}>
+              <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: "-0.02em" }}>Sentinel X</div>
+              <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: -2 }}>
                 Bharat Petrochemicals · Unit 3
               </div>
             </div>
           </div>
         </Link>
 
-        {/* Center — Risk Score */}
+        {/* Center — Risk Score Indicator */}
         <div className="center">
-          <div
-            className="clay-card"
-            style={{ padding: "8px 20px", display: "flex", alignItems: "center", gap: 12 }}
-          >
+          <div className={`risk-indicator ${riskSeverity}`}>
             <div className="live-dot" />
-            <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>Plant Risk</div>
-            <div
-              style={{
-                fontSize: 22,
-                fontWeight: 900,
-                color: riskColor,
-                fontVariantNumeric: "tabular-nums",
-                transition: "color 0.5s",
-              }}
-            >
+            <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>Plant Risk</span>
+            <span style={{ fontSize: 15, fontWeight: 800, fontVariantNumeric: "tabular-nums" }}>
               {plantRisk}%
-            </div>
-            <div
-              style={{
-                fontSize: 11,
-                padding: "2px 8px",
-                borderRadius: 999,
-                background: plantRisk >= 80 ? "rgba(255,59,59,0.15)" : "rgba(255,170,0,0.12)",
-                color: riskColor,
-                fontWeight: 700,
-              }}
-            >
-              {plantRisk >= 80 ? "CRITICAL" : plantRisk >= 60 ? "HIGH" : plantRisk >= 40 ? "MEDIUM" : "SAFE"}
-            </div>
+            </span>
+            <span className={`badge ${riskSeverity}`}>
+              {riskSeverity.toUpperCase()}
+            </span>
           </div>
         </div>
 
-        {/* Right — quick chips + alerts */}
+        {/* Right — UNS Chip + Alert bell */}
         <div className="right">
-          <div className="clay-card" style={{ padding: "7px 12px", fontSize: 12, display: "flex", gap: 6, alignItems: "center" }}>
+          <div style={{ padding: "4px 8px", background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: "var(--r-sm)", fontSize: 11, display: "flex", gap: 6, alignItems: "center" }}>
             <span className="live-dot" />
-            <span>UNS Active</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--text-secondary)" }}>UNS LIVE</span>
           </div>
 
           {/* Alert bell */}
           <div style={{ position: "relative" }}>
             <button
-              className="clay-button"
+              className="btn"
               onClick={() => setAlertOpen(!alertOpen)}
               style={{
-                padding: "8px 12px",
-                borderRadius: "var(--r-md)",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 12,
+                padding: "5px 10px",
                 position: "relative",
                 cursor: "pointer",
               }}
               aria-label="Alerts"
             >
-              <Bell size={15} />
+              <Bell size={14} />
               {unread > 0 && (
                 <span
                   style={{
                     position: "absolute",
                     top: -4,
                     right: -4,
-                    background: "var(--risk-critical)",
+                    background: "var(--alarm-critical)",
                     color: "white",
-                    fontSize: 10,
+                    fontSize: 9,
                     fontWeight: 800,
-                    width: 18,
-                    height: 18,
+                    width: 16,
+                    height: 16,
                     borderRadius: 999,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    border: "2px solid var(--canvas)",
+                    border: "2px solid var(--bg-panel)",
                   }}
                 >
                   {unread}
@@ -169,36 +144,36 @@ export function TopNav() {
                   top: "calc(100% + 8px)",
                   right: 0,
                   width: 340,
-                  background: "var(--canvas-2)",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  background: "var(--bg-elevated)",
+                  border: "1px solid var(--border-bright)",
                   borderRadius: "var(--r-lg)",
-                  boxShadow: "0 24px 48px rgba(0,0,0,0.6)",
+                  boxShadow: "var(--shadow-lg)",
                   zIndex: 200,
                   overflow: "hidden",
-                  animation: "float-up 0.2s var(--ease-spring)",
+                  animation: "float-up 0.15s ease",
                 }}
               >
                 <div
                   style={{
-                    padding: "14px 16px",
-                    borderBottom: "1px solid rgba(255,255,255,0.05)",
+                    padding: "12px 16px",
+                    borderBottom: "1px solid var(--border-dim)",
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
                   }}
                 >
-                  <div style={{ fontWeight: 700, fontSize: 14 }}>Alerts</div>
+                  <div style={{ fontWeight: 700, fontSize: 13 }}>Plant Alarm Feed</div>
                   <button
                     onClick={() => setAlertOpen(false)}
-                    style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: 16 }}
+                    style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: 14 }}
                   >
                     ✕
                   </button>
                 </div>
                 <div style={{ maxHeight: 320, overflowY: "auto" }}>
                   {alerts.length === 0 ? (
-                    <div style={{ padding: 20, textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>
-                      No active alerts
+                    <div style={{ padding: 20, textAlign: "center", color: "var(--text-muted)", fontSize: 12 }}>
+                      No active alarms
                     </div>
                   ) : (
                     alerts.slice(0, 12).map((a) => (
@@ -206,33 +181,25 @@ export function TopNav() {
                         key={a.id}
                         onClick={() => markAlertRead(a.id)}
                         style={{
-                          padding: "12px 16px",
-                          borderBottom: "1px solid rgba(255,255,255,0.04)",
+                          padding: "10px 14px",
+                          borderBottom: "1px solid var(--border-dim)",
                           opacity: a.read ? 0.5 : 1,
                           cursor: "pointer",
-                          transition: "opacity 0.2s, background 0.15s",
-                          background: a.read ? "transparent" : "rgba(255,59,59,0.04)",
+                          transition: "background 0.12s",
+                          background: a.read ? "transparent" : "var(--alarm-critical-bg)",
+                          borderLeft: a.severity === "CRITICAL" ? "3px solid var(--alarm-critical)" : "3px solid var(--alarm-warning)",
                         }}
                       >
-                        <div
-                          style={{
-                            fontSize: 12,
-                            color:
-                              a.severity === "CRITICAL" ? "var(--risk-critical)" :
-                              a.severity === "HIGH"     ? "var(--risk-high)" :
-                              a.severity === "MEDIUM"   ? "var(--risk-medium)" :
-                              "var(--text-secondary)",
-                            fontWeight: 700,
-                            marginBottom: 2,
-                          }}
-                        >
-                          {a.severity}
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+                          <span className={`badge ${a.severity.toLowerCase()}`} style={{ fontSize: 9 }}>
+                            {a.severity}
+                          </span>
+                          <span style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>
+                            {new Date(a.timestamp).toLocaleTimeString()}
+                          </span>
                         </div>
-                        <div style={{ fontSize: 13 }}>{a.title}</div>
-                        <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 3 }}>
-                          {a.zone && <span style={{ marginRight: 6 }}>Zone {a.zone}</span>}
-                          {new Date(a.timestamp).toLocaleTimeString()}
-                        </div>
+                        <div style={{ fontSize: 12, fontWeight: 600, marginTop: 4 }}>{a.title}</div>
+                        {a.zone && <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>Zone {a.zone}</div>}
                       </div>
                     ))
                   )}
@@ -252,9 +219,8 @@ export function TopNav() {
               key={n.href}
               href={n.href}
               className={pathname === n.href ? "active" : ""}
-              style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
             >
-              <IconComp size={14} />
+              <IconComp size={13} />
               <span>{n.label}</span>
             </Link>
           );

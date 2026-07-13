@@ -38,6 +38,7 @@ export default function DebatePage() {
   const [messages, setMessages] = useState<AgentMessage[]>([]);
   const [running, setRunning] = useState(false);
   const [useScripted, setUseScripted] = useState(true);
+  const [selectedScenario, setSelectedScenario] = useState('h2s_confined_space');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function DebatePage() {
           zone: "ZC",
           risk_level: "CRITICAL",
           use_scripted_demo: useScripted,
-          scenario: "h2s_confined_space"
+          scenario: selectedScenario,
         })
       });
 
@@ -187,17 +188,75 @@ export default function DebatePage() {
       {/* Main Debate Transcript Feed */}
       <div className="debate-feed" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {messages.length === 0 && !running && (
-          <div
-            className="clay-card info"
-            style={{ padding: "32px", textAlign: "center", color: "var(--text-muted)" }}
-          >
-            <Brain size={36} style={{ color: "var(--accent-blue)", marginBottom: "12px", opacity: 0.8 }} />
-            <div style={{ fontSize: "14px", fontWeight: 700, marginBottom: "6px" }}>
-              Run Safety Debate
+          <div>
+            {/* Last session result card */}
+            <div style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-dim)',
+              borderRadius: 6,
+              padding: 16,
+              marginBottom: 16,
+            }}>
+              <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 8, fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                Last Session — 14 minutes ago &middot; 7 agents &middot; 3m 24s
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 700, marginBottom: 4 }}>
+                H2S Buildup — Zone C Compressor Bay
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>
+                Compound risk: H₂S 45ppm + Active Confined Space permit + 6 workers in zone
+              </div>
+              <div style={{
+                background: 'var(--alarm-normal-bg)',
+                border: '1px solid var(--alarm-normal)',
+                borderLeft: '3px solid var(--alarm-normal)',
+                borderRadius: 4,
+                padding: '8px 12px',
+                fontSize: 12,
+                color: 'var(--alarm-normal)',
+                fontFamily: 'var(--font-mono)',
+              }}>
+                DECISION: Zone C partial shutdown. Valve CV-312 replacement scheduled. Risk: 84% → 18%. Cost: ₹18.8L.
+              </div>
             </div>
-            <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-              Watch 7 specialized AI agents discuss a critical Zone C H₂S gas release scenario.
-              The Executive AI will synthesize all inputs and make the final decision.
+
+            {/* Scenario selector */}
+            <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 8, fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Select Debate Scenario
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 20 }}>
+              {[
+                { id: 'h2s_confined_space', title: 'H2S + Confined Space', severity: 'critical', zone: 'Zone C', detail: 'Compressor Bay H₂S buildup during active CSE permit' },
+                { id: 'equipment_failure',  title: 'Compressor Failure Cascade', severity: 'high', zone: 'Zone B', detail: 'C-301 vibration 11mm/s + adjacent hot work permit' },
+                { id: 'permit_conflict',    title: 'Hot Work + Adjacent LEL', severity: 'high', zone: 'Zone A', detail: 'Open flame work within 15m of LEL 18% sensor' },
+              ].map((s) => (
+                <div
+                  key={s.id}
+                  onClick={() => setSelectedScenario(s.id)}
+                  style={{
+                    background: selectedScenario === s.id ? 'var(--bg-elevated)' : 'var(--bg-card)',
+                    border: `1px solid ${selectedScenario === s.id ? 'var(--border-bright)' : 'var(--border-dim)'}`,
+                    borderLeft: selectedScenario === s.id ? '3px solid var(--alarm-info)' : '1px solid var(--border-dim)',
+                    borderRadius: 6,
+                    padding: '12px 14px',
+                    cursor: 'pointer',
+                    transition: 'all 120ms ease',
+                  }}
+                >
+                  <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'var(--font-mono)' }}>{s.zone}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-primary)', fontWeight: 700, marginBottom: 6 }}>{s.title}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 8, lineHeight: 1.4 }}>{s.detail}</div>
+                  <span className={`badge ${s.severity}`}>{s.severity.toUpperCase()}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Help text */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: 'var(--bg-card)', borderRadius: 6, border: '1px solid var(--border-dim)' }}>
+              <Brain size={14} color="var(--alarm-info)" style={{ flexShrink: 0 }} />
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                7 specialized AI agents will debate the selected scenario in real-time. The Executive Agent synthesizes all inputs and issues a final risk decision.
+              </div>
             </div>
           </div>
         )}
