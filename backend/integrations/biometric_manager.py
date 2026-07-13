@@ -209,6 +209,8 @@ class BiometricManager:
         # Old formula gave 517% because it didn't account for 8h shift budget
         accumulated_h2s_ppm_h = ambient["h2s_ppm"] * shift_h
         accumulated_co_ppm_h  = ambient["co_ppm"]  * shift_h
+        h2s_twa = accumulated_h2s_ppm_h / 8.0
+        co_twa  = accumulated_co_ppm_h / 8.0
         dose_pct = min(150.0, (accumulated_h2s_ppm_h / (self.H2S_TWA_LIMIT_PPM * 8.0)) * 100)
 
         # ── Cognitive load (HRV-derived + task complexity) ───────────────────
