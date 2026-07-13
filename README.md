@@ -1,160 +1,224 @@
-# 🏭 SafetyOS — Enterprise AI Operating System for Industrial Safety
-### 🏆 ET AI Hackathon 2.0 | Solo Build |
+<p align="center">
+  <img src="frontend/public/logo.png" alt="Sentinel X Logo" width="120" height="120" style="border-radius: 20px;" />
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Next.js 14](https://img.shields.io/badge/Next.js-14-black.svg?style=flat&logo=next.js)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg?logo=docker)](https://www.docker.com/)
-[![RAG Engine](https://img.shields.io/badge/ChromaDB-VectorSearch-orange.svg)](https://www.trychroma.com/)
-[![Knowledge Graph](https://img.shields.io/badge/Neo4j-bolt-blue.svg?logo=neo4j)](https://neo4j.com/)
+<h1 align="center">🏭 Sentinel X — Industrial Safety AI Operating System</h1>
 
----
+<p align="center">
+  <strong>Autonomous IT/OT Convergence, Real-Time Compound Risk Intelligence, Multi-Agent AI Debate & Worker Biometrics for High-Risk Industrial Plants</strong>
+</p>
 
-## ❓ The Core Problem
-
-Industrial complexes (refineries, steel plants, chemical processors) run on dozens of legacy systems. Standard Operating Procedures (SOPs), sensor streams, CCTV cameras, and physical work permits exist in isolated silos. When critical events occur (e.g., toxic gas release in a confined maintenance space), operators suffer from **alert fatigue** or fail to synthesize multiple data points in time. 
-
-**Legacy solutions are retrospective. SafetyOS is predictive and autonomous.**
-
-**SafetyOS** bridges this gap. It aggregates:
-1. **IoT Sensor Feeds** (20+ virtual sensors via MQTT)
-2. **Work Permit Registries** (Permit-to-Work database correlation)
-3. **CCTV AI Computer Vision** (PPE checks and area intrusion alerts)
-4. **Regulatory Standards** (OISD standards, Factories Act 1948, DGFASLI)
+<p align="center">
+  <a href="https://sentinel-x-pearl.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
+  <a href="https://sentinel-x-52xs.onrender.com/docs"><img src="https://img.shields.io/badge/API%20Docs-Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="API Docs" /></a>
+  <a href="https://github.com/brovk2008/SENTINEL-X"><img src="https://img.shields.io/badge/ET%20AI%20Hackathon-2.0-blueviolet?style=for-the-badge" alt="ET AI Hackathon 2.0" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" /></a>
+</p>
 
 ---
 
-## ⚡ The Solution: Next-Gen Architecture
+## 📌 Executive Summary
 
-SafetyOS is a containerized real-time OS served via a premium glassmorphic interface, orchestrating background AI agents that debate safety decisions before executing response protocols.
+Modern industrial facilities—petrochemical refineries, steel mills, and chemical processing units—operate complex machinery under hazardous conditions. Today, industrial safety systems are fragmented into isolated silos: SCADA handles process telemetry, physical permits are filed separately, gas detectors alert locally, and worker tracking is manual.
 
+When multiple subtle anomalies happen simultaneously (e.g., a low-level toxic gas weep during confined space maintenance while an adjacent compressor exhibits abnormal vibration), traditional systems fail to correlate the compound hazard, leading to catastrophic industrial disasters.
+
+**Sentinel X** bridges this gap by acting as an autonomous **AI Operating System for Industrial Safety**. It normalizes industrial IoT data into a **Unified Namespace (UNS)**, continuously correlates multi-vector hazards through a **20-Rule Compound Risk Engine**, streams real-time consensus via a **7-Agent AI Debate Engine**, tracks worker physiological strain via smart biometrics, models atmospheric gas plume dispersion, and validates Permit-to-Work (PTW) compliance against live SCADA telemetry.
+
+---
+
+## 🚀 Key Innovation Highlights
+
+### 🤖 1. Multi-Agent AI Debate Engine
+When a high-risk safety incident occurs, Sentinel X triggers an autonomous debate between **6 specialized domain AI agents + 1 Executive Decision Agent**:
+- 🔴 **Safety Agent**: Prioritizes life protection and mandatory evacuation thresholds.
+- 🟡 **Production Agent**: Evaluates operational downtime costs and partial isolation alternatives.
+- ⚖️ **Compliance Agent**: Enforces strict OISD & Factories Act statutory mandates.
+- 🔧 **Maintenance Agent**: Diagnoses root-cause mechanical failure signatures and repair timelines.
+- 💰 **Finance Agent**: Calculates ROI of proactive shutdown vs. catastrophic liability.
+- 🚨 **Emergency Agent**: Mobilizes response teams, exclusion zones, and protocol activation.
+- 📊 **Executive Agent**: Synthesizes all perspectives and renders an authoritative, decisive operational verdict.
+
+### ⚡ 2. 20-Rule Compound Risk Correlation Engine
+Goes beyond single-sensor threshold alarms by detecting multi-variable hazard interactions:
+- **H₂S Buildup + Active Confined Space Permit**
+- **Hot Work Permit + Downwind Adjacent LEL Flammable Gas Spike**
+- **Lockout/Tagout (LOTO) Verification Failure + Active Maintenance**
+- **Worker Fatigue (>12h Shift) + High-Hazard Overcrowded Zone**
+- **Vibration Anomaly + Overdue Mechanical Calibration Cascade**
+
+### 🩺 3. Worker Wearable Biometric Intelligence
+- Computes Moran et al. **Physiological Strain Index (PSI)** (0–10 scale) using real-time heart rate and core/skin body temperature telemetry.
+- Evaluates **WBGT Heat Index** and calculates cumulative **OSHA TWA/STEL gas dosimetry** for H₂S and CO exposure per worker.
+
+### 💨 4. Gaussian Hazard Plume Dispersion Modeling
+- Implements atmospheric **Pasquill-Gifford dispersion models** using Briggs rural coefficients.
+- Dynamically projects **ERPG-2/3 & OISD hazard boundaries** on SVG plant floor overlays, adjusting in real-time to wind direction, release rate, and stability classes.
+
+### 🚶 5. Real-Time Location System (RTLS) & Exclusion Geofencing
+- Ultra-Wideband (UWB) worker coordinate tracking on interactive plant floor maps.
+- Automated 2-second evaluation loops checking confined space permit access and active machinery exclusion zones.
+
+### 📋 6. SCADA-Integrated Digital PTW Validator
+- Calculates a 3-vector **Vulnerability Index (VI)**: $\text{VI} = \text{Location Score} \times \text{Job Criticality} \times \text{Human Strain}$.
+- Validates isolation status and verifies training records against OISD-105, OISD-116, OISD-118, and Factories Act 1948 requirements.
+
+### 🔑 7. Multi-Provider LLM & Custom Key Settings Interface
+- Built-in provider router supporting **Google Gemini 2.0**, **OpenRouter**, **Anthropic Claude 3.5**, and **Local Ollama** models.
+- Includes a dedicated **Settings Page (`/settings`)** allowing operators to configure custom API keys and test connections at runtime.
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart TB
+    subgraph OT_Layer["Industrial OT & Sensor Layer"]
+        Sensors["📡 Gas, Temp, Press, Vib Sensors"]
+        PLC["⚡ Modbus / OPC-UA / PLCs"]
+        Biometrics["🩺 Worker Smart Vests (HR, Temp, Gas)"]
+        RTLS["🚶 UWB Location Tags"]
+        CCTV["📹 RTSP / HLS Camera Feeds"]
+    end
+
+    subgraph UNS_Layer["IT/OT Integration & UNS"]
+        Normalizer["Unified Namespace (UNS) Normalizer"]
+        MQTT["Mosquitto MQTT Broker (Sparkplug B)"]
+    end
+
+    subgraph Intelligence_Engine["Sentinel X Core AI Engine"]
+        RiskEngine["⚡ 20-Rule Compound Risk Engine"]
+        DebateEngine["🤖 7-Agent AI Debate Orchestrator"]
+        PlumeEngine["💨 Gaussian Plume Dispersion Model"]
+        PTWEngine["📋 Digital PTW & SCADA Validator"]
+        LLMRouter["🧠 Multi-Provider LLM Router (Gemini/Claude/Ollama)"]
+    end
+
+    subgraph Presentation_Layer["User Interface & Emergency Response"]
+        WebUI["💻 Next.js 14 Bento Dashboard (Vercel)"]
+        FastAPI["🚀 FastAPI Backend Server (Render)"]
+        Alerts["🚨 Emergency Alarms & WebSocket Feed"]
+    end
+
+    Sensors --> Normalizer
+    PLC --> Normalizer
+    Biometrics --> Normalizer
+    RTLS --> Normalizer
+    CCTV --> FastAPI
+
+    Normalizer --> MQTT
+    MQTT --> RiskEngine
+    RiskEngine --> DebateEngine
+    DebateEngine --> LLMRouter
+    PlumeEngine --> WebUI
+    PTWEngine --> WebUI
+
+    FastAPI <--> WebUI
+    FastAPI <--> Alerts
 ```
-                  ┌──────────────────────┐
-                  │   Nginx Web Proxy    │
-                  └──────────┬───────────┘
-                             │
-            ┌────────────────┴────────────────┐
-            ▼                                 ▼
-   ┌─────────────────┐               ┌─────────────────┐
-   │ Next.js 14 UI   │               │ FastAPI Backend │
-   │ (Mission Control│               │ (HTTP/Websocket)│
-   └─────────────────┘               └────────┬────────┘
-                                              │
-              ┌───────────────────────────────┼──────────────────────────────┐
-              ▼                               ▼                              ▼
-     ┌─────────────────┐             ┌─────────────────┐            ┌─────────────────┐
-     │  Redis Pub/Sub  │             │   PostgreSQL    │            │ ChromaDB Vector │
-     │  (Live State)   │             │  (Permit DB)    │            │ (SOPs & OISD)   │
-     └─────────────────┘             └─────────────────┘            └─────────────────┘
-              ▲                               ▲                              ▲
-              │                               │                              │
-     ┌────────┴────────┐             ┌────────┴────────┐            ┌────────┴────────┐
-     │   MQTT Broker   │             │  Neo4j Bolt Graph│            │  LLM Router Engine│
-     │ (Mosquitto IoT) │             │ (Entity Links)  │            │ (Gemini/Ollama) │
-     └─────────────────┘             └─────────────────┘            └─────────────────┘
-```
 
 ---
 
-## 🎯 Key Hackathon-Winning Features
+## 📱 Application Modules & Pages (17 Routes)
 
-### 1. 🚦 Mission Control Dashboard
-* **Glassmorphic UI**: Vibrant, responsive dark-mode styling built using CSS variables, custom gauges, and animated transitions.
-* **Interactive SVG Plant Layout**: Real-time color-coded hazard zones indicating risk levels mapped dynamically to active sensor groups.
-* **Live Sensor Ticker**: Smooth, infinite-scroll horizontal ticker displaying critical changes from 20+ live sensor feeds.
-
-### 2. 🧠 Multi-Agent AI Debate Room
-* **6 Specialized Agents + 1 Executive Coordinator**:
-  * 🔴 **Safety Agent**: Prioritizes life safety, advocates for immediate evacuations.
-  * 🟡 **Production Agent**: Seeks operational workarounds, quantifies downtime cost.
-  * ⚖️ **Compliance Agent**: Cites OISD, DGFASLI, and Factories Act regulations.
-  * 🔧 **Maintenance Agent**: Identifies technical root causes and estimates fix times.
-  * 💰 **Finance Agent**: Computes the financial cost of action vs. inaction.
-  * 🚨 **Emergency Agent**: Validates and triggers emergency response protocols.
-  * 🎯 **Executive Coordinator**: Synthesizes the debate into a single, concrete action plan.
-* **Real-time Streaming**: Debates are powered by an LLM-router with automatic provider fallback, streamed directly to the frontend via Server-Sent Events (SSE) with typing animations.
-
-### 3. 👁️ Smart CCTV Computer Vision
-* **Real-Time Video Analytics Mocks**: Interactive video player drawing bounding boxes over workers.
-* **Violations Auditing**: Flags workers without PPE (hardhats, vests) or individuals entering restricted zones (Zone C Compressor Bay) during unsafe gas levels.
-
-### 4. 📖 Knowledge RAG Engine
-* **Vector Semantic Search**: Queries safety questions against OISD standards, Indian Factory Act regulations, and historical incident logs using ChromaDB embeddings.
-* **Cited Responses**: Delivers responses complete with specific document citations and confidence ratings.
-* **Voice Integration**: Hands-free voice querying utilizing the Web Speech API.
-
-### 5. 📳 Worker Mobile Companion (PWA)
-* **Real-Time Notification Channel**: Simulates QR-code pairing of field devices to the dashboard.
-* **Autonomous Push Notifications**: Instantly pushes evacuation coordinates and warnings to workers.
+| Page Route | Module Name | Core Features |
+|---|---|---|
+| **`/`** | **Mission Control** | Live plant operations feed, real-time risk ring, sensor ticker, compound risk alerts. |
+| **`/debate`** | **AI Debate Chamber** | Streaming multi-agent safety debate reasoning with interactive scenario controls. |
+| **`/sensors`** | **Sensors Console** | Matrix of 10+ real-time plant sensors with sparklines and historical charts. |
+| **`/cameras`** | **CCTV Vision** | Computer vision AI feed overlay with object detection and PPE monitoring. |
+| **`/permits`** | **Digital PTW** | Automated permit verification engine with Vulnerability Index scoring. |
+| **`/biometrics`** | **Worker Biometrics** | Fleet physiological strain index (PSI) gauges, heart rate, and gas dosimetry. |
+| **`/dispersion`** | **Hazard Plume** | Real-time atmospheric toxic plume model with ERPG contour map overlays. |
+| **`/workers`** | **RTLS Tracking** | UWB plant floor positioning map, geofence breaches, and machinery exclusion zones. |
+| **`/compliance`** | **Regulatory Hub** | Real-time statutory compliance audit against OISD and Factories Act rules. |
+| **`/simulator`** | **Scenario Simulator** | What-if risk simulation matrix for testing compound hazard escalation. |
+| **`/executive`** | **Executive Briefing** | AI Copilot assistant and executive shift report generator. |
+| **`/knowledge`** | **RAG Knowledge Base** | Vector semantic search over OISD regulations, SOPs, and incident archives. |
+| **`/sites`** | **Multi-Site Overview** | Geographical map overview across multiple industrial refinery locations. |
+| **`/connect`** | **Connectivity Manager** | Protocol connector settings for MQTT, OPC-UA, Modbus, and RTSP. |
+| **`/handover`** | **Shift Handover Log** | Digital shift change log with pending permit tracking and AI summary. |
+| **`/settings`** | **Settings & API Keys** | **Custom LLM API Key manager** (Gemini, OpenRouter, Claude, Ollama) with live test suite. |
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Component | Technology | Role |
-|---|---|---|
-| **Frontend** | Next.js 14, React, Zustand, Recharts, Lucide | Core UI & State Synchronization |
-| **Backend** | FastAPI (Python), Uvicorn, Websockets | REST API & Real-time message streaming |
-| **Database (SQL)** | PostgreSQL + SQLAlchemy | Users, Active Permits, and Shift Logs |
-| **State Store (NoSQL)** | Redis (Hiredis) | Memory state cache & WebSocket Pub/Sub broker |
-| **Vector DB (RAG)** | ChromaDB | Regulation documents, SOPs, and incident vectors |
-| **Graph DB** | Neo4j | Equipment-permit-regulation dependency links |
-| **Message Broker** | Mosquitto (MQTT) | IoT simulated sensor data ingestion |
-| **AI Router** | LangChain / Google Gemini API / Ollama | Multi-provider LLM coordinator with fallbacks |
-| **Reverse Proxy** | Nginx | Port routing and static assets delivery |
+- **Frontend**: Next.js 14 (App Router), TypeScript, React 18, Zustand, Recharts, Lucide Icons, Vanilla CSS (Claymorphism & Spatial Bento UI).
+- **Backend**: FastAPI, Python 3.11, Asyncio, Pydantic v2, Uvicorn, Starlette.
+- **AI / LLM & ML**: Google Gemini API, OpenRouter API, Anthropic API, Ollama, PyTorch, OpenCV, ChromaDB (Vector Search).
+- **Industrial IoT Protocols**: MQTT (Sparkplug B), OPC-UA, Modbus TCP, RTSP / HLS Video Streaming.
+- **Infrastructure & Deployment**: Docker, Docker Compose, Vercel (Frontend), Render (Backend).
 
 ---
 
-## 🚀 Quick Start Instructions (Run Local / Docker)
+## ⚖️ Supported Industrial Standards
 
-### Option A: Local Build (Without Docker)
+- **OISD-105**: Work Permit System & Gas Clearance Limits
+- **OISD-116**: Fire Protection Facilities for Petroleum Refineries
+- **OISD-118**: Inspection of Heavy Rotating Equipment
+- **OISD-GDN-206**: Safety Management System in Petroleum Industry
+- **Factories Act 1948**: Sections 36 (Confined Space), 37 (Explosive Gas), 41F (Hazardous Processes)
+- **OSHA 1910.119**: Process Safety Management (PSM) of Highly Hazardous Chemicals
 
-If Docker Desktop is not running, launch the stack directly on your local machine:
+---
 
-1. **Start Backend**:
-   ```bash
-   cd backend
-   pip install -r requirements.txt
-   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-   ```
-2. **Start Frontend**:
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
-3. **Generate & Seed Data**:
-   ```bash
-   # In root directory:
-   python synthetic_data_generator.py --export   # creates local database seed files
-   python synthetic_data_generator.py --push     # pushes seed data to backend
-   ```
-4. **Visit**: `http://localhost:3000`
+## ⚡ Quickstart & Local Development
 
-### Option B: Dockerized Container (One Command)
+### Prerequisites
+- Node.js 18+ & npm
+- Python 3.11+
+- Git
 
-Ensure Docker Desktop is running, then launch the stack using the bootstrapper:
-
-```powershell
-./run.ps1
-```
-Or directly:
+### 1. Clone Repository
 ```bash
-docker-compose up --build -d
+git clone https://github.com/brovk2008/SENTINEL-X.git
+cd SENTINEL-X
+```
+
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open `http://localhost:3000` in your browser.
+
+### 3. Backend Setup
+```bash
+cd backend
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On Linux/macOS:
+source venv/bin/activate
+
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+API server will run at `http://localhost:8000`. Access Swagger UI at `http://localhost:8000/docs`.
+
+### 4. Docker Compose Setup (Optional)
+Run the entire stack including Postgres, Redis, Mosquitto MQTT, and API via Docker:
+```bash
+docker-compose up -d
 ```
 
 ---
 
-## 🔒 Zero Trust Internal Security Audit
+## 🌐 Production Deployment
 
-SafetyOS contains a built-in automated sanity-check suite that runs health inspections across every TCP/HTTP endpoint, checking data integrity and streaming message performance:
-
-```bash
-python zero_trust_audit.py
-```
+- **Frontend Web App**: Deployed on **Vercel** at [`https://sentinel-x-pearl.vercel.app`](https://sentinel-x-pearl.vercel.app)
+- **Backend API**: Deployed on **Render** at [`https://sentinel-x-52xs.onrender.com`](https://sentinel-x-52xs.onrender.com)
 
 ---
 
 ## 📄 License
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
+
+---
+
+<p align="center">
+  Built for the <strong>ET AI Hackathon 2.0</strong> | <i>Sentinel X — The factory has a brain.</i>
+</p>
