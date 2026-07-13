@@ -2,7 +2,9 @@
 import React, { useState, useMemo } from "react";
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RTooltip } from "recharts";
 import { useStore, SensorReading } from "../../lib/store";
-import { Radio } from "lucide-react";
+import { Radio, Sparkles } from "lucide-react";
+import { PIDVisionExtractorModal } from "../../components/PIDVisionExtractorModal";
+
 
 type FilterKey = "all" | "gas" | "temperature" | "pressure" | "vibration" | "flow" | "humidity" | "ZA" | "ZB" | "ZC" | "ZD" | "ZE" | "ZF";
 type SortKey = "risk" | "zone" | "type" | "updated";
@@ -180,6 +182,8 @@ export default function SensorsPage() {
   const sensors = useStore((s) => s.sensors);
   const [filter, setFilter]  = useState<FilterKey>("all");
   const [sort,   setSort]    = useState<SortKey>("risk");
+  const [showVisionModal, setShowVisionModal] = useState(false);
+
 
   const items = useMemo(() => {
     let arr = Object.values(sensors);
@@ -215,7 +219,16 @@ export default function SensorsPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            className="btn primary"
+            onClick={() => setShowVisionModal(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <Sparkles size={14} />
+            <span>Vision P&ID Extractor</span>
+          </button>
           <div style={{ fontSize: 12, color: "var(--text-muted)" }}>Sort by:</div>
+
           {(["risk", "zone", "type"] as SortKey[]).map((s) => (
             <button
               key={s}
@@ -274,6 +287,8 @@ export default function SensorsPage() {
           ))}
         </div>
       )}
+      {/* Vision AI Modal */}
+      <PIDVisionExtractorModal isOpen={showVisionModal} onClose={() => setShowVisionModal(false)} />
     </div>
   );
 }

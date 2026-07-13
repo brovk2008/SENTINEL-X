@@ -28,7 +28,9 @@ const DEMO_SOURCES: Source[] = [
   { id: "azure-iot",     name: "Azure IoT Hub",                     protocol: "mqtt",     host: "safetyos.azure-devices.net",             port: 8883,  status: "standby",      tags_count: 0,   last_seen: null },
 ];
 
-import { Cloud, Globe, Zap, Radio, Flame, ShieldCheck, Plug } from "lucide-react";
+import { Cloud, Globe, Zap, Radio, Flame, ShieldCheck, Plug, Sparkles } from "lucide-react";
+import { PIDVisionExtractorModal } from "../../components/PIDVisionExtractorModal";
+
 
 const CLOUD_INTEGRATIONS = [
   { id: "aws",        name: "AWS IoT Core",        Icon: Cloud,       color: "#ff9900" },
@@ -195,8 +197,10 @@ function AddModal({ onClose }: { onClose: () => void }) {
 export default function ConnectPage() {
   const [sources, setSources] = useState<Source[]>(DEMO_SOURCES);
   const [showAdd, setShowAdd] = useState(false);
+  const [showVisionModal, setShowVisionModal] = useState(false);
   const [testing, setTesting] = useState<string | null>(null);
   const [testResult, setTestResult] = useState<Record<string, string>>({});
+
 
   useEffect(() => {
     if (!API) return;
@@ -232,12 +236,22 @@ export default function ConnectPage() {
             {connected.length} sources connected · {totalTags} data tags · 847 readings/sec
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button className="clay-btn" onClick={() => sources.forEach((s) => s.status === "connected" && handleTest(s.id))}>
-            🔌 Test All
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button
+            className="btn primary"
+            onClick={() => setShowVisionModal(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <Sparkles size={14} />
+            <span>Scan P&ID / SCADA Diagram</span>
           </button>
-          <button className="clay-btn primary" onClick={() => setShowAdd(true)}>
-            + Add Source
+          <button
+            className="btn"
+            onClick={() => setShowAdd(true)}
+            style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+          >
+            <Plug size={14} />
+            <span>Connect New Source</span>
           </button>
         </div>
       </div>
@@ -345,7 +359,9 @@ export default function ConnectPage() {
         </div>
       </div>
 
+      {/* Modals */}
       {showAdd && <AddModal onClose={() => setShowAdd(false)} />}
+      <PIDVisionExtractorModal isOpen={showVisionModal} onClose={() => setShowVisionModal(false)} />
     </div>
   );
 }
