@@ -89,7 +89,7 @@ body {
   background: var(--bg-base);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
@@ -155,9 +155,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: var(--r-sm);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   font-family: var(--font-mono);
   letter-spacing: 0.04em;
@@ -174,7 +174,7 @@ body {
 /* ── VALUE DISPLAY ──────────────────────────────── */
 .sensor-value {
   font-family: var(--font-mono);
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--text-value);
   line-height: 1;
@@ -187,7 +187,7 @@ body {
 
 .sensor-unit {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary);
   margin-left: 4px;
 }
@@ -261,10 +261,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 4px 11px;
   border-radius: var(--r-sm);
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   text-decoration: none;
   border: 1px solid transparent;
@@ -306,7 +306,7 @@ body {
   border-radius: var(--r-md);
   border: 1px solid;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 .risk-indicator.critical { background: var(--alarm-critical-bg); border-color: var(--alarm-critical); color: var(--alarm-critical); }
@@ -320,9 +320,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
+  padding: 7px 15px;
   border-radius: var(--r-md);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   border: 1px solid var(--border-mid);
@@ -410,14 +410,14 @@ body {
 }
 
 .page-title {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
 }
 
 .page-subtitle {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
   margin-top: 3px;
 }
@@ -527,18 +527,18 @@ body {
 .data-table { width: 100%; border-collapse: collapse; }
 .data-table th {
   text-align: left;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 8px 12px;
+  padding: 9px 13px;
   border-bottom: 1px solid var(--border-dim);
 }
 .data-table td {
-  padding: 10px 12px;
+  padding: 11px 13px;
   border-bottom: 1px solid var(--border-dim);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-primary);
 }
 .data-table tr:hover td { background: var(--bg-card-hover); }
