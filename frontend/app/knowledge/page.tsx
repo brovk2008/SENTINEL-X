@@ -107,9 +107,9 @@ export default function KnowledgePage() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "20px", alignItems: "start" }}>
+      <div className="responsive-row">
         {/* Chat Console */}
-        <div className="clay-card" style={{ display: "flex", flexDirection: "column", height: "550px" }}>
+        <div className="clay-card" style={{ display: "flex", flexDirection: "column", height: "550px", flex: 1.4 }}>
           <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
             {messages.length === 0 && (
               <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-secondary)" }}>
@@ -169,23 +169,59 @@ export default function KnowledgePage() {
         </div>
 
         {/* Sidebar */}
-        <div className="clay-card">
-          <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 12 }}>Suggested Queries</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {SUGGESTED.map((q) => (
-              <button
-                key={q}
-                className="clay-card"
-                onClick={() => sendQuery(q)}
-                style={{
-                  textAlign: "left", fontSize: "11px", padding: "10px 12px",
-                  color: "var(--text-secondary)", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center"
-                }}
-              >
-                <span>{q}</span>
-                <ChevronRight size={12} style={{ flexShrink: 0, marginLeft: 6 }} />
-              </button>
-            ))}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Suggested Queries */}
+          <div className="clay-card" style={{ padding: 16 }}>
+            <div style={{ fontWeight: 800, fontSize: 13, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginBottom: 12 }}>Suggested Queries</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {SUGGESTED.map((q) => (
+                <button
+                  key={q}
+                  className="clay-card"
+                  onClick={() => sendQuery(q)}
+                  style={{
+                    textAlign: "left", fontSize: "11px", padding: "10px 12px",
+                    color: "var(--text-secondary)", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center",
+                    background: "rgba(255,255,255,0.01)"
+                  }}
+                >
+                  <span>{q}</span>
+                  <ChevronRight size={12} style={{ flexShrink: 0, marginLeft: 6 }} />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Featured Safety Standards */}
+          <div className="clay-card info" style={{ padding: 16 }}>
+            <div style={{ fontWeight: 800, fontSize: 13, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginBottom: 12 }}>Featured Standards</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {[
+                { code: "OISD-STD-105", desc: "Work Permit System (Permit to Work)", tags: ["LOTO", "Hot Work"] },
+                { code: "OISD-GDN-206", desc: "Safety Management System Rules", tags: ["Audit", "Risk"] },
+                { code: "Factories Act 1948", desc: "Section 36: Fume Precautions", tags: ["CSE", "Ventilation"] },
+              ].map((std) => (
+                <div 
+                  key={std.code} 
+                  style={{ 
+                    background: "rgba(255,255,255,0.02)", 
+                    border: "1px solid rgba(255,255,255,0.05)", 
+                    borderRadius: "var(--r-md)", 
+                    padding: "10px 12px",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => sendQuery(`What does ${std.code} say about ${std.tags[0]}?`)}
+                >
+                  <div style={{ fontSize: 12, fontWeight: 800, color: "var(--accent-blue)" }}>{std.code}</div>
+                  <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 4, lineHeight: 1.4 }}>{std.desc}</div>
+                  <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                    {std.tags.map(t => (
+                      <span key={t} style={{ fontSize: 9, background: "rgba(255,255,255,0.05)", color: "var(--text-muted)", padding: "1px 5px", borderRadius: 3 }}>{t}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

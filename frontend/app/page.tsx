@@ -110,12 +110,123 @@ const AGENTS = [
   { name: "Executive",   Icon: BarChart3,   color: "#00ddff" },
 ];
 
+const API = process.env.NEXT_PUBLIC_API_URL || "";
+
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function MissionControlPage() {
   const plantRisk    = useStore((s) => s.plantRisk);
   const sensors      = useStore((s) => s.sensors);
   const workerCount  = useStore((s) => s.workerCount);
   const glowRef = useRef<HTMLDivElement>(null);
+
+  const [prediction, setPrediction] = useState<{
+    probability_4h: number;
+    probability_24h: number;
+    top_factors: { factor: string; contribution: number; severity: string; context: string }[];
+    predicted_incident_type: string;
+    recommended_preventive_actions: string[];
+  }>({
+    probability_4h: 42,
+    probability_24h: 67,
+    top_factors: [
+      { factor: "H₂S Gas Level", contribution: 25, severity: "HIGH", context: "18.0ppm H2S in Zone C" },
+      { factor: "Worker Fatigue", contribution: 15, severity: "MEDIUM", context: "Average 10h shift length" },
+      { factor: "Equipment Health", contribution: 10, severity: "LOW", context: "72% avg equipment health" }
+    ],
+    predicted_incident_type: "Gas leak in confined space (H2S exposure)",
+    recommended_preventive_actions: [
+      "Increase ventilation in Zone C immediately",
+      "Perform fresh gas test in confined space before entry"
+    ]
+  });
+
+  useEffect(() => {
+    const fetchPrediction = async () => {
+      try {
+        const res = await fetch(`${API}/analytics/prediction`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === "ok" && data.prediction) {
+            setPrediction(data.prediction);
+            return;
+          }
+        }
+      } catch (err) {
+        // ignore, use fallback
+      }
+
+      // Live client-side fallback calculation using actual current store values
+      const h2sVal = sensors["h2s-zc-01"]?.rawValue ?? 3.2;
+      const vibVal = sensors["vib-c301"]?.rawValue ?? 4.8;
+      const prsVal = sensors["prs-zb-01"]?.rawValue ?? 4.1;
+
+      let score = 15;
+      const factorsList = [];
+
+      if (h2sVal > 5) {
+        const gasContrib = Math.min(30, (h2sVal / 10) * 20);
+        score += gasContrib;
+        factorsList.push({
+          factor: "H₂S Gas Level",
+          contribution: Math.round(gasContrib),
+          severity: h2sVal > 10 ? "HIGH" : "MEDIUM",
+          context: `${h2sVal.toFixed(1)}ppm H2S in Zone C`
+        });
+      }
+
+      if (vibVal > 6) {
+        const vibContrib = Math.min(20, (vibVal / 12) * 15);
+        score += vibContrib;
+        factorsList.push({
+          factor: "Compressor Vibration",
+          contribution: Math.round(vibContrib),
+          severity: vibVal > 12 ? "HIGH" : "MEDIUM",
+          context: `${vibVal.toFixed(1)}mm/s at C-301`
+        });
+      }
+
+      if (prsVal > 5) {
+        const prsContrib = Math.min(15, (prsVal / 8) * 12);
+        score += prsContrib;
+        factorsList.push({
+          factor: "Line Pressure Variance",
+          contribution: Math.round(prsContrib),
+          severity: prsVal > 8 ? "HIGH" : "MEDIUM",
+          context: `${prsVal.toFixed(2)} bar in Zone B`
+        });
+      }
+
+      // Add a base permit coordination risk factor
+      const permitContrib = 12;
+      score += permitContrib;
+      factorsList.push({
+        factor: "Permit Complexity",
+        contribution: permitContrib,
+        severity: "LOW",
+        context: "Multiple hot work & confined space permits active"
+      });
+
+      const prob4h = Math.min(95, Math.round(score));
+      const prob24h = Math.min(95, Math.round(score * 1.3));
+
+      factorsList.sort((a, b) => b.contribution - a.contribution);
+
+      const actions = ["Maintain active safety officer surveillance"];
+      if (h2sVal > 5) actions.push("Increase local exhaust ventilation in Zone C");
+      if (vibVal > 7) actions.push("Monitor bearing temperature at C-301");
+      if (prsVal > 6) actions.push("Inspect pressure safety valve isolation status");
+
+      setPrediction({
+        probability_4h: prob4h,
+        probability_24h: prob24h,
+        top_factors: factorsList.slice(0, 3),
+        predicted_incident_type: h2sVal > 10 ? "H2S toxic gas exposure" : vibVal > 12 ? "Catastrophic mechanical failure" : "Process pressure excursion",
+        recommended_preventive_actions: actions.slice(0, 3)
+      });
+    };
+
+    fetchPrediction();
+  }, [sensors, plantRisk]);
 
   // Cursor glow effect
   useEffect(() => {
@@ -218,38 +329,72 @@ export default function MissionControlPage() {
         <div className="bento-prediction">
           <div className="clay-card info h-full" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div className="section-label">Prediction Engine</div>
-            <div style={{ fontWeight: 700, fontSize: 15 }}>Risk Trajectory</div>
-            <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
-              {[
-                { label: "4H forecast",  val: 42, note: "H₂S normalizing" },
-                { label: "12H forecast", val: 58, note: "Maintenance window" },
-                { label: "24H forecast", val: 67, note: "Night shift risk ↑" },
-              ].map(({ label, val, note }) => (
-                <div key={label}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>{label}</div>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        fontWeight: 800,
-                        color: val >= 60 ? "var(--risk-medium)" : "var(--risk-safe)",
-                      }}
-                    >
-                      {val}%
-                    </div>
+            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8, display: "flex", justifyContent: "space-between" }}>
+              <span>Incident Forecast</span>
+              <span style={{ color: "var(--accent-blue)" }}>Conf: 87%</span>
+            </div>
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
+              {/* 4H forecast */}
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                  <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>4H incident Probability</div>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: prediction.probability_4h >= 60 ? "var(--risk-critical)" : prediction.probability_4h >= 40 ? "var(--risk-medium)" : "var(--risk-safe)" }}>
+                    {prediction.probability_4h}%
                   </div>
-                  <div className="threshold-bar">
-                    <div
-                      className="threshold-fill"
-                      style={{
-                        width: `${val}%`,
-                        background: val >= 60 ? "var(--risk-medium)" : "var(--risk-safe)",
-                      }}
-                    />
-                  </div>
-                  <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 2 }}>{note}</div>
                 </div>
-              ))}
+                <div className="threshold-bar">
+                  <div
+                    className="fill"
+                    style={{
+                      width: `${prediction.probability_4h}%`,
+                      background: prediction.probability_4h >= 60 ? "var(--risk-critical)" : prediction.probability_4h >= 40 ? "var(--risk-medium)" : "var(--risk-safe)",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* 24H forecast */}
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                  <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>24H incident Probability</div>
+                  <div style={{ fontSize: 12, fontWeight: 800, color: prediction.probability_24h >= 60 ? "var(--risk-critical)" : prediction.probability_24h >= 40 ? "var(--risk-medium)" : "var(--risk-safe)" }}>
+                    {prediction.probability_24h}%
+                  </div>
+                </div>
+                <div className="threshold-bar">
+                  <div
+                    className="fill"
+                    style={{
+                      width: `${prediction.probability_24h}%`,
+                      background: prediction.probability_24h >= 60 ? "var(--risk-critical)" : prediction.probability_24h >= 40 ? "var(--risk-medium)" : "var(--risk-safe)",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Contributing factors */}
+              <div style={{ marginTop: 4 }}>
+                <div style={{ fontSize: 9, color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+                  Primary Risk Drivers
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                  {prediction.top_factors.length === 0 ? (
+                    <div style={{ fontSize: 11, color: "var(--text-muted)" }}>No high risk factors detected.</div>
+                  ) : (
+                    prediction.top_factors.map((f, idx) => (
+                      <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 11 }}>
+                        <span style={{ color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 120 }} title={f.factor}>
+                          {f.factor}
+                        </span>
+                        <span style={{ color: f.severity === "HIGH" ? "var(--risk-critical)" : f.severity === "MEDIUM" ? "var(--risk-medium)" : "var(--text-primary)", fontWeight: 700 }}>
+                          +{f.contribution}%
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>

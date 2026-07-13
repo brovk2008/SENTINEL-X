@@ -230,61 +230,88 @@ export default function BiometricsPage() {
           </div>
         ))}
       </div>
-
       {/* Main Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, alignItems: "start" }}>
+      <div className="responsive-row">
         {/* Worker roster list */}
-        <div>
-          <div className="section-label" style={{ marginBottom: 12 }}>Personnel Roster</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {workers.map((w) => {
-              const isSel = selectedId === w.worker_id;
-              const color = statusColor(w.status);
-              return (
-                <div
-                  key={w.worker_id}
-                  className={`source-card ${isSel ? "info" : ""}`}
-                  style={{ cursor: "pointer", transition: "transform 0.15s" }}
-                  onClick={() => setSelectedId(w.worker_id)}
-                >
-                  {/* Status indicator */}
-                  <div className="status-dot" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }} />
+        <div style={{ flex: 1.1, display: "flex", flexDirection: "column", gap: 20 }}>
+          <div>
+            <div className="section-label" style={{ marginBottom: 12 }}>Personnel Roster</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {workers.map((w) => {
+                const isSel = selectedId === w.worker_id;
+                const color = statusColor(w.status);
+                return (
+                  <div
+                    key={w.worker_id}
+                    className={`source-card ${isSel ? "info" : ""}`}
+                    style={{ cursor: "pointer", transition: "transform 0.15s" }}
+                    onClick={() => setSelectedId(w.worker_id)}
+                  >
+                    {/* Status indicator */}
+                    <div className="status-dot" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }} />
 
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                      <div style={{ fontWeight: 800, fontSize: 14 }}>{w.worker_name}</div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color }}>{w.status}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <div style={{ fontWeight: 800, fontSize: 14 }}>{w.worker_name}</div>
+                        <div style={{ fontSize: 11, fontWeight: 700, color }}>{w.status}</div>
+                      </div>
+                      <div style={{ display: "flex", gap: 10, fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><Users size={11} /> {w.role}</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><MapPin size={11} /> Zone {w.zone_id}</span>
+                        <span>⏱ {w.shift_hours}h shift</span>
+                      </div>
                     </div>
-                    <div style={{ display: "flex", gap: 10, fontSize: 11, color: "var(--text-secondary)", marginTop: 2 }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><Users size={11} /> {w.role}</span>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}><MapPin size={11} /> Zone {w.zone_id}</span>
-                      <span>⏱ {w.shift_hours}h shift</span>
+
+                    {/* PSI Circle */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <svg width="40" height="40" viewBox="0 0 40 40" style={{ transform: "rotate(-90deg)" }} aria-hidden>
+                        <circle cx="20" cy="20" r="16" stroke="rgba(255,255,255,0.06)" strokeWidth="4" fill="none" />
+                        <circle
+                          cx="20" cy="20" r="16" stroke={color} strokeWidth="4" fill="none"
+                          strokeDasharray={2 * Math.PI * 16}
+                          strokeDashoffset={(1 - w.psi_score / 10) * 2 * Math.PI * 16}
+                        />
+                      </svg>
+                      <div style={{ width: 24, textAlign: "right" }}>
+                        <div style={{ fontSize: 12, fontWeight: 900 }}>{w.psi_score}</div>
+                        <div style={{ fontSize: 8, color: "var(--text-muted)" }}>PSI</div>
+                      </div>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+          </div>
 
-                  {/* PSI Circle */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <svg width="40" height="40" viewBox="0 0 40 40" style={{ transform: "rotate(-90deg)" }} aria-hidden>
-                      <circle cx="20" cy="20" r="16" stroke="rgba(255,255,255,0.06)" strokeWidth="4" fill="none" />
-                      <circle
-                        cx="20" cy="20" r="16" stroke={color} strokeWidth="4" fill="none"
-                        strokeDasharray={2 * Math.PI * 16}
-                        strokeDashoffset={(1 - w.psi_score / 10) * 2 * Math.PI * 16}
-                      />
-                    </svg>
-                    <div style={{ width: 24, textAlign: "right" }}>
-                      <div style={{ fontSize: 12, fontWeight: 900 }}>{w.psi_score}</div>
-                      <div style={{ fontSize: 8, color: "var(--text-muted)" }}>PSI</div>
-                    </div>
-                  </div>
+          {/* Zone-wise Density Heatmap */}
+          <div className="clay-card info" style={{ padding: "16px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+              <div style={{ fontWeight: 700, fontSize: 13, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)" }}>
+                Zone-wise Crew Heatmap
+              </div>
+              <span className="live-dot" />
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+              {[
+                { zone: "Zone A", count: workers.filter(w => w.zone_id === "ZA").length, status: "Normal", color: "var(--risk-safe)" },
+                { zone: "Zone B", count: workers.filter(w => w.zone_id === "ZB").length, status: "Normal", color: "var(--risk-safe)" },
+                { zone: "Zone C", count: workers.filter(w => w.zone_id === "ZC").length, status: "Heat Stress", color: "var(--risk-critical)" },
+                { zone: "Zone D", count: workers.filter(w => w.zone_id === "ZD").length, status: "Normal", color: "var(--risk-safe)" },
+                { zone: "Zone E", count: workers.filter(w => w.zone_id === "ZE").length, status: "Normal", color: "var(--risk-safe)" },
+                { zone: "Zone F", count: workers.filter(w => w.zone_id === "ZF").length, status: "Normal", color: "var(--risk-safe)" },
+              ].map((h) => (
+                <div key={h.zone} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "var(--r-md)", padding: "10px", textAlign: "center" }}>
+                  <div style={{ fontSize: 14, fontWeight: 900, color: h.color }}>{h.count}</div>
+                  <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 2 }}>{h.zone}</div>
+                  <div style={{ fontSize: 8, color: "var(--text-secondary)", marginTop: 4, textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }}>{h.status}</div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Selected worker details */}
-        <div>
+        <div style={{ flex: 1.1 }}>
           <div className="section-label" style={{ marginBottom: 12 }}>Physiological Telemetry Detail</div>
           {selected ? (
             <div className={`clay-card ${selected.psi_score >= 7 ? "critical" : "info"}`} style={{ animation: "float-up 0.3s var(--ease-spring)" }}>

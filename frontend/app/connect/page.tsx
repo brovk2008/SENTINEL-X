@@ -205,6 +205,7 @@ export default function ConnectPage() {
   const [showVisionModal, setShowVisionModal] = useState(false);
   const [testing, setTesting] = useState<string | null>(null);
   const [testResult, setTestResult] = useState<Record<string, string>>({});
+  const [livePackets, setLivePackets] = useState<{ id: string; time: string; source: string; tag: string; value: string }[]>([]);
 
   useEffect(() => {
     if (!API) return;
@@ -212,6 +213,30 @@ export default function ConnectPage() {
       .then((r) => r.json())
       .then((d) => { if (d.sources) setSources(d.sources); })
       .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const topics = ["safetyos/v401/press", "safetyos/compressor/vib", "safetyos/temp/tankA", "safetyos/gas/h2s", "safetyos/flow/main"];
+    const tags = ["PRS-V401", "VIB-C301", "TMP-TKA", "H2S-ZC-01", "FLW-MAIN"];
+    const units = ["bar", "mm/s", "°C", "ppm", "m³/h"];
+    const minMax = [[10.5, 12.5], [4.2, 5.8], [70.0, 75.0], [2.8, 3.9], [72.0, 76.0]];
+
+    const interval = setInterval(() => {
+      const idx = Math.floor(Math.random() * topics.length);
+      const val = (minMax[idx][0] + Math.random() * (minMax[idx][1] - minMax[idx][0])).toFixed(2);
+      
+      const newPacket = {
+        id: Math.random().toString(36).substring(7),
+        time: new Date().toLocaleTimeString(),
+        source: idx === 3 ? "Mosquitto MQTT" : idx === 1 ? "Honeywell OPCUA" : "Siemens Modbus",
+        tag: tags[idx],
+        value: `${val} ${units[idx]}`
+      };
+
+      setLivePackets((prev) => [newPacket, ...prev].slice(0, 15));
+    }, 1500);
+
+    return () => clearInterval(interval);
   }, []);
 
   const connected = sources.filter((s) => s.status === "connected");
@@ -276,90 +301,137 @@ export default function ConnectPage() {
         ))}
       </div>
 
-      {/* Connected sources */}
-      <div style={{ marginBottom: 24 }}>
-        <div className="section-label" style={{ marginBottom: 12 }}>Connected Sources</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {sources.filter((s) => s.status !== "standby").map((src) => (
-            <div key={src.id} className="source-card">
-              <StatusDot status={src.status} />
-              <ProtoBadge proto={src.protocol} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 700, fontSize: 14 }}>{src.name}</div>
-                <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
-                  {src.host}:{src.port}
-                  {src.tags_count ? ` · ${src.tags_count} tags` : ""}
-                  {src.last_seen ? ` · last: ${timeSince(src.last_seen)}` : ""}
+      <div className="responsive-row">
+        <div style={{ flex: 1.3, display: "flex", flexDirection: "column", gap: 24 }}>
+          {/* Connected sources */}
+          <div>
+            <div className="section-label" style={{ marginBottom: 12 }}>Connected Sources</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {sources.filter((s) => s.status !== "standby").map((src) => (
+                <div key={src.id} className="source-card">
+                  <StatusDot status={src.status} />
+                  <ProtoBadge proto={src.protocol} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{src.name}</div>
+                    <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
+                      {src.host}:{src.port}
+                      {src.tags_count ? ` · ${src.tags_count} tags` : ""}
+                      {src.last_seen ? ` · last: ${timeSince(src.last_seen)}` : ""}
+                    </div>
+                    <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>
+                      {src.protocol === "mqtt" && src.topics ? `Topics: ${src.topics.join(", ")} · QoS 1` : ""}
+                      {src.protocol === "opcua" && src.namespace ? `Namespace: ${src.namespace} · Polling: ${src.poll_interval_ms || 1000}ms` : ""}
+                      {src.protocol === "modbus" ? `Polling: ${src.poll_interval_ms || 2000}ms` : ""}
+                      {src.protocol === "rtsp" ? "Codec: H.264 · Output: HLS" : ""}
+                      {src.protocol === "http_poll" ? `Poll interval: ${src.poll_interval_ms || 5000}ms` : ""}
+                    </div>
+                    {src.error && (
+                      <div style={{ fontSize: 10, color: "var(--risk-critical)", marginTop: 4 }}>⚠ {src.error}</div>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    {testResult[src.id] === "ok" && (
+                      <span style={{ fontSize: 11, color: "var(--risk-safe)", fontWeight: 700 }}>✓ OK</span>
+                    )}
+                    <button
+                      className="clay-btn"
+                      style={{ padding: "6px 10px", fontSize: 11 }}
+                      onClick={() => handleTest(src.id)}
+                      disabled={testing === src.id}
+                    >
+                      {testing === src.id ? "Testing..." : "Test"}
+                    </button>
+                    <button
+                      className="clay-btn"
+                      style={{ padding: "6px 10px", fontSize: 11 }}
+                      onClick={() => handleDisconnect(src.id)}
+                    >
+                      Disconnect
+                    </button>
+                  </div>
                 </div>
-                <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>
-                  {src.protocol === "mqtt" && src.topics ? `Topics: ${src.topics.join(", ")} · QoS 1` : ""}
-                  {src.protocol === "opcua" && src.namespace ? `Namespace: ${src.namespace} · Polling: ${src.poll_interval_ms || 1000}ms` : ""}
-                  {src.protocol === "modbus" ? `Polling: ${src.poll_interval_ms || 2000}ms` : ""}
-                  {src.protocol === "rtsp" ? "Codec: H.264 · Output: HLS" : ""}
-                  {src.protocol === "http_poll" ? `Poll interval: ${src.poll_interval_ms || 5000}ms` : ""}
-                </div>
-                {src.error && (
-                  <div style={{ fontSize: 10, color: "var(--risk-critical)", marginTop: 4 }}>⚠ {src.error}</div>
-                )}
-              </div>
-              <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                {testResult[src.id] === "ok" && (
-                  <span style={{ fontSize: 11, color: "var(--risk-safe)", fontWeight: 700 }}>✓ OK</span>
-                )}
-                <button
-                  className="clay-btn"
-                  style={{ padding: "6px 10px", fontSize: 11 }}
-                  onClick={() => handleTest(src.id)}
-                  disabled={testing === src.id}
-                >
-                  {testing === src.id ? "Testing..." : "Test"}
-                </button>
-                <button
-                  className="clay-btn"
-                  style={{ padding: "6px 10px", fontSize: 11 }}
-                  onClick={() => handleDisconnect(src.id)}
-                >
-                  Disconnect
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Available integrations */}
-      <div>
-        <div className="section-label" style={{ marginBottom: 12 }}>Available Integrations</div>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-            gap: 10,
-          }}
-        >
-          {CLOUD_INTEGRATIONS.map((ci) => {
-            const CiIcon = ci.Icon;
-            const existing = sources.find((s) => s.id.startsWith(ci.id));
-            return (
-              <div
-                key={ci.id}
-                className="clay-card"
-                style={{ padding: "16px", textAlign: "center", cursor: "pointer" }}
-                onClick={() => setShowAdd(true)}
-              >
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: `${ci.color}15`, display: "grid", placeItems: "center", margin: "0 auto 8px" }}>
-                  <CiIcon size={22} color={ci.color} />
-                </div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: ci.color }}>{ci.name}</div>
-                <button
-                  className="clay-btn"
-                  style={{ marginTop: 10, fontSize: 11, padding: "5px 12px", width: "100%", justifyContent: "center" }}
-                >
-                  {existing?.status === "connected" ? "✓ Connected" : "Connect"}
-                </button>
-              </div>
-            );
-          })}
+          {/* Available integrations */}
+          <div>
+            <div className="section-label" style={{ marginBottom: 12 }}>Available Integrations</div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+                gap: 10,
+              }}
+            >
+              {CLOUD_INTEGRATIONS.map((ci) => {
+                const CiIcon = ci.Icon;
+                const existing = sources.find((s) => s.id.startsWith(ci.id));
+                return (
+                  <div
+                    key={ci.id}
+                    className="clay-card"
+                    style={{ padding: "16px", textAlign: "center", cursor: "pointer" }}
+                    onClick={() => setShowAdd(true)}
+                  >
+                    <div style={{ width: 40, height: 40, borderRadius: 10, background: `${ci.color}15`, display: "grid", placeItems: "center", margin: "0 auto 8px" }}>
+                      <CiIcon size={22} color={ci.color} />
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: ci.color }}>{ci.name}</div>
+                    <button
+                      className="clay-btn"
+                      style={{ marginTop: 10, fontSize: 11, padding: "5px 12px", width: "100%", justifyContent: "center" }}
+                    >
+                      {existing?.status === "connected" ? "✓ Connected" : "Connect"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Live Data Streams Console */}
+        <div style={{ flex: 1 }}>
+          <div className="clay-card info h-full" style={{ padding: 18, display: "flex", flexDirection: "column", height: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <div className="section-label" style={{ margin: 0 }}>Unified Namespace Console</div>
+              <span className="live-dot" />
+            </div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 10 }}>
+              Live MQTT / OPC-UA / Modbus payload stream:
+            </div>
+            <div 
+              style={{ 
+                flex: 1, 
+                background: "var(--bg-input)", 
+                border: "1px solid var(--border-mid)", 
+                borderRadius: "var(--r-md)", 
+                padding: "10px 14px", 
+                fontFamily: "var(--font-mono)", 
+                fontSize: 11, 
+                overflowY: "auto",
+                minHeight: 320,
+                maxHeight: 490
+              }}
+            >
+              {livePackets.length === 0 ? (
+                <div style={{ color: "var(--text-muted)", textAlign: "center", marginTop: 20 }}>Listening for packets...</div>
+              ) : (
+                livePackets.map((pkt) => (
+                  <div key={pkt.id} style={{ marginBottom: 6, borderBottom: "1px solid rgba(255,255,255,0.02)", paddingBottom: 4 }}>
+                    <span style={{ color: "var(--text-muted)" }}>[{pkt.time}]</span>{" "}
+                    <span style={{ color: "var(--accent-blue)" }}>{pkt.source}</span>{" "}
+                    <span style={{ color: "var(--text-primary)", fontWeight: 700 }}>{pkt.tag}</span>{" "}
+                    <span style={{ color: "var(--alarm-normal)" }}>{pkt.value}</span>
+                  </div>
+                ))
+              )}
+            </div>
+            <div style={{ fontSize: 9, color: "var(--text-muted)", marginTop: 8, textAlign: "right" }}>
+              Broker: localhost:1883 | Status: Listening
+            </div>
+          </div>
         </div>
       </div>
 

@@ -188,117 +188,166 @@ LOGGED BY: Sentinel X Autonomous Safety Operating System
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 24 }}>
-        {/* AI Summary */}
-        <div className="clay-card info">
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-            <Bot size={18} color="var(--accent-blue)" />
-            <div style={{ fontWeight: 700, fontSize: 14 }}>AI Handover Summary</div>
-            <div className="live-dot" style={{ marginLeft: "auto" }} />
-          </div>
-          <div
-            style={{
-              fontSize: 13,
-              lineHeight: 1.7,
-              color: "var(--text-secondary)",
-              whiteSpace: "pre-wrap",
-              fontFamily: "var(--text-display)",
-            }}
-          >
-            {AI_SUMMARY}
-          </div>
-        </div>
-
-        {/* Shift event log */}
-        <div className="clay-card">
-          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 14 }}>Shift Event Log</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            {EVENTS.map(({ time, type, msg, zone }) => (
-              <div
-                key={time + msg.slice(0, 10)}
-                style={{
-                  display: "flex", gap: 10, padding: "8px 10px",
-                  background: type === "alert" ? "rgba(255,59,59,0.05)" : type === "ai" ? "rgba(155,89,255,0.05)" : "rgba(255,255,255,0.02)",
-                  borderRadius: "var(--r-sm)",
-                  borderLeft: `2px solid ${type === "alert" ? "var(--risk-critical)" : type === "ai" ? "var(--accent-purple)" : "var(--accent-blue)"}`,
-                }}
-              >
-                <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--text-mono)", flexShrink: 0, paddingTop: 2 }}>
-                  {time}
-                </div>
-                <div style={{ fontSize: 11, lineHeight: 1.5, flex: 1 }}>{msg}</div>
-                <div
-                  style={{
-                    fontSize: 9, fontWeight: 700, color: "var(--text-muted)",
-                    flexShrink: 0, alignSelf: "flex-start", paddingTop: 2,
-                  }}
-                >
-                  {zone}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Handover checklist */}
-      <div className="clay-card">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 14 }}>Handover Checklist</div>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
-              {completedCount}/{checklist.length} items complete — {completionPct}%
+      <div className="responsive-row">
+        {/* Left Column: AI Summary + Shift Logs + Checklist */}
+        <div style={{ flex: 1.3, display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* AI Summary */}
+          <div className="clay-card info">
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <Bot size={18} color="var(--accent-blue)" />
+              <div style={{ fontWeight: 700, fontSize: 14 }}>AI Handover Summary</div>
+              <div className="live-dot" style={{ marginLeft: "auto" }} />
             </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div
               style={{
-                width: 120, height: 6, borderRadius: 4,
-                background: "rgba(255,255,255,0.06)", overflow: "hidden",
+                fontSize: 13,
+                lineHeight: 1.7,
+                color: "var(--text-secondary)",
+                whiteSpace: "pre-wrap",
+                fontFamily: "var(--font-sans)",
               }}
             >
-              <div
-                style={{
-                  width: `${completionPct}%`, height: "100%",
-                  background: completionPct === 100 ? "var(--risk-safe)" : "var(--accent-blue)",
-                  transition: "width 0.4s var(--ease-out)",
-                }}
-              />
+              {AI_SUMMARY}
             </div>
-            <div style={{ fontSize: 13, fontWeight: 800, color: completionPct === 100 ? "var(--risk-safe)" : "var(--accent-blue)" }}>
-              {completionPct}%
+          </div>
+
+          {/* Shift event log */}
+          <div className="clay-card">
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 14 }}>Shift Event Log</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {EVENTS.map(({ time, type, msg, zone }) => (
+                <div
+                  key={time + msg.slice(0, 10)}
+                  style={{
+                    display: "flex", gap: 10, padding: "8px 10px",
+                    background: type === "alert" ? "rgba(255,59,59,0.05)" : type === "ai" ? "rgba(155,89,255,0.05)" : "rgba(255,255,255,0.02)",
+                    borderRadius: "var(--r-sm)",
+                    borderLeft: `2px solid ${type === "alert" ? "var(--risk-critical)" : type === "ai" ? "var(--accent-purple)" : "var(--accent-blue)"}`,
+                  }}
+                >
+                  <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-mono)", flexShrink: 0, paddingTop: 2 }}>
+                    {time}
+                  </div>
+                  <div style={{ fontSize: 11, lineHeight: 1.5, flex: 1 }}>{msg}</div>
+                  <div
+                    style={{
+                      fontSize: 9, fontWeight: 700, color: "var(--text-muted)",
+                      flexShrink: 0, alignSelf: "flex-start", paddingTop: 2,
+                    }}
+                  >
+                    {zone}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Handover checklist */}
+          <div className="clay-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>Handover Checklist</div>
+                <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
+                  {completedCount}/{checklist.length} items complete — {completionPct}%
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div
+                  style={{
+                    width: 120, height: 6, borderRadius: 4,
+                    background: "rgba(255,255,255,0.06)", overflow: "hidden",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: `${completionPct}%`, height: "100%",
+                      background: completionPct === 100 ? "var(--risk-safe)" : "var(--accent-blue)",
+                      transition: "width 0.4s var(--ease-out)",
+                    }}
+                  />
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: completionPct === 100 ? "var(--risk-safe)" : "var(--accent-blue)" }}>
+                  {completionPct}%
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {checklist.map((item) => (
+                <div
+                  key={item.id}
+                  className="checklist-item"
+                  onClick={() => toggleCheck(item.id)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className={`check-box ${item.checked ? "checked" : ""}`}>
+                    {item.checked && <span style={{ color: "black", fontSize: 11, fontWeight: 900 }}>✓</span>}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, opacity: item.checked ? 0.6 : 1, textDecoration: item.checked ? "line-through" : "none", transition: "all 0.2s" }}>
+                      {item.label}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 9, fontWeight: 700, padding: "2px 8px",
+                      borderRadius: 999, background: "rgba(255,255,255,0.05)",
+                      color: "var(--text-muted)", border: "1px solid rgba(255,255,255,0.06)",
+                      flexShrink: 0,
+                    }}
+                  >
+                    Zone {item.zone}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div>
-          {checklist.map((item) => (
-            <div
-              key={item.id}
-              className="checklist-item"
-              onClick={() => toggleCheck(item.id)}
-              style={{ cursor: "pointer" }}
-            >
-              <div className={`check-box ${item.checked ? "checked" : ""}`}>
-                {item.checked && <span style={{ color: "black", fontSize: 11, fontWeight: 900 }}>✓</span>}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, opacity: item.checked ? 0.6 : 1, textDecoration: item.checked ? "line-through" : "none", transition: "all 0.2s" }}>
-                  {item.label}
+        {/* Right Column: Shift Handover Archive + Guideline Info */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* Shift Handover Logs Archive */}
+          <div className="clay-card">
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 14 }}>Handover Log History</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { date: "12 July 2026", shift: "Night → Day Shift", supervisor: "Manish Sinha", status: "Completed", risk: "71%", color: "var(--risk-medium)" },
+                { date: "12 July 2026", shift: "Day → Night Shift", supervisor: "S. K. Rao", status: "Completed", risk: "65%", color: "var(--risk-medium)" },
+                { date: "11 July 2026", shift: "Night → Day Shift", supervisor: "V. Sharma", status: "Completed", risk: "42%", color: "var(--risk-safe)" },
+                { date: "11 July 2026", shift: "Day → Night Shift", supervisor: "Amit Patel", status: "Completed", risk: "40%", color: "var(--risk-safe)" },
+              ].map((h, i) => (
+                <div key={i} style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "var(--r-md)", padding: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700 }}>{h.shift}</div>
+                    <div style={{ fontSize: 10, color: "var(--text-secondary)", marginTop: 2 }}>
+                      {h.date} · Supervisor: {h.supervisor}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <span className="badge" style={{ background: "rgba(255,255,255,0.04)", color: "var(--text-secondary)", fontSize: 10, border: "1px solid rgba(255,255,255,0.08)" }}>
+                      {h.status}
+                    </span>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: h.color, marginTop: 4 }}>
+                      Risk: {h.risk}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div
-                style={{
-                  fontSize: 9, fontWeight: 700, padding: "2px 8px",
-                  borderRadius: 999, background: "rgba(255,255,255,0.05)",
-                  color: "var(--text-muted)", border: "1px solid rgba(255,255,255,0.06)",
-                  flexShrink: 0,
-                }}
-              >
-                Zone {item.zone}
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* OISD Guideline standards card */}
+          <div className="clay-card info">
+            <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 10 }}>OISD Standard 105 Compliance</div>
+            <div style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.6 }}>
+              Pursuant to standard safety handovers:
+              <ul style={{ paddingLeft: 16, marginTop: 6 }}>
+                <li>All active Work Permits must be counter-signed by incoming supervisors.</li>
+                <li>H2S & Hydrocarbon levels must be verified by continuous gas testing.</li>
+                <li>PPE compliance stats must be reviewed and certified prior to crew swap.</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
       <AuditReportModal isOpen={showModal} onClose={() => setShowModal(false)} />

@@ -609,3 +609,59 @@ body {
 .recharts-tooltip-wrapper { outline: none; }
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line { stroke: var(--border-dim) !important; }
+
+/* ── BENTO GRID SYSTEM ────────────────────────── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 16px 20px 42px;
+}
+
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bento-plant-map { grid-column: span 2; }
+  .bento-sensor-ticker { grid-column: span 2; }
+  .bento-active-risks { grid-column: span 2; }
+  .bento-agents { grid-column: span 2; }
+}
+
+@media (min-width: 1200px) {
+  .bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(180px, auto);
+  }
+  .bento-plant-map { grid-column: span 3; grid-row: span 2; }
+  .bento-risk-score { grid-column: span 1; grid-row: span 1; }
+  .bento-prediction { grid-column: span 1; grid-row: span 1; }
+  .bento-workers { grid-column: span 1; }
+  .bento-permits { grid-column: span 1; }
+  .bento-sensor-ticker { grid-column: span 4; }
+  .bento-active-risks { grid-column: span 2; }
+  .bento-agents { grid-column: span 2; }
+}
+
+/* ── LAYOUT & SPACING HELPERS ───────────────────── */
+.responsive-row {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 1024px) {
+  .responsive-row {
+    flex-direction: row;
+  }
+  .responsive-row > * {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* Tighter layout paddings */
+.content-stage {
+  padding-bottom: 50px;
+}
