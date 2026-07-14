@@ -161,6 +161,22 @@ export default function SettingsPage() {
             </span>
           </div>
 
+          {/* Demo Mode Info Banner */}
+          <div style={{
+            background: 'rgba(26, 95, 160, 0.1)',
+            border: '1px solid rgba(26, 95, 160, 0.3)',
+            borderRadius: 6,
+            padding: '12px 16px',
+            marginBottom: 20,
+            fontSize: 12,
+            color: '#7090c0',
+            lineHeight: 1.5,
+          }}>
+            ℹ️ <strong>Demo Mode Active</strong> — Sentinel X runs fully without API keys using pre-scripted 
+            AI responses and synthetic sensor data. Configure an API key below to enable live AI reasoning 
+            for the multi-agent debate and executive briefing.
+          </div>
+
           <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {/* Google Gemini Key */}
             <div>

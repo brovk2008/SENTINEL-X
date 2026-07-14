@@ -88,8 +88,8 @@ async def evaluate_compliance(sensor_state: dict) -> List[Dict[str, Any]]:
             "detail": f"20/20 sensors online and transmitting"
         },
         "h2s_twa": {
-            "is_compliant": h2s_zc < 1.5,
-            "detail": f"H2S TWA estimate: {h2s_zc * 0.3:.2f}ppm ({'COMPLIANT' if h2s_zc < 5 else 'REVIEW REQUIRED'})"
+            "is_compliant": (h2s_zc * 0.3) < 1.0,
+            "detail": f"H2S TWA estimate: {h2s_zc * 0.3:.2f}ppm ({'COMPLIANT' if (h2s_zc * 0.3) < 1.0 else 'VIOLATION — Exceeds 1ppm Factories Act limit'})"
         },
     }
 

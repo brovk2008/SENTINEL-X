@@ -215,9 +215,43 @@ export default function DebatePage() {
                 fontSize: 12,
                 color: 'var(--alarm-normal)',
                 fontFamily: 'var(--font-mono)',
+                marginBottom: 16,
               }}>
                 DECISION: Zone C partial shutdown. Valve CV-312 replacement scheduled. Risk: 84% → 18%. Cost: ₹18.8L.
               </div>
+
+              {/* Collapsible Transcript history */}
+              <details style={{ cursor: 'pointer' }}>
+                <summary style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent-blue)', userSelect: 'none', padding: '4px 0' }}>
+                  Show Full Debate Transcript Logs
+                </summary>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 12 }}>
+                  {[
+                    { agent: "Safety Agent", color: "#ff4444", icon: "🛡️",
+                      message: "Zone C conditions are critical — H2S at 45ppm exceeds the OISD-105 mandatory evacuation threshold of 25ppm in a confined space with an active permit. Immediate evacuation of Zone C is non-negotiable. Worker safety cannot be traded for uptime." },
+                    { agent: "Production Agent", color: "#ffaa00", icon: "⚙️",
+                      message: "Evacuation of Zone C means shutting down Line 3. That's approximately ₹18.4 lakh in downtime. Can we isolate the confined space work scope and keep the rest of Zone C operational while we address the gas buildup?" },
+                    { agent: "Compliance Agent", color: "#4488ff", icon: "⚖️",
+                      message: "OISD Standard 105, Section 4.3 is explicit: when H2S exceeds 25ppm in any area with an active confined space permit, mandatory evacuation is legally required — not optional. Proceeding without evacuation exposes the company to criminal liability." },
+                    { agent: "Maintenance Agent", color: "#00cc88", icon: "🔧",
+                      message: "The H2S buildup is from Valve CV-312 seal weep on Compressor C-301 — inspection noted this morning. Replacement takes 45 minutes. We can reduce feed rate to minimize further accumulation during evacuation." },
+                    { agent: "Finance Agent", color: "#cc88ff", icon: "💰",
+                      message: "Full Zone C evacuation + shutdown: ₹18.8L total. Cost of a major H2S incident (Vizag 2025 model): ₹34 crore in liability and fines. The math strongly favors evacuation now." },
+                    { agent: "Emergency Response Agent", color: "#ff6644", icon: "🚨",
+                      message: "With H2S at 45ppm, active confined space permit, and dual sensor confirmation — emergency threshold confirmed. EMERGENCY PROTOCOL ACTIVATED. Evacuating all Zone C personnel. Response team dispatched." },
+                    { agent: "Executive AI", color: "#44ffaa", icon: "🎯", isExecutive: true,
+                      message: "DECISION: Immediate Zone C evacuation + partial Line 3 shutdown.\nRationale: OISD-105 mandates evacuation. Valve replacement during 90-minute evacuation window.\nRisk Reduction: 84% → 3%\nCost: ₹18.8L downtime + ₹38K valve = ₹18.8L total\nCompliance: ✅ OISD-105-4.3\nTimeline: Evacuation starts NOW. Operations resume 16:30 after gas test < 10ppm." },
+                  ].map((h, hi) => (
+                    <div key={hi} style={{ padding: '8px 10px', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 6, display: 'flex', gap: 10 }}>
+                      <span style={{ fontSize: 14 }}>{h.icon}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: h.color }}>{h.agent}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.4, whiteSpace: 'pre-wrap' }}>{h.message}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </details>
             </div>
 
             {/* Scenario selector */}

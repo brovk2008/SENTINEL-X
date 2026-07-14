@@ -1,16 +1,16 @@
 // frontend/lib/demo-camera-feeds.ts
-// Curated YouTube IDs of real industrial/factory footage for demo camera feeds.
-// All are publicly embeddable. Falls back gracefully if embed blocked.
+// Curated direct MP4 video URLs of real industrial/factory footage for demo camera feeds.
+// Replaces fragile YouTube embeds with high-performance direct video playback.
 
 export interface DemoCameraConfig {
   camera_id: string;
   name: string;
   zone: string;
-  youtube_id: string | null;
-  start_seconds: number;
-  description: string;
-  has_alert?: boolean;
-  alert_text?: string;
+  video_url: string | null;
+  fallback_color: string;
+  workers: number;
+  ppe_pct: number;
+  has_alert: boolean;
   offline?: boolean;
 }
 
@@ -19,69 +19,81 @@ export const DEMO_CAMERA_FEEDS: DemoCameraConfig[] = [
     camera_id: "CAM-01",
     name: "Zone A — Tank Farm Entry",
     zone: "ZA",
-    youtube_id: "RN4V7w8-fBc",
-    start_seconds: 30,
-    description: "Storage tank farm CCTV overhead angle",
+    video_url: "https://videos.pexels.com/video-files/3249063/3249063-uhd_2560_1440_25fps.mp4",
+    fallback_color: "#0d1a0d",
+    workers: 4,
+    ppe_pct: 100,
+    has_alert: false,
   },
   {
     camera_id: "CAM-02",
     name: "Zone B — Processing Unit",
     zone: "ZB",
-    youtube_id: "qJ_KgnOUQkM",
-    start_seconds: 0,
-    description: "Processing unit floor level camera",
+    video_url: "https://videos.pexels.com/video-files/2098823/2098823-hd_1280_720_25fps.mp4",
+    fallback_color: "#0d100d",
+    workers: 2,
+    ppe_pct: 100,
+    has_alert: false,
   },
   {
     camera_id: "CAM-03",
     name: "Zone C — Compressor Bay",
     zone: "ZC",
-    youtube_id: "Y7hDNzjRqdk",
-    start_seconds: 15,
-    description: "Compressor bay — CRITICAL ZONE",
+    video_url: "https://videos.pexels.com/video-files/3168389/3168389-uhd_2560_1440_25fps.mp4",
+    fallback_color: "#1a0d0d",
+    workers: 6,
+    ppe_pct: 83,
     has_alert: true,
-    alert_text: "PPE Violation — 1 worker no helmet",
   },
   {
     camera_id: "CAM-04",
     name: "Zone D — Control Room",
     zone: "ZD",
-    youtube_id: "sZ_1YEuFqL4",
-    start_seconds: 0,
-    description: "Main control room operations",
+    video_url: "https://videos.pexels.com/video-files/3249063/3249063-hd_1280_720_25fps.mp4",
+    fallback_color: "#0d0d1a",
+    workers: 3,
+    ppe_pct: 100,
+    has_alert: false,
   },
   {
     camera_id: "CAM-05",
-    name: "Zone A — Tank Farm Overview",
+    name: "Zone A — Tank Overview",
     zone: "ZA",
-    youtube_id: "N7N6GOYIX7A",
-    start_seconds: 45,
-    description: "Tank farm wide angle overview",
+    video_url: "https://videos.pexels.com/video-files/2098823/2098823-uhd_2560_1440_25fps.mp4",
+    fallback_color: "#0a120a",
+    workers: 1,
+    ppe_pct: 100,
+    has_alert: false,
   },
   {
     camera_id: "CAM-06",
-    name: "Zone B — Rotating Equipment",
+    name: "Zone B — Compressor Area",
     zone: "ZB",
-    youtube_id: "Ul6oZ2QFFHY",
-    start_seconds: 10,
-    description: "Rotating equipment area",
+    video_url: "https://videos.pexels.com/video-files/3168389/3168389-hd_1280_720_25fps.mp4",
+    fallback_color: "#0d100d",
+    workers: 1,
+    ppe_pct: 100,
+    has_alert: false,
   },
   {
     camera_id: "CAM-07",
-    name: "Main Gate — Entry Point",
+    name: "Main Gate — Entry",
     zone: "GATE",
-    youtube_id: "PFRCq8LXX8U",
-    start_seconds: 0,
-    description: "Plant main entry gate",
+    video_url: "https://videos.pexels.com/video-files/2098823/2098823-hd_1280_720_25fps.mp4",
+    fallback_color: "#120d0d",
+    workers: 3,
+    ppe_pct: 67,
     has_alert: true,
-    alert_text: "Unauthorized entry — no permit verified",
   },
   {
     camera_id: "CAM-08",
     name: "Zone F — Flare Stack",
     zone: "ZF",
-    youtube_id: null,
-    start_seconds: 0,
-    description: "Flare stack — camera offline",
+    video_url: null,
+    fallback_color: "#0a0a0a",
+    workers: 0,
+    ppe_pct: 0,
+    has_alert: false,
     offline: true,
   },
 ];

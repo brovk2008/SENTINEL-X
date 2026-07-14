@@ -41,7 +41,11 @@ export function WSProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let ws: WebSocket | null = null;
+    let reconnectDelay = 1000;
+    const maxDelay = 15000;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     let demoTimer: ReturnType<typeof setInterval> | null = null;
+    let isConnected = false;
 
     // Seed all demo sensors with initial values
     const currentValues: Record<string, number> = {};
@@ -72,43 +76,9 @@ export function WSProvider({ children }: { children: React.ReactNode }) {
         .catch(() => {});
     }
 
-    // Real WebSocket if URL is set
-    if (WS_URL) {
-      try {
-        ws = new WebSocket(WS_URL);
-        ws.onmessage = (ev) => {
-          try {
-            const d = JSON.parse(ev.data);
-            if (d.type === "sensor_reading") {
-              updateSensor(d.sensor_id || d.id, {
-                name: d.name,
-                value: `${d.value} ${d.unit || ""}`.trim(),
-                rawValue: parseFloat(d.value),
-                timestamp: d.timestamp,
-                zone: d.zone,
-              });
-            }
-            if (d.type === "alert") {
-              addAlert({ id: d.id, title: d.title, severity: d.severity || "MEDIUM", zone: d.zone, timestamp: d.timestamp });
-            }
-            if (d.type === "plant_risk") {
-              setPlantRisk(d.risk_score);
-            }
-            if (d.type === "source_status") {
-              useStore.getState().updateConnectSource(d.source_id, { status: d.status, last_seen: d.last_seen });
-            }
-          } catch {
-            // ignore malformed
-          }
-        };
-        ws.onerror = () => { ws = null; };
-      } catch {
-        ws = null;
-      }
-    }
-
-    // Demo ticker — runs if no WS or as supplement
-    if (!ws) {
+    const startDemoTicker = () => {
+      if (demoTimer) return;
+      console.log("[WSProvider] Starting fallback demo ticker...");
       demoTimer = setInterval(() => {
         const s = DEMO_SENSORS[Math.floor(Math.random() * DEMO_SENSORS.length)];
         const prev = currentValues[s.id] ?? s.base;
@@ -136,11 +106,108 @@ export function WSProvider({ children }: { children: React.ReactNode }) {
           setPlantRisk(Math.min(100, Math.round(useStore.getState().plantRisk + 2)));
         }
       }, 2800);
-    }
+    };
+
+    const stopDemoTicker = () => {
+      if (demoTimer) {
+        console.log("[WSProvider] Stopping fallback demo ticker...");
+        clearInterval(demoTimer);
+        demoTimer = null;
+      }
+    };
+
+    const connect = () => {
+      if (!WS_URL) {
+        startDemoTicker();
+        return;
+      }
+      console.log("[WSProvider] Connecting to:", WS_URL);
+      try {
+        ws = new WebSocket(WS_URL);
+
+        ws.onopen = () => {
+          console.log("[WSProvider] WebSocket connected successfully!");
+          isConnected = true;
+          reconnectDelay = 1000;
+          stopDemoTicker();
+        };
+
+        ws.onmessage = (ev) => {
+          try {
+            const d = JSON.parse(ev.data);
+            if (d.type === "sensor_reading" || d.type === "sensor_update") {
+              const sensorId = d.sensor_id || d.id;
+              const val = parseFloat(d.value);
+              const unit = d.unit || "";
+              updateSensor(sensorId, {
+                name: d.name,
+                value: `${d.value} ${unit}`.trim(),
+                rawValue: isNaN(val) ? 0 : val,
+                timestamp: d.timestamp || new Date().toISOString(),
+                zone: d.zone,
+              });
+            }
+            if (d.type === "alert" || d.type === "compound_risk") {
+              addAlert({
+                id: d.id || `a-${Date.now()}`,
+                title: d.title || d.rule_name || "Safety Alert",
+                severity: d.severity || "MEDIUM",
+                zone: d.zone || d.zone_id || "ALL",
+                timestamp: d.timestamp || new Date().toISOString(),
+              });
+              const riskScore = d.risk_score || d.risk_probability;
+              if (d.type === "compound_risk" && riskScore) {
+                setPlantRisk(riskScore);
+              }
+            }
+            if (d.type === "plant_risk") {
+              setPlantRisk(d.risk_score);
+            }
+            if (d.type === "source_status") {
+              useStore.getState().updateConnectSource(d.source_id, { status: d.status, last_seen: d.last_seen });
+            }
+          } catch (e) {
+            // ignore
+          }
+        };
+
+        ws.onerror = () => {
+          ws?.close();
+        };
+
+        ws.onclose = () => {
+          isConnected = false;
+          startDemoTicker();
+          scheduleReconnect();
+        };
+
+      } catch (err) {
+        isConnected = false;
+        startDemoTicker();
+        scheduleReconnect();
+      }
+    };
+
+    const scheduleReconnect = () => {
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(() => {
+        reconnectDelay = Math.min(reconnectDelay * 1.5, maxDelay);
+        connect();
+      }, reconnectDelay);
+    };
+
+    connect();
 
     return () => {
-      if (ws) ws.close();
-      if (demoTimer) clearInterval(demoTimer);
+      if (ws) {
+        ws.onopen = null;
+        ws.onmessage = null;
+        ws.onerror = null;
+        ws.onclose = null;
+        ws.close();
+      }
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      stopDemoTicker();
     };
   }, [updateSensor, addAlert, setPlantRisk, setConnectSources]);
 

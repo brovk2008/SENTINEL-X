@@ -96,6 +96,20 @@ async def simulate_risk(rule_id: int = Body(..., embed=True)):
     # Create synthetic plant state that triggers this rule
     synthetic_state = _generate_state_for_rule(rule_id)
 
+    # Inject physical sensor anomalies in simulator background
+    try:
+        from services.sensor_simulator import inject_anomaly
+        if rule_id == 1:
+            await inject_anomaly("H2S-ZC-01", 45.2, 300)
+            await inject_anomaly("H2S-ZC-02", 41.5, 300)
+        elif rule_id == 2:
+            await inject_anomaly("VIB-C301", 11.2, 300)
+            await inject_anomaly("TEMP-C301", 108.0, 300)
+        elif rule_id == 3:
+            await inject_anomaly("LEL-ZB-01", 18.0, 300)
+    except Exception as e:
+        logger.warning(f"Could not inject simulation anomaly: {e}")
+
     # Evaluate to confirm trigger
     alerts = evaluate_risk(synthetic_state)
     triggered = next((a for a in alerts if a["rule_id"] == rule_id), None)

@@ -135,23 +135,25 @@ export default function ExecutivePage() {
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
             <FileText size={20} color="var(--accent-blue)" />
             <div style={{ fontWeight: 800, fontSize: 14 }}>Real-Time Operational Safety Briefing</div>
-            <div className="live-dot" style={{ marginLeft: "auto" }} />
+            {loading ? (
+              <span style={{ fontSize: 11, color: "var(--text-muted)", marginLeft: "auto", animation: "pulse 1.5s infinite" }}>Updating...</span>
+            ) : (
+              <div className="live-dot" style={{ marginLeft: "auto" }} />
+            )}
           </div>
 
-          {loading ? (
-            <div style={{ color: "var(--text-muted)", fontSize: 13, padding: 20 }}>Generating briefing...</div>
-          ) : (
-            <div
-              style={{
-                fontSize: 13,
-                lineHeight: 1.7,
-                color: "var(--text-secondary)",
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {brief}
-            </div>
-          )}
+          <div
+            style={{
+              fontSize: 13,
+              lineHeight: 1.7,
+              color: "var(--text-secondary)",
+              whiteSpace: "pre-wrap",
+              opacity: loading ? 0.75 : 1,
+              transition: "opacity 0.2s ease",
+            }}
+          >
+            {brief}
+          </div>
         </div>
 
         {/* Chat Assistant */}

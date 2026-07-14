@@ -211,7 +211,7 @@ class BiometricManager:
         accumulated_co_ppm_h  = ambient["co_ppm"]  * shift_h
         h2s_twa = accumulated_h2s_ppm_h / 8.0
         co_twa  = accumulated_co_ppm_h / 8.0
-        dose_pct = min(150.0, (accumulated_h2s_ppm_h / (self.H2S_TWA_LIMIT_PPM * 8.0)) * 100)
+        dose_pct = min(120.0, (accumulated_h2s_ppm_h / (self.H2S_TWA_LIMIT_PPM * 8.0)) * 100)
 
         # ── Cognitive load (HRV-derived + task complexity) ───────────────────
         cognitive_load = min(100.0, 38 + (55 - min(55, hrv)) * 1.1

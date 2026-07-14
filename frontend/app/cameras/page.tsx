@@ -111,35 +111,28 @@ function DetectionCanvas({ cam }: { cam: Camera }) {
   );
 }
 
-// ── Camera Tile (uses DemoCameraFeed YouTube embed) ───────────────────────────
+
+
+// ── Camera Tile ───────────────────────────────────────────────────────────────
 function CamTile({ cam, onOpen }: { cam: Camera; onOpen: (c: Camera) => void }) {
-  // Find matching demo feed config
   const feedConfig = DEMO_CAMERA_FEEDS.find((f) => f.camera_id === cam.id);
+  const feed = {
+    camera_id: cam.id,
+    name: cam.name,
+    zone: cam.zone,
+    video_url: feedConfig?.video_url ?? null,
+    fallback_color: feedConfig?.fallback_color ?? "#0d0d0d",
+    workers: cam.workers_detected,
+    ppe_pct: cam.ppe_compliance,
+    has_alert: cam.hasAlert ?? false,
+    offline: cam.status === 'offline',
+  };
 
   return (
-    <div style={{ position: 'relative' }}>
-      {/* YouTube embed with CCTV overlays */}
-      <DemoCameraFeed
-        cameraId={cam.id}
-        youtubeId={feedConfig?.youtube_id ?? null}
-        startSeconds={feedConfig?.start_seconds ?? 0}
-        offline={cam.status === 'offline'}
-        hasAlert={cam.hasAlert}
-        alertText={cam.alertText}
-        workerCount={cam.workers_detected}
-        ppePct={cam.ppe_compliance}
-        name={cam.name}
-        zone={cam.zone}
-        onClick={() => cam.status === 'online' && onOpen(cam)}
-      />
-
-      {/* Detection canvas overlay on top of video */}
-      {cam.status === 'online' && (
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 10 }}>
-          <DetectionCanvas cam={cam} />
-        </div>
-      )}
-    </div>
+    <DemoCameraFeed
+      feed={feed}
+      onClick={() => cam.status === 'online' && onOpen(cam)}
+    />
   );
 }
 
