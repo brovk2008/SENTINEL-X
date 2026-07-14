@@ -61,6 +61,12 @@ interface SafetyState {
   // Workers
   workerCount: number;
   setWorkerCount: (n: number) => void;
+
+  // System mode
+  demoMode: boolean | null;
+  scriptedDebate: boolean | null;
+  setDemoMode: (mode: boolean | null) => void;
+  setScriptedDebate: (mode: boolean | null) => void;
 }
 
 export const useStore = create<SafetyState>((set) => ({
@@ -109,4 +115,10 @@ export const useStore = create<SafetyState>((set) => ({
   // ── Workers ──
   workerCount: 48,
   setWorkerCount: (n) => set({ workerCount: n }),
+
+  // ── System Mode ──
+  demoMode: null,
+  scriptedDebate: null,
+  setDemoMode: (mode) => set({ demoMode: mode }),
+  setScriptedDebate: (mode) => set({ scriptedDebate: mode }),
 }));

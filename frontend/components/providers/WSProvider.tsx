@@ -38,6 +38,8 @@ export function WSProvider({ children }: { children: React.ReactNode }) {
   const addAlert      = useStore((s) => s.addAlert);
   const setPlantRisk  = useStore((s) => s.setPlantRisk);
   const setConnectSources = useStore((s) => s.setConnectSources);
+  const setDemoMode   = useStore((s) => s.setDemoMode);
+  const setScriptedDebate = useStore((s) => s.setScriptedDebate);
 
   useEffect(() => {
     let ws: WebSocket | null = null;
@@ -74,6 +76,21 @@ export function WSProvider({ children }: { children: React.ReactNode }) {
         .then((r) => r.json())
         .then((d) => { if (d.sources) setConnectSources(d.sources); })
         .catch(() => {});
+
+      // Fetch active system mode configuration
+      fetch(`${API}/health`)
+        .then((r) => r.json())
+        .then((d) => {
+          setDemoMode(d.demo_mode);
+          setScriptedDebate(d.scripted_debate);
+        })
+        .catch(() => {
+          setDemoMode(true);
+          setScriptedDebate(true);
+        });
+    } else {
+      setDemoMode(true);
+      setScriptedDebate(true);
     }
 
     const startDemoTicker = () => {
@@ -209,7 +226,7 @@ export function WSProvider({ children }: { children: React.ReactNode }) {
       if (reconnectTimer) clearTimeout(reconnectTimer);
       stopDemoTicker();
     };
-  }, [updateSensor, addAlert, setPlantRisk, setConnectSources]);
+  }, [updateSensor, addAlert, setPlantRisk, setConnectSources, setDemoMode, setScriptedDebate]);
 
   return <>{children}</>;
 }

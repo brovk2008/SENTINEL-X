@@ -7,72 +7,62 @@
 
 :root {
   /* ── Canvas layers ── */
-  --bg-base:       #111114;
-  --bg-panel:      #1c1c20;
-  --bg-card:       #242428;
-  --bg-card-hover: #2a2a30;
-  --bg-elevated:   #303038;
-  --bg-input:      #1a1a1e;
+  --bg-base:       #08090f; /* Deep dark blue/black */
+  --bg-panel:      #0e111d; /* Sleek navy panel background */
+  --bg-card:       #131726; /* Sleek navy card background */
+  --bg-card-hover: #181d30; /* Card hover state */
+  --bg-elevated:   #1d233a;
+  --bg-input:      #0a0b12;
 
   /* ── Borders ── */
-  --border-dim:    #2e2e36;
-  --border-mid:    #3a3a44;
-  --border-bright: #4a4a58;
+  --border-dim:    #1d2238; /* Subtle borders */
+  --border-mid:    #252c48;
+  --border-bright: #39446f;
 
-  /* ── ISA-18.2 Alarm Colors — ONLY used for alarm states ── */
-  --alarm-critical: #cc2222;
-  --alarm-high:     #cc6600;
-  --alarm-warning:  #cc9900;
-  --alarm-normal:   #2a7040;
-  --alarm-offline:  #505060;
-  --alarm-info:     #1a5fa0;
-  --alarm-safe:     #1a6040;
+  /* ── Alarm Colors ── */
+  --alarm-critical: #ff3355; /* Vibrant red-pink */
+  --alarm-high:     #ffaa00; /* Vibrant orange */
+  --alarm-warning:  #ffcc00; /* Yellow */
+  --alarm-normal:   #00ff88; /* Vibrant green/cyan */
+  --alarm-offline:  #4c536b;
+  --alarm-info:     #00e5ff; /* Vibrant cyan */
+  --alarm-safe:     #00ffaa;
 
   /* ── Alarm tint backgrounds ── */
-  --alarm-critical-bg: rgba(204, 34, 34, 0.08);
-  --alarm-high-bg:     rgba(204, 102, 0, 0.08);
-  --alarm-warning-bg:  rgba(204, 153, 0, 0.07);
-  --alarm-normal-bg:   rgba(42, 112, 64, 0.07);
-  --alarm-info-bg:     rgba(26, 95, 160, 0.10);
+  --alarm-critical-bg: rgba(255, 51, 85, 0.08);
+  --alarm-high-bg:     rgba(255, 170, 0, 0.08);
+  --alarm-warning-bg:  rgba(255, 204, 0, 0.07);
+  --alarm-normal-bg:   rgba(0, 255, 136, 0.07);
+  --alarm-info-bg:     rgba(0, 229, 255, 0.10);
 
   /* ── Text ── */
-  --text-primary:   #e4e4e8;
-  --text-secondary: #8888a0;
-  --text-muted:     #505060;
-  --text-value:     #f0f0f4;
+  --text-primary:   #f0f2f7; /* Cool white text */
+  --text-secondary: #8c96b5; /* Cool slate text */
+  --text-muted:     #525c7e;
+  --text-value:     #ffffff;
 
   /* ── Font stacks ── */
-  --font-sans: 'Inter', 'Helvetica Neue', -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Roboto Mono', 'Courier New', monospace;
+  --font-sans: 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
   /* ── Interactive ── */
-  --btn-primary-bg:    #1a5fa0;
-  --btn-primary-hover: #1e6bb5;
-  --btn-danger-bg:     #8a1a1a;
-  --btn-danger-hover:  #aa2222;
+  --btn-primary-bg:    #0099ff;
+  --btn-primary-hover: #00b4ff;
+  --btn-danger-bg:     #cc2244;
+  --btn-danger-hover:  #ff3355;
 
   /* ── Shadows ── */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
 
-  /* ── Radius — conservative for industrial ── */
-  --r-sm: 4px;
-  --r-md: 6px;
-  --r-lg: 8px;
-  --r-xl: 10px;
+  /* ── Radius — curved and smooth like the workcells mockup ── */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 18px;
 
   /* ── Transitions ── */
-  --transition: 120ms ease;
-
-  /* ── Legacy aliases (keep for pages that still reference old vars) ── */
-  --canvas:        #111114;
-  --canvas-2:      #1c1c20;
-  --canvas-3:      #242428;
-  --risk-critical: #cc2222;
-  --risk-high:     #cc6600;
-  --risk-medium:   #cc9900;
-  --risk-safe:     #2a7040;
   --risk-offline:  #505060;
   --accent-blue:   #1a5fa0;
   --accent-purple: #6644aa;

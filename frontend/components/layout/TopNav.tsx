@@ -46,6 +46,7 @@ const NAV = [
 export function TopNav() {
   const pathname = usePathname();
   const plantRisk = useStore((s) => s.plantRisk);
+  const demoMode = useStore((s) => s.demoMode);
   const alerts = useStore((s) => s.alerts);
   const markAlertRead = useStore((s) => s.markAlertRead);
   const unread = alerts.filter((a) => !a.read).length;
@@ -93,7 +94,47 @@ export function TopNav() {
         </div>
 
         {/* Right — UNS Chip + Alert bell */}
-        <div className="right">
+        <div className="right" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {/* Mode Indicator Badge */}
+          {demoMode === true && (
+            <div style={{
+              padding: "4px 10px",
+              background: "rgba(0, 212, 255, 0.08)",
+              border: "1px solid rgba(0, 212, 255, 0.25)",
+              borderRadius: "var(--r-sm)",
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#00d4ff",
+              display: "flex",
+              gap: 6,
+              alignItems: "center",
+              letterSpacing: "0.05em",
+              fontFamily: "var(--font-mono)",
+            }}>
+              <span className="live-dot" style={{ background: "#00d4ff", boxShadow: "0 0 8px #00d4ff" }} />
+              DEMO MODE
+            </div>
+          )}
+          {demoMode === false && (
+            <div style={{
+              padding: "4px 10px",
+              background: "rgba(0, 255, 136, 0.08)",
+              border: "1px solid rgba(0, 255, 136, 0.25)",
+              borderRadius: "var(--r-sm)",
+              fontSize: 10,
+              fontWeight: 800,
+              color: "#00ff88",
+              display: "flex",
+              gap: 6,
+              alignItems: "center",
+              letterSpacing: "0.05em",
+              fontFamily: "var(--font-mono)",
+            }}>
+              <span className="live-dot" style={{ background: "#00ff88", boxShadow: "0 0 8px #00ff88" }} />
+              PRODUCTION MODE
+            </div>
+          )}
+
           <div style={{ padding: "4px 8px", background: "var(--bg-card)", border: "1px solid var(--border-mid)", borderRadius: "var(--r-sm)", fontSize: 11, display: "flex", gap: 6, alignItems: "center" }}>
             <span className="live-dot" />
             <span style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--text-secondary)" }}>UNS LIVE</span>

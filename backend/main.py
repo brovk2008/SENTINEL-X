@@ -199,5 +199,7 @@ async def health_check():
         "status": "online",
         "service": "SafetyOS API",
         "version": "1.0.0",
-        "message": "The factory has a brain."
+        "message": "The factory has a brain.",
+        "demo_mode": getattr(settings, 'DEMO_FAST_START', True),
+        "scripted_debate": getattr(settings, 'DEMO_CONNECTIVITY', True),
     }
