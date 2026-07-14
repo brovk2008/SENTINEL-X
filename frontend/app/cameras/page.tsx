@@ -115,7 +115,11 @@ function DetectionCanvas({ cam }: { cam: Camera }) {
 
 // ── Camera Tile ───────────────────────────────────────────────────────────────
 function CamTile({ cam, onOpen }: { cam: Camera; onOpen: (c: Camera) => void }) {
-  const feedConfig = DEMO_CAMERA_FEEDS.find((f) => f.camera_id === cam.id);
+  const numPart = cam.id.replace(/\D/g, "");
+  const indexVal = numPart ? parseInt(numPart) : 0;
+  const feedIndex = isNaN(indexVal) ? 0 : indexVal % DEMO_CAMERA_FEEDS.length;
+
+  const feedConfig = DEMO_CAMERA_FEEDS.find((f) => f.camera_id === cam.id) || DEMO_CAMERA_FEEDS[feedIndex];
   const feed = {
     camera_id: cam.id,
     name: cam.name,
@@ -333,16 +337,103 @@ function CamModal({ cam, onClose }: { cam: Camera; onClose: () => void }) {
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function CamerasPage() {
-  const [cameras, setCameras] = useState<Camera[]>(DEMO_CAMERAS);
+  const [cameras, setCameras] = useState<Camera[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("sentinel_cctv_fleet");
+      if (saved) return JSON.parse(saved);
+    }
+    return DEMO_CAMERAS;
+  });
   const [selected, setSelected] = useState<Camera | null>(null);
+
+  // Manage Panel
+  const [showManager, setShowManager] = useState(false);
+  const [newCamId, setNewCamId] = useState("");
+  const [newCamName, setNewCamName] = useState("");
+  const [newCamZone, setNewCamZone] = useState("ZA");
+  const [newCamStatus, setNewCamStatus] = useState<"online" | "offline">("online");
+  const [newCamWorkers, setNewCamWorkers] = useState(2);
+  const [newCamPPE, setNewCamPPE] = useState(100);
 
   useEffect(() => {
     if (!API) return;
     fetch(`${API}/cameras/`)
       .then((r) => r.json())
-      .then((d) => { if (d.cameras) setCameras(d.cameras); })
+      .then((d) => {
+        if (d.cameras && d.cameras.length > 0) {
+          setCameras((prev) => {
+            // Keep user created custom nodes, merge with backend list
+            const apiCams = d.cameras as Camera[];
+            const customCams = prev.filter((p) => !apiCams.some((a) => a.id === p.id) && p.id.startsWith("CAM-") && parseInt(p.id.split("-")[1]) > 8);
+            const merged = [...apiCams, ...customCams];
+            if (typeof window !== "undefined") {
+              localStorage.setItem("sentinel_cctv_fleet", JSON.stringify(merged));
+            }
+            return merged;
+          });
+        }
+      })
       .catch(() => {});
   }, []);
+
+  const handleAddCamera = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCamId.trim() || !newCamName.trim()) return;
+
+    const cam: Camera = {
+      id: newCamId.trim().toUpperCase(),
+      name: newCamName.trim(),
+      zone: newCamZone,
+      status: newCamStatus,
+      workers_detected: newCamStatus === "online" ? newCamWorkers : 0,
+      ppe_compliance: newCamStatus === "online" ? newCamPPE : 0,
+      hasAlert: newCamStatus === "online" && newCamPPE < 100,
+      alertText: newCamStatus === "online" && newCamPPE < 100 ? `PPE Violation — ${Math.round(newCamWorkers * (1 - newCamPPE/100))} workers missing safety gear` : undefined
+    };
+
+    const updated = [cam, ...cameras];
+    setCameras(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sentinel_cctv_fleet", JSON.stringify(updated));
+    }
+
+    setNewCamId("");
+    setNewCamName("");
+  };
+
+  const handleGenerate100 = () => {
+    const fleet: Camera[] = [...cameras.filter(c => !c.id.startsWith("CAM-") || parseInt(c.id.split("-")[1]) <= 8)];
+    const zones = ["ZA", "ZB", "ZC", "ZD", "ZE", "ZF"];
+    for (let i = 9; i <= 108; i++) {
+      const id = `CAM-${i.toString().padStart(2, "0")}`;
+      const zone = zones[Math.floor(Math.random() * zones.length)];
+      const status = Math.random() > 0.08 ? "online" : "offline";
+      const workers = status === "online" ? Math.floor(Math.random() * 8) : 0;
+      const ppe = status === "online" ? (Math.random() > 0.88 ? (Math.random() > 0.5 ? 75 : 83) : 100) : 0;
+
+      fleet.push({
+        id,
+        name: `Zone ${zone} — Telemetry Feed ${i}`,
+        zone,
+        status,
+        workers_detected: workers,
+        ppe_compliance: ppe,
+        hasAlert: ppe > 0 && ppe < 100,
+        alertText: ppe > 0 && ppe < 100 ? `PPE Compliance Alert: ${ppe}%` : undefined
+      });
+    }
+    setCameras(fleet);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sentinel_cctv_fleet", JSON.stringify(fleet));
+    }
+  };
+
+  const handleClearFleet = () => {
+    setCameras(DEMO_CAMERAS);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("sentinel_cctv_fleet");
+    }
+  };
 
   const onlineCount = cameras.filter((c) => c.status === "online").length;
   const alertCount  = cameras.filter((c) => c.hasAlert).length;
@@ -353,7 +444,7 @@ export default function CamerasPage() {
     setCheckingPPE(true);
     setTimeout(() => {
       setCheckingPPE(false);
-      announceSafetyAlert("Automated P P E compliance scan complete. Two violations flagged. Zone C and Main Gate.");
+      announceSafetyAlert(`Automated P P E compliance scan complete. Total of ${cameras.length} nodes checked. Flagged violations in progress.`);
     }, 1200);
   };
 
@@ -373,6 +464,9 @@ export default function CamerasPage() {
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--risk-critical)", animation: "live-pulse 2s infinite", display: "inline-block" }} />
             <span style={{ fontSize: 12, fontWeight: 700, color: "var(--risk-critical)" }}>REC ●</span>
           </div>
+          <button className="btn" onClick={() => setShowManager(!showManager)}>
+            <span>Fleet Manager</span>
+          </button>
           <button className="btn" onClick={handlePPECheckAll} disabled={checkingPPE} style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <ShieldCheck size={14} />
             <span>{checkingPPE ? "Scanning PPE..." : "PPE Check All"}</span>
@@ -391,11 +485,68 @@ export default function CamerasPage() {
         </div>
       </div>
 
-      {/* Camera wall — 4×2 grid */}
+      {/* Fleet Manager Control Panel */}
+      {showManager && (
+        <div className="clay-card" style={{ padding: 20, marginBottom: 20, border: "1px solid var(--border-bright)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 800 }}>CCTV Fleet Node Manager</h3>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn" onClick={handleGenerate100} style={{ padding: "4px 10px", fontSize: 11, background: "rgba(0, 229, 255, 0.12)", color: "#00e5ff" }}>
+                ⚡ Generate 100 Camera Fleet
+              </button>
+              <button className="btn danger" onClick={handleClearFleet} style={{ padding: "4px 10px", fontSize: 11 }}>
+                🧹 Reset CCTV Fleet
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={handleAddCamera} style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Camera ID</label>
+              <input type="text" placeholder="CAM-09" value={newCamId} onChange={(e) => setNewCamId(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 90 }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 150 }}>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Camera Name / Location</label>
+              <input type="text" placeholder="Zone C — Pump P-102 Intake" value={newCamName} onChange={(e) => setNewCamName(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: "100%" }} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Zone</label>
+              <select value={newCamZone} onChange={(e) => setNewCamZone(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, background: "var(--bg-panel)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none" }}>
+                <option value="ZA">Zone A</option>
+                <option value="ZB">Zone B</option>
+                <option value="ZC">Zone C</option>
+                <option value="ZD">Zone D</option>
+                <option value="ZE">Zone E</option>
+                <option value="ZF">Zone F</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Status</label>
+              <select value={newCamStatus} onChange={(e) => setNewCamStatus(e.target.value as any)} style={{ padding: "6px 10px", borderRadius: 6, background: "var(--bg-panel)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none" }}>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Workers</label>
+              <input type="number" min={0} max={15} value={newCamWorkers} onChange={(e) => setNewCamWorkers(parseInt(e.target.value) || 0)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 60 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>PPE %</label>
+              <input type="number" min={0} max={100} value={newCamPPE} onChange={(e) => setNewCamPPE(parseInt(e.target.value) || 0)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 60 }} />
+            </div>
+            <button type="submit" className="btn" style={{ padding: "7px 14px", fontSize: 12, background: "var(--accent-blue)" }}>
+              + Add Camera
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Camera wall — responsive auto-fit grid */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
           gap: 12,
         }}
       >
@@ -417,7 +568,7 @@ export default function CamerasPage() {
           { label: "Total Cameras", val: cameras.length, color: "var(--text-primary)" },
           { label: "Online",        val: onlineCount,     color: "var(--risk-safe)" },
           { label: "Active Alerts", val: alertCount,      color: "var(--risk-critical)" },
-          { label: "Workers Tracked", val: cameras.reduce((s, c) => s + c.workers_detected, 0), color: "var(--accent-blue)" },
+          { label: "Workers Tracked", val: cameras.reduce((s, c) => s + (c.status === "online" ? c.workers_detected : 0), 0), color: "var(--accent-blue)" },
           { label: "PPE Violations", val: cameras.filter((c) => c.ppe_compliance < 100 && c.status === "online").length, color: "var(--risk-medium)" },
         ].map(({ label, val, color }) => (
           <div

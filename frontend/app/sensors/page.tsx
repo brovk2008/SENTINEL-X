@@ -180,10 +180,105 @@ function SensorCard({ sensor }: { sensor: SensorReading }) {
 
 export default function SensorsPage() {
   const sensors = useStore((s) => s.sensors);
+  const updateSensor = useStore((s) => s.updateSensor);
+  const setSensors = useStore((s) => s.setSensors);
+
   const [filter, setFilter]  = useState<FilterKey>("all");
   const [sort,   setSort]    = useState<SortKey>("risk");
   const [showVisionModal, setShowVisionModal] = useState(false);
 
+  // Manage Panel
+  const [showManager, setShowManager] = useState(false);
+  const [newSenId, setNewSenId] = useState("");
+  const [newSenName, setNewSenName] = useState("");
+  const [newSenType, setNewSenType] = useState("gas");
+  const [newSenZone, setNewSenZone] = useState("ZA");
+  const [newSenVal, setNewSenVal] = useState(2.5);
+  const [newSenWarn, setNewSenWarn] = useState(5.0);
+  const [newSenCrit, setNewSenCrit] = useState(10.0);
+  const [newSenMax, setNewSenMax] = useState(20.0);
+  const [newSenUnit, setNewSenUnit] = useState("ppm");
+
+  const handleAddSensor = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSenId.trim() || !newSenName.trim()) return;
+
+    let status: "normal" | "warn" | "crit" | "ok" = "normal";
+    if (newSenVal >= newSenCrit) status = "crit";
+    else if (newSenVal >= newSenWarn) status = "warn";
+    else if (newSenVal < newSenWarn * 0.4) status = "ok";
+
+    updateSensor(newSenId.trim().toUpperCase(), {
+      name: newSenName.trim(),
+      value: `${newSenVal.toFixed(1)} ${newSenUnit}`,
+      rawValue: newSenVal,
+      unit: newSenUnit,
+      zone: newSenZone,
+      type: newSenType,
+      status,
+      trend: "flat",
+      history: [newSenVal],
+      timestamp: new Date().toISOString(),
+      threshold: { warn: newSenWarn, crit: newSenCrit, max: newSenMax },
+    });
+
+    setNewSenId("");
+    setNewSenName("");
+  };
+
+  const handleGenerate500 = () => {
+    const types = ["gas", "temperature", "pressure", "vibration", "flow", "humidity"];
+    const zones = ["ZA", "ZB", "ZC", "ZD", "ZE", "ZF"];
+    const units: Record<string, string> = { gas: "ppm", temperature: "°C", pressure: "bar", vibration: "mm/s", flow: "m³/h", humidity: "%" };
+    const limits: Record<string, { base: number; drift: number; warn: number; crit: number; max: number }> = {
+      gas: { base: 2.1, drift: 0.5, warn: 5, crit: 10, max: 20 },
+      temperature: { base: 65, drift: 4, warn: 80, crit: 95, max: 120 },
+      pressure: { base: 4.2, drift: 0.3, warn: 6, crit: 8, max: 10 },
+      vibration: { base: 3.5, drift: 0.8, warn: 7, crit: 12, max: 20 },
+      flow: { base: 70, drift: 3, warn: 90, crit: 100, max: 110 },
+      humidity: { base: 60, drift: 2, warn: 85, crit: 95, max: 100 },
+    };
+
+    for (let i = 1; i <= 500; i++) {
+      const id = `SEN-${i.toString().padStart(3, "0")}`;
+      const type = types[Math.floor(Math.random() * types.length)];
+      const zone = zones[Math.floor(Math.random() * zones.length)];
+      const lim = limits[type];
+      const val = lim.base + (Math.random() - 0.5) * lim.drift * 2;
+
+      let status: "normal" | "warn" | "crit" | "ok" = "normal";
+      if (val >= lim.crit) status = "crit";
+      else if (val >= lim.warn) status = "warn";
+      else if (val < lim.warn * 0.4) status = "ok";
+
+      let fmtValue = `${val.toFixed(1)} ${units[type]}`;
+      if (type === "pressure") fmtValue = `${val.toFixed(2)} bar`;
+
+      updateSensor(id, {
+        name: `${type.charAt(0).toUpperCase() + type.slice(1)} Sensor ${i}`,
+        value: fmtValue,
+        rawValue: parseFloat(val.toFixed(2)),
+        unit: units[type],
+        zone,
+        type,
+        status,
+        trend: "flat",
+        history: [val],
+        timestamp: new Date().toISOString(),
+        threshold: { warn: lim.warn, crit: lim.crit, max: lim.max },
+      });
+    }
+  };
+
+  const handleClearSensors = () => {
+    const kept: Record<string, SensorReading> = {};
+    Object.keys(sensors).forEach((k) => {
+      if (!k.startsWith("SEN-")) {
+        kept[k] = sensors[k];
+      }
+    });
+    setSensors(kept);
+  };
 
   const items = useMemo(() => {
     let arr = Object.values(sensors);
@@ -219,6 +314,9 @@ export default function SensorsPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button className="btn" onClick={() => setShowManager(!showManager)}>
+            <span>Sensor Manager</span>
+          </button>
           <button
             className="btn primary"
             onClick={() => setShowVisionModal(true)}
@@ -240,6 +338,79 @@ export default function SensorsPage() {
           ))}
         </div>
       </div>
+
+      {/* Sensor Manager Control Panel */}
+      {showManager && (
+        <div className="clay-card" style={{ padding: 20, marginBottom: 20, border: "1px solid var(--border-bright)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 800 }}>Sensor Matrix Node Manager</h3>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn" onClick={handleGenerate500} style={{ padding: "4px 10px", fontSize: 11, background: "rgba(0, 229, 255, 0.12)", color: "#00e5ff" }}>
+                ⚡ Generate 500 Sensor Grid
+              </button>
+              <button className="btn danger" onClick={handleClearSensors} style={{ padding: "4px 10px", fontSize: 11 }}>
+                🧹 Reset Sensor Grid
+              </button>
+            </div>
+          </div>
+
+          <form onSubmit={handleAddSensor} style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "flex-end" }}>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Sensor ID</label>
+              <input type="text" placeholder="SEN-01" value={newSenId} onChange={(e) => setNewSenId(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 90 }} />
+            </div>
+            <div style={{ flex: 1, minWidth: 150 }}>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Sensor Name</label>
+              <input type="text" placeholder="Zone C — H2S Sensor 10" value={newSenName} onChange={(e) => setNewSenName(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: "100%" }} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Type</label>
+              <select value={newSenType} onChange={(e) => setNewSenType(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, background: "var(--bg-panel)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none" }}>
+                <option value="gas">Gas</option>
+                <option value="temperature">Temperature</option>
+                <option value="pressure">Pressure</option>
+                <option value="vibration">Vibration</option>
+                <option value="flow">Flow</option>
+                <option value="humidity">Humidity</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Zone</label>
+              <select value={newSenZone} onChange={(e) => setNewSenZone(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, background: "var(--bg-panel)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none" }}>
+                <option value="ZA">Zone A</option>
+                <option value="ZB">Zone B</option>
+                <option value="ZC">Zone C</option>
+                <option value="ZD">Zone D</option>
+                <option value="ZE">Zone E</option>
+                <option value="ZF">Zone F</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Value</label>
+              <input type="number" step="any" value={newSenVal} onChange={(e) => setNewSenVal(parseFloat(e.target.value) || 0)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 60 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Warn</label>
+              <input type="number" step="any" value={newSenWarn} onChange={(e) => setNewSenWarn(parseFloat(e.target.value) || 0)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 60 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Crit</label>
+              <input type="number" step="any" value={newSenCrit} onChange={(e) => setNewSenCrit(parseFloat(e.target.value) || 0)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 60 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Max</label>
+              <input type="number" step="any" value={newSenMax} onChange={(e) => setNewSenMax(parseFloat(e.target.value) || 0)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 60 }} />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Unit</label>
+              <input type="text" placeholder="ppm" value={newSenUnit} onChange={(e) => setNewSenUnit(e.target.value)} style={{ padding: "6px 10px", borderRadius: 6, background: "rgba(0,0,0,0.25)", border: "1px solid var(--border-mid)", color: "#fff", fontSize: 12, outline: "none", width: 60 }} />
+            </div>
+            <button type="submit" className="btn" style={{ padding: "7px 14px", fontSize: 12, background: "var(--accent-blue)" }}>
+              + Add Sensor
+            </button>
+          </form>
+        </div>
+      )}
 
       {/* Filter pills */}
       <div className="filter-pills" style={{ marginBottom: 20 }}>
